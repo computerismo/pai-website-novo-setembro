@@ -37,32 +37,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: pai-website-novo-setembro/dental-website/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('pai-website-novo-setembro/dental-website/package-lock.json', 'pai-website-novo-setembro/dental-website/yarn.lock') }}-${{ hashFiles('pai-website-novo-setembro/dental-website/**/*.[jt]s', 'pai-website-novo-setembro/dental-website/**/*.[jt]sx') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pai-website-novo-setembro/dental-website/package-lock.json') }}-${{ hashFiles('pai-website-novo-setembro/dental-website/**/*.[jt]s', 'pai-website-novo-setembro/dental-website/**/*.[jt]sx') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('pai-website-novo-setembro/dental-website/package-lock.json', 'pai-website-novo-setembro/dental-website/yarn.lock') }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('pai-website-novo-setembro/dental-website/package-lock.json') }}-
 
       - name: Install dependencies
         working-directory: pai-website-novo-setembro/dental-website
-        run: |
-          if [ -f "yarn.lock" ]; then
-            yarn install --frozen-lockfile
-          elif [ -f "package.json" ]; then
-            npm ci
-          else
-            echo "Unable to determine package manager"
-            exit 1
-          fi
+        run: npm ci
 
       - name: Build with Next.js
         working-directory: pai-website-novo-setembro/dental-website
-        run: |
-          if [ -f "yarn.lock" ]; then
-            yarn next build
-            yarn next export
-          else
-            npx next build
-            npx next export
-          fi
+        run: npx next build && npx next export
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
