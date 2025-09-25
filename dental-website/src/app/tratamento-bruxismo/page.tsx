@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { Navigation } from '@/components/shared/Navigation';
+import { Breadcrumb } from '@/components/shared/Breadcrumb';
 import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { LeadForm } from '@/components/landing/LeadForm';
@@ -16,6 +17,7 @@ export default function TratamentoBruxismoPage() {
   return (
     <>
       <Navigation />
+      <Breadcrumb />
       <main>
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-blue-50 via-white to-green-50 py-20 relative overflow-hidden">
