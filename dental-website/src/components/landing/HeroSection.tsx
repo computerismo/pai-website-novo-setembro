@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/Button';
-import { Phone, Calendar, ChevronDown } from 'lucide-react';
-import Image from 'next/image';
+import { Phone, Calendar, ChevronDown, Stethoscope, Shield, Heart } from 'lucide-react';
 
 interface HeroSectionProps {
   title: string;
@@ -71,14 +70,45 @@ export function HeroSection({
             </div>
           </div>
 
-          <div className="relative h-[500px] rounded-2xl overflow-hidden">
-            <Image
-              src={backgroundImage || '/images/hero-dentist.jpg'}
-              alt="Consultório odontológico"
-              fill
-              className="object-cover"
-              priority
-            />
+          <div className="relative h-[500px] rounded-2xl overflow-hidden bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700 shadow-2xl">
+            {/* Gradient Background with Design Elements */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/90 via-indigo-600/90 to-purple-700/90"></div>
+
+            {/* Decorative Elements */}
+            <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-1/3 right-1/3 w-24 h-24 bg-blue-300/20 rounded-full blur-xl"></div>
+            <div className="absolute top-1/2 right-1/4 w-20 h-20 bg-purple-300/15 rounded-full blur-lg"></div>
+
+            {/* Medical Icons */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="grid grid-cols-2 gap-8 opacity-20">
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                  <Stethoscope className="w-8 h-8 text-white" />
+                </div>
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                  <Shield className="w-8 h-8 text-white" />
+                </div>
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                  <Heart className="w-8 h-8 text-white" />
+                </div>
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                  <Calendar className="w-8 h-8 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* Overlay Content */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center text-white p-8">
+                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/30">
+                  <Stethoscope className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-4">Cuidado Profissional</h3>
+                <p className="text-white/90 leading-relaxed">
+                  Especialistas dedicados ao seu bem-estar e qualidade de vida
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
