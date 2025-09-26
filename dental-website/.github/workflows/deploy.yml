@@ -64,6 +64,7 @@ jobs:
         working-directory: ./dental-website
         env:
           NEXT_PUBLIC_BASE_PATH: /pai-website-novo-setembro
+          GITHUB_PAGES: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
