@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: 'Clínica Odontológica',
+  name: 'Odontologia',
   description: 'Especialistas em tratamento de bruxismo e disfunções temporomandibulares',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://exemplo.com.br',
   phone: '(11) 99999-9999',

@@ -9,10 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-primary-500 text-white hover:bg-primary-600 focus-visible:ring-primary-500',
+        primary: 'bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 focus-visible:ring-primary-500',
         secondary: 'bg-secondary-500 text-white hover:bg-secondary-600 focus-visible:ring-secondary-500',
         outline: 'border-2 border-primary-500 text-primary-500 hover:bg-primary-50',
-        ghost: 'text-gray-700 hover:bg-gray-100',
+        ghost: 'text-slate-700 hover:bg-white/20 hover:backdrop-blur-xl border border-transparent hover:border-white/30',
         danger: 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-500',
         whatsapp: 'bg-green-500 text-white hover:bg-green-600 focus-visible:ring-green-500',
       },

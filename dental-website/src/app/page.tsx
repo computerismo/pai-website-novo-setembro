@@ -45,7 +45,7 @@ export default function HomePage() {
 
             <div className="grid md:grid-cols-3 gap-8 relative">
               {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-5">
+              <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 w-32 h-32 bg-blue-200 rounded-full filter blur-2xl"></div>
                 <div className="absolute bottom-10 right-10 w-32 h-32 bg-teal-200 rounded-full filter blur-2xl"></div>
               </div>
@@ -108,7 +108,7 @@ export default function HomePage() {
 
             <div className="relative">
               {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-5">
+              <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 w-32 h-32 bg-blue-200 rounded-full filter blur-2xl"></div>
                 <div className="absolute bottom-10 right-10 w-32 h-32 bg-teal-200 rounded-full filter blur-2xl"></div>
               </div>

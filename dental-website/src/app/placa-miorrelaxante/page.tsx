@@ -18,7 +18,7 @@ export default function PlacaMiorrelaxantePage() {
       <Navigation />
       <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 py-20 relative overflow-hidden">
+        <section className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 py-20 pt-36 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-100 rounded-full opacity-30 transform translate-x-40 -translate-y-40"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-100 rounded-full opacity-30 transform -translate-x-32 translate-y-32"></div>
 
