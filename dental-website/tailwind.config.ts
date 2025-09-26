@@ -48,6 +48,7 @@ const config: Config = {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         display: ['Plus Jakarta Sans', 'sans-serif'],
+        serif: ['Crimson Pro', 'Georgia', 'serif'],
       },
       animation: {
         fadeIn: 'fadeIn 0.5s ease-in-out',

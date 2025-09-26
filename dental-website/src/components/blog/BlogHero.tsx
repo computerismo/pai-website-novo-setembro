@@ -1,6 +1,6 @@
 export function BlogHero() {
   return (
-    <section className="relative py-20 bg-gradient-to-br from-blue-50 via-white to-blue-50 overflow-hidden">
+    <section className="relative py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-500 rounded-full filter blur-3xl"></div>

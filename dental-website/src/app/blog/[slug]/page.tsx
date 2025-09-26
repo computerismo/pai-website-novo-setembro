@@ -82,7 +82,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     <>
       <Navigation />
       <main>
-        <article className="py-8">
+        <article className="py-8 pt-36">
           <div className="container mx-auto px-4">
             <BlogPostHeader post={post} />
 

@@ -6,22 +6,22 @@ import { Button } from '@/components/ui/Button';
 const components: MDXComponents = {
   // Override default HTML elements
   h1: ({ children, ...props }) => (
-    <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight" {...props}>
+    <h1 className="text-4xl font-bold text-slate-800 mb-6 leading-tight" {...props}>
       {children}
     </h1>
   ),
   h2: ({ children, ...props }) => (
-    <h2 className="text-3xl font-bold text-gray-900 mb-4 mt-8 leading-tight" {...props}>
+    <h2 className="text-3xl font-bold text-slate-800 mb-4 mt-8 leading-tight" {...props}>
       {children}
     </h2>
   ),
   h3: ({ children, ...props }) => (
-    <h3 className="text-2xl font-bold text-gray-900 mb-3 mt-6 leading-tight" {...props}>
+    <h3 className="text-2xl font-bold text-slate-800 mb-3 mt-6 leading-tight" {...props}>
       {children}
     </h3>
   ),
   h4: ({ children, ...props }) => (
-    <h4 className="text-xl font-semibold text-gray-900 mb-2 mt-4" {...props}>
+    <h4 className="text-xl font-semibold text-slate-800 mb-2 mt-4" {...props}>
       {children}
     </h4>
   ),
@@ -46,7 +46,7 @@ const components: MDXComponents = {
     </li>
   ),
   blockquote: ({ children, ...props }) => (
-    <blockquote className="border-l-4 border-primary-500 pl-6 py-2 bg-gray-50 rounded-r-lg mb-6 italic text-gray-700" {...props}>
+    <blockquote className="border-l-4 border-sky-500 pl-6 py-2 bg-gray-50 rounded-r-lg mb-6 italic text-gray-700" {...props}>
       {children}
     </blockquote>
   ),
@@ -64,7 +64,7 @@ const components: MDXComponents = {
     // Internal links
     if (href && href.startsWith('/')) {
       return (
-        <Link href={href} className="text-primary-500 hover:text-primary-600 underline" {...props}>
+        <Link href={href} className="text-sky-600 hover:text-sky-700 underline" {...props}>
           {children}
         </Link>
       );
@@ -73,7 +73,7 @@ const components: MDXComponents = {
     return (
       <a
         href={href}
-        className="text-primary-500 hover:text-primary-600 underline"
+        className="text-sky-600 hover:text-sky-700 underline"
         target="_blank"
         rel="noopener noreferrer"
         {...props}

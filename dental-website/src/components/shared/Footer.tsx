@@ -14,7 +14,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-gradient-to-tr from-slate-800 via-slate-900 to-slate-800 text-white overflow-hidden">
+    <footer className="relative bg-gradient-to-tr from-sky-900 via-slate-800 to-sky-800 text-white overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-20 w-64 h-64 bg-blue-400 rounded-full filter blur-3xl"></div>
@@ -30,7 +30,7 @@ export function Footer() {
           {/* Company Info Card */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 shadow-xl hover:bg-white/10 transition-all duration-300">
             <h3 className="text-2xl font-bold mb-4 text-white">{siteConfig.name}</h3>
-            <p className="text-blue-100/80 mb-6 leading-relaxed">
+            <p className="text-white/90 mb-6 leading-relaxed">
               {siteConfig.description}
             </p>
             <div className="flex space-x-4">
@@ -38,7 +38,7 @@ export function Footer() {
                 href={siteConfig.social.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white/10 backdrop-blur-sm p-3 rounded-full text-blue-100 hover:text-white hover:bg-blue-500/20 transition-all duration-300 hover:scale-110 border border-white/10"
+                className="bg-white/10 backdrop-blur-sm p-3 rounded-full text-white/90 hover:text-white hover:bg-blue-500/20 transition-all duration-300 hover:scale-110 border border-white/10"
               >
                 <Facebook className="w-5 h-5" />
               </a>
@@ -46,7 +46,7 @@ export function Footer() {
                 href={siteConfig.social.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white/10 backdrop-blur-sm p-3 rounded-full text-blue-100 hover:text-white hover:bg-teal-500/20 transition-all duration-300 hover:scale-110 border border-white/10"
+                className="bg-white/10 backdrop-blur-sm p-3 rounded-full text-white/90 hover:text-white hover:bg-teal-500/20 transition-all duration-300 hover:scale-110 border border-white/10"
               >
                 <Instagram className="w-5 h-5" />
               </a>
@@ -69,7 +69,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-blue-100/80 hover:text-white transition-all duration-200 flex items-center group hover:translate-x-1"
+                    className="text-white/90 hover:text-white transition-all duration-200 flex items-center group hover:translate-x-1"
                   >
                     <ChevronRight className="w-4 h-4 mr-2 text-blue-300 group-hover:text-teal-300 transition-colors" />
                     {link.label}
@@ -96,7 +96,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-blue-100/80 hover:text-white transition-all duration-200 flex items-center group hover:translate-x-1"
+                    className="text-white/90 hover:text-white transition-all duration-200 flex items-center group hover:translate-x-1"
                   >
                     <ChevronRight className="w-4 h-4 mr-2 text-teal-300 group-hover:text-blue-300 transition-colors" />
                     {link.label}
@@ -117,7 +117,7 @@ export function Footer() {
                 <div className="bg-white/10 backdrop-blur-sm p-2 rounded-lg mr-3 flex-shrink-0 mt-0.5">
                   <MapPin className="w-4 h-4 text-blue-300 group-hover:text-teal-300 transition-colors" />
                 </div>
-                <span className="text-blue-100/80 text-sm leading-relaxed">
+                <span className="text-white/90 text-sm leading-relaxed">
                   {siteConfig.address.street}<br />
                   {siteConfig.address.neighborhood}<br />
                   {siteConfig.address.city} - {siteConfig.address.state}<br />
@@ -130,7 +130,7 @@ export function Footer() {
                 </div>
                 <a
                   href={`tel:${siteConfig.phone.replace(/\D/g, '')}`}
-                  className="text-blue-100/80 hover:text-white transition-colors text-sm"
+                  className="text-white/90 hover:text-white transition-colors text-sm"
                 >
                   {siteConfig.phone}
                 </a>
@@ -141,7 +141,7 @@ export function Footer() {
                 </div>
                 <a
                   href={`mailto:${siteConfig.email}`}
-                  className="text-blue-100/80 hover:text-white transition-colors text-sm"
+                  className="text-white/90 hover:text-white transition-colors text-sm"
                 >
                   {siteConfig.email}
                 </a>
@@ -151,7 +151,7 @@ export function Footer() {
                   <div className="bg-white/10 backdrop-blur-sm p-2 rounded-lg mr-3 flex-shrink-0 mt-0.5">
                     <Clock className="w-4 h-4 text-blue-300 group-hover:text-teal-300 transition-colors" />
                   </div>
-                  <div className="text-blue-100/80 text-sm leading-relaxed">
+                  <div className="text-white/90 text-sm leading-relaxed">
                     <p>{siteConfig.openingHours.weekdays}</p>
                     <p>{siteConfig.openingHours.saturday}</p>
                     <p>{siteConfig.openingHours.sunday}</p>
@@ -169,21 +169,21 @@ export function Footer() {
 
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 shadow-xl">
             <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-blue-100/80 text-sm mb-4 md:mb-0 flex items-center">
+              <p className="text-white/90 text-sm mb-4 md:mb-0 flex items-center">
                 <span className="mr-2">©</span>
                 {currentYear} {siteConfig.name}. Todos os direitos reservados.
               </p>
               <div className="flex space-x-6 text-sm">
                 <Link
                   href="/politica-privacidade"
-                  className="text-blue-100/80 hover:text-white transition-all duration-200 hover:translate-y-[-1px]"
+                  className="text-white/90 hover:text-white transition-all duration-200 hover:translate-y-[-1px]"
                 >
                   Política de Privacidade
                 </Link>
                 <div className="w-px h-4 bg-white/20"></div>
                 <Link
                   href="/termos-uso"
-                  className="text-blue-100/80 hover:text-white transition-all duration-200 hover:translate-y-[-1px]"
+                  className="text-white/90 hover:text-white transition-all duration-200 hover:translate-y-[-1px]"
                 >
                   Termos de Uso
                 </Link>
