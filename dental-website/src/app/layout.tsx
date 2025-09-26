@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Crimson_Pro } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '@/lib/constants/site';
 
 const inter = Inter({ subsets: ['latin'] });
+const crimsonPro = Crimson_Pro({
+  subsets: ['latin'],
+  variable: '--font-crimson-pro',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -47,7 +51,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} ${crimsonPro.variable}`}>{children}</body>
     </html>
   );
 }

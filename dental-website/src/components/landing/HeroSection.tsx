@@ -28,7 +28,7 @@ export function HeroSection({
 }: HeroSectionProps) {
   if (variant === 'split') {
     return (
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 pt-24">
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 pt-32 md:pt-24">
         {/* Background Pattern Elements */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-200/40 to-blue-300/20 rounded-full filter blur-3xl"></div>

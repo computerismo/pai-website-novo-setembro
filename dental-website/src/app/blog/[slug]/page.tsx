@@ -79,9 +79,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const relatedPosts = getRelatedPosts(slug, 3);
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-500 rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-blue-400 rounded-full filter blur-3xl"></div>
+        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-teal-400 rounded-full filter blur-3xl"></div>
+      </div>
+
       <Navigation />
-      <main>
+      <main className="relative">
         <article className="py-8 pt-36">
           <div className="container mx-auto px-4">
             <BlogPostHeader post={post} />
@@ -162,27 +169,40 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         )}
 
         {/* CTA Section */}
-        <section className="py-16 bg-gray-50 border-t border-gray-100">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">
-              Precisa de Ajuda com Bruxismo?
-            </h2>
-            <p className="text-lg mb-8 text-gray-600 max-w-2xl mx-auto">
-              Agende uma consulta gratuita e converse com nossos especialistas
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
-                Agendar Consulta
-              </button>
-              <button className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                Falar no WhatsApp
-              </button>
+        <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-t border-blue-100/50">
+          {/* Decorative Elements */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
+
+          <div className="container mx-auto px-4">
+            <div className="text-center">
+              <div className="inline-block mb-4">
+                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
+                  💙 Precisa de Ajuda?
+                </span>
+              </div>
+              <h2 className="text-4xl font-bold mb-4 text-gray-900">
+                Precisa de Ajuda com Bruxismo?
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+                Agende uma consulta gratuita e converse com nossos especialistas
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                  Agendar Consulta
+                </button>
+                <button className="bg-white border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors shadow-sm">
+                  Falar no WhatsApp
+                </button>
+              </div>
             </div>
           </div>
+
+          {/* Bottom Decorative Line */}
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
         </section>
       </main>
       <Footer />
       <WhatsAppButton />
-    </>
+    </div>
   );
 }
