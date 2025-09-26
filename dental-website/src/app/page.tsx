@@ -50,7 +50,7 @@ export default function HomePage() {
                 <div className="absolute bottom-10 right-10 w-32 h-32 bg-teal-200 rounded-full filter blur-2xl"></div>
               </div>
 
-              <div className="bg-white/40 backdrop-blur-sm rounded-xl border border-white/60 p-8 shadow-xl text-center hover:shadow-2xl hover:bg-white/50 transition-all duration-300 hover:-translate-y-1 relative">
+              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-8 shadow-xl text-center hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <span className="text-2xl text-white">🩺</span>
                 </div>
@@ -60,7 +60,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="bg-white/40 backdrop-blur-sm rounded-xl border border-white/60 p-8 shadow-xl text-center hover:shadow-2xl hover:bg-white/50 transition-all duration-300 hover:-translate-y-1 relative">
+              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-8 shadow-xl text-center hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative">
                 <div className="bg-gradient-to-br from-teal-500 to-teal-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <span className="text-2xl text-white">🛡️</span>
                 </div>
@@ -70,7 +70,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="bg-white/40 backdrop-blur-sm rounded-xl border border-white/60 p-8 shadow-xl text-center hover:shadow-2xl hover:bg-white/50 transition-all duration-300 hover:-translate-y-1 relative">
+              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-8 shadow-xl text-center hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative">
                 <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <span className="text-2xl text-white">❤️</span>
                 </div>
@@ -114,7 +114,7 @@ export default function HomePage() {
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-                <div className="bg-white/40 backdrop-blur-sm p-6 rounded-xl border border-white/60 shadow-xl hover:shadow-2xl hover:bg-white/50 transition-all duration-300 hover:-translate-y-1 group">
+                <div className="bg-neutral-50 p-6 rounded-xl border border-neutral-200 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
                       <span className="text-white text-lg">🦷</span>
@@ -125,7 +125,7 @@ export default function HomePage() {
                   <p className="text-gray-600 leading-relaxed">Dispositivo personalizado para aliviar tensão</p>
                 </div>
 
-                <div className="bg-white/40 backdrop-blur-sm p-6 rounded-xl border border-white/60 shadow-xl hover:shadow-2xl hover:bg-white/50 transition-all duration-300 hover:-translate-y-1 group">
+                <div className="bg-neutral-50 p-6 rounded-xl border border-neutral-200 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center shadow-md">
                       <span className="text-white text-lg">💉</span>
@@ -136,7 +136,7 @@ export default function HomePage() {
                   <p className="text-gray-600 leading-relaxed">Aplicação terapêutica para bruxismo</p>
                 </div>
 
-                <div className="bg-white/40 backdrop-blur-sm p-6 rounded-xl border border-white/60 shadow-xl hover:shadow-2xl hover:bg-white/50 transition-all duration-300 hover:-translate-y-1 group">
+                <div className="bg-neutral-50 p-6 rounded-xl border border-neutral-200 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-md">
                       <span className="text-white text-lg">🔍</span>
@@ -147,7 +147,7 @@ export default function HomePage() {
                   <p className="text-gray-600 leading-relaxed">Avaliação completa e gratuita</p>
                 </div>
 
-                <div className="bg-white/40 backdrop-blur-sm p-6 rounded-xl border border-white/60 shadow-xl hover:shadow-2xl hover:bg-white/50 transition-all duration-300 hover:-translate-y-1 group">
+                <div className="bg-neutral-50 p-6 rounded-xl border border-neutral-200 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
                       <span className="text-white text-lg">📋</span>

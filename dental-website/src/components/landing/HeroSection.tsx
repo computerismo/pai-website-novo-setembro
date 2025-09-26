@@ -46,13 +46,13 @@ export function HeroSection({
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-8">
-            {/* Content Background with Glass Effect */}
-            <div className="absolute inset-0 bg-white/40 backdrop-blur-sm rounded-3xl border border-white/60 shadow-xl -m-8 p-8"></div>
+            {/* Content Background Card */}
+            <div className="absolute inset-0 bg-neutral-50 rounded-3xl border border-neutral-200 shadow-xl -m-8 p-8"></div>
 
             <div className="relative z-10">
               {/* Enhanced Subtitle with Badge Design */}
               <div className="mb-6">
-                <span className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 bg-blue-100/80 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-200/50 shadow-sm">
+                <span className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 bg-blue-100 px-4 py-2 rounded-full border border-blue-200 shadow-sm">
                   <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
                   {subtitle}
                 </span>
@@ -93,7 +93,7 @@ export function HeroSection({
 
             {/* Enhanced Social Proof */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 sm:gap-8 pt-6 relative z-10">
-              <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-4 py-3 rounded-2xl border border-white/40 shadow-sm">
+              <div className="flex items-center gap-3 bg-neutral-50 px-4 py-3 rounded-2xl border border-neutral-200 shadow-sm">
                 <div className="flex items-center gap-1">
                   <span className="text-yellow-500 text-lg">★★★★★</span>
                 </div>
@@ -103,7 +103,7 @@ export function HeroSection({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-4 py-3 rounded-2xl border border-white/40 shadow-sm">
+              <div className="flex items-center gap-3 bg-neutral-50 px-4 py-3 rounded-2xl border border-neutral-200 shadow-sm">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-gray-900">+500 pacientes</span>
