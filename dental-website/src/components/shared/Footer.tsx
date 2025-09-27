@@ -87,11 +87,9 @@ export function Footer() {
             </h4>
             <ul className="space-y-3">
               {[
-                { label: 'Bruxismo', href: '/tratamentos/bruxismo' },
-                { label: 'Placa Miorrelaxante', href: '/tratamentos/placa-miorrelaxante' },
-                { label: 'Botox', href: '/tratamentos/botox' },
-                { label: 'DTM', href: '/tratamentos/dtm' },
-                { label: 'Clareamento', href: '/tratamentos/clareamento' },
+                { label: 'Tratamento de Bruxismo', href: '/tratamento-bruxismo' },
+                { label: 'Placa Miorrelaxante', href: '/placa-miorrelaxante' },
+                { label: 'Botox para Bruxismo', href: '/botox-bruxismo' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

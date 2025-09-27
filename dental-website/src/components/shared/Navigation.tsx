@@ -18,7 +18,6 @@ const navLinks = [
       { label: 'Tratamento de Bruxismo', href: '/tratamento-bruxismo' },
       { label: 'Placa Miorrelaxante', href: '/placa-miorrelaxante' },
       { label: 'Botox para Bruxismo', href: '/botox-bruxismo' },
-      { label: 'Diagnóstico Gratuito', href: '/diagnostico-gratuito' },
     ]
   },
   { label: 'Blog', href: '/blog' },
