@@ -1,4 +1,4 @@
-import { getAllPosts, getFeaturedPosts, getAllCategories } from '@/lib/blog/posts';
+import { prisma } from '@/lib/db';
 import { Navigation } from '@/components/shared/Navigation';
 import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
@@ -13,10 +13,75 @@ export const metadata: Metadata = {
   keywords: ['blog odontológico', 'saúde bucal', 'bruxismo', 'dicas dentárias'],
 };
 
-export default function BlogPage() {
-  const allPosts = getAllPosts();
-  const featuredPosts = getFeaturedPosts();
-  const categories = getAllCategories();
+export default async function BlogPage() {
+  // Fetch published posts from database
+  const allPostsData = await prisma.post.findMany({
+    where: {
+      status: 'published',
+      publishedAt: { lte: new Date() },
+    },
+    orderBy: { publishedAt: 'desc' },
+    include: {
+      author: { select: { name: true } },
+      category: { select: { name: true } },
+      tags: { select: { name: true } },
+    },
+  });
+
+  const featuredPostsData = await prisma.post.findMany({
+    where: {
+      status: 'published',
+      publishedAt: { lte: new Date() },
+      featured: true,
+    },
+    orderBy: { publishedAt: 'desc' },
+    take: 3,
+    include: {
+      author: { select: { name: true } },
+      category: { select: { name: true } },
+      tags: { select: { name: true } },
+    },
+  });
+
+  const categoriesData = await prisma.category.findMany({
+    orderBy: { name: 'asc' },
+    include: {
+      _count: { select: { posts: true } },
+    },
+  });
+
+  // Transform data to match the expected format
+  const allPosts = allPostsData.map(post => ({
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt || '',
+    date: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
+    author: post.author.name || 'Admin',
+    category: post.category?.name || 'Geral',
+    tags: post.tags.map(t => t.name),
+    image: post.featuredImage || '/images/blog/default.jpg',
+    featured: post.featured,
+    readingTime: post.readingTime || '5 min',
+  }));
+
+  const featuredPosts = featuredPostsData.map(post => ({
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt || '',
+    date: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
+    author: post.author.name || 'Admin',
+    category: post.category?.name || 'Geral',
+    tags: post.tags.map(t => t.name),
+    image: post.featuredImage || '/images/blog/default.jpg',
+    featured: post.featured,
+    readingTime: post.readingTime || '5 min',
+  }));
+
+  const categories = categoriesData.map(cat => ({
+    name: cat.name,
+    slug: cat.slug,
+    count: cat._count.posts,
+  }));
 
   return (
     <>

@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getAllPostSlugs, getPostBySlug, getRelatedPosts } from '@/lib/blog/posts';
+import { prisma } from '@/lib/db';
 import { Navigation } from '@/components/shared/Navigation';
 import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
@@ -9,11 +8,7 @@ import { BlogPostContent } from '@/components/blog/BlogPostContent';
 import { BlogPostSidebar } from '@/components/blog/BlogPostSidebar';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 import { BlogPostNavigation } from '@/components/blog/BlogPostNavigation';
-import components from '@/components/blog/MDXComponents';
 import { Metadata } from 'next';
-import remarkGfm from 'remark-gfm';
-import rehypeSlug from 'rehype-slug';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -22,15 +17,26 @@ interface BlogPostPageProps {
 }
 
 export async function generateStaticParams() {
-  const slugs = getAllPostSlugs();
-  return slugs.map((slug) => ({
-    slug: slug,
+  const posts = await prisma.post.findMany({
+    where: { status: 'published' },
+    select: { slug: true },
+  });
+
+  return posts.map((post) => ({
+    slug: post.slug,
   }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+
+  const post = await prisma.post.findUnique({
+    where: { slug },
+    include: {
+      author: { select: { name: true } },
+      tags: { select: { name: true } },
+    },
+  });
 
   if (!post) {
     return {
@@ -40,43 +46,103 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
   return {
     title: `${post.title} - Clínica Odontológica`,
-    description: post.excerpt,
-    keywords: post.tags.join(', '),
-    authors: [{ name: post.author }],
+    description: post.excerpt || '',
+    keywords: post.tags.map(t => t.name).join(', '),
+    authors: [{ name: post.author.name || 'Admin' }],
     openGraph: {
       type: 'article',
       title: post.title,
-      description: post.excerpt,
-      images: [
+      description: post.excerpt || '',
+      images: post.featuredImage ? [
         {
-          url: post.image,
+          url: post.featuredImage,
           width: 1200,
           height: 630,
           alt: post.title,
         },
-      ],
-      publishedTime: post.date,
-      authors: [post.author],
-      tags: post.tags,
+      ] : [],
+      publishedTime: post.publishedAt?.toISOString(),
+      authors: [post.author.name || 'Admin'],
+      tags: post.tags.map(t => t.name),
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
-      description: post.excerpt,
-      images: [post.image],
+      description: post.excerpt || '',
+      images: post.featuredImage ? [post.featuredImage] : [],
     },
   };
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
 
-  if (!post) {
+  const postData = await prisma.post.findUnique({
+    where: { slug },
+    include: {
+      author: { select: { name: true } },
+      category: { select: { name: true, slug: true } },
+      tags: { select: { name: true, slug: true } },
+    },
+  });
+
+  if (!postData || postData.status !== 'published') {
     notFound();
   }
 
-  const relatedPosts = getRelatedPosts(slug, 3);
+  // Increment view count
+  await prisma.post.update({
+    where: { slug },
+    data: { views: { increment: 1 } },
+  });
+
+  // Get related posts (same category or shared tags)
+  const relatedPostsData = await prisma.post.findMany({
+    where: {
+      status: 'published',
+      publishedAt: { lte: new Date() },
+      slug: { not: slug },
+      OR: [
+        { categoryId: postData.categoryId },
+        { tags: { some: { id: { in: postData.tags.map(t => t.id) } } } },
+      ],
+    },
+    take: 3,
+    orderBy: { publishedAt: 'desc' },
+    include: {
+      author: { select: { name: true } },
+      category: { select: { name: true } },
+      tags: { select: { name: true } },
+    },
+  });
+
+  // Transform to expected format
+  const post = {
+    slug: postData.slug,
+    title: postData.title,
+    excerpt: postData.excerpt || '',
+    content: postData.content,
+    date: postData.publishedAt?.toISOString() || postData.createdAt.toISOString(),
+    author: postData.author.name || 'Admin',
+    category: postData.category?.name || 'Geral',
+    tags: postData.tags.map(t => t.name),
+    image: postData.featuredImage || '/images/blog/default.jpg',
+    featured: postData.featured,
+    readingTime: postData.readingTime || '5 min',
+  };
+
+  const relatedPosts = relatedPostsData.map(p => ({
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt || '',
+    date: p.publishedAt?.toISOString() || p.createdAt.toISOString(),
+    author: p.author.name || 'Admin',
+    category: p.category?.name || 'Geral',
+    tags: p.tags.map(t => t.name),
+    image: p.featuredImage || '/images/blog/default.jpg',
+    featured: p.featured,
+    readingTime: p.readingTime || '5 min',
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative overflow-hidden">
@@ -97,26 +163,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {/* Main Content */}
               <div className="lg:col-span-3">
                 <BlogPostContent>
-                  <MDXRemote
-                    source={post.content}
-                    components={components}
-                    options={{
-                      mdxOptions: {
-                        remarkPlugins: [remarkGfm],
-                        rehypePlugins: [
-                          rehypeSlug,
-                          [
-                            rehypeAutolinkHeadings,
-                            {
-                              behavior: 'wrap',
-                              properties: {
-                                className: ['anchor'],
-                              },
-                            },
-                          ],
-                        ],
-                      },
-                    }}
+                  <div
+                    className="prose prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
                   />
                 </BlogPostContent>
 
