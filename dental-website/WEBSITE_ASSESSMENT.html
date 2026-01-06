@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relatório Técnico: Dental Website</title>
+    <style>
+      :root {
+        --bg: #fafafa;
+        --surface: #ffffff;
+        --text-primary: #111111;
+        --text-secondary: #666666;
+        --accent: #2563eb; /* Deep Blue */
+        --border: #e5e5e5;
+        --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+        --font-mono: "JetBrains Mono", "Fira Code", monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text-primary);
+        font-family: var(--font-sans);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        padding: 4rem 2rem;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      /* Typography */
+      h1,
+      h2,
+      h3 {
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 2rem;
+      }
+
+      .meta {
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 4rem;
+        display: flex;
+        gap: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      h2 {
+        font-size: 1.75rem;
+        margin-top: 4rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      h2::before {
+        content: "";
+        display: block;
+        width: 4px;
+        height: 4px;
+        background-color: var(--accent);
+        border-radius: 50%;
+      }
+
+      h3 {
+        font-size: 1.25rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      p {
+        margin-bottom: 1.5rem;
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+      }
+
+      /* Components */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        border-color: #d4d4d4;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+      }
+
+      .status-success {
+        background-color: #ecfdf5;
+        color: #059669;
+        border: 1px solid #d1fae5;
+      }
+
+      /* Tech Stack Grid */
+      .stack-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .stack-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 1.5rem;
+        border-radius: 6px;
+      }
+
+      .stack-label {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+
+      .stack-value {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1.125rem;
+      }
+
+      /* Code/File Tree */
+      .file-tree {
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        background: #f4f4f5;
+        padding: 1.5rem;
+        border-radius: 6px;
+        color: #333;
+        border: 1px solid var(--border);
+      }
+
+      .file-tree ul {
+        list-style: none;
+        padding-left: 1rem;
+        border-left: 1px solid #e5e5e5;
+      }
+
+      .file-tree li {
+        margin: 0.5rem 0;
+        position: relative;
+      }
+
+      .highlight {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      /* Tables (Minimalist) */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+      }
+
+      th {
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-primary);
+        border-bottom: 2px solid var(--border);
+        padding: 1rem 0;
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.75rem;
+      }
+
+      td {
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-secondary);
+      }
+
+      /* Recommendations List */
+      .rec-list {
+        list-style: none;
+      }
+
+      .rec-item {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+        border-left: 2px solid var(--border);
+      }
+
+      .rec-item strong {
+        display: block;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+
+      /* Footer */
+      footer {
+        margin-top: 6rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      /* Utilities */
+      .text-accent {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Análise Técnica de Sistema</h1>
+        <div class="meta">
+          <span>Projeto: Dental Website</span>
+          <span>Data: 05 Jan 2026</span>
+          <span
+            >Status:
+            <span class="status-badge status-success"
+              >Produção / Otimizado</span
+            ></span
+          >
+        </div>
+      </header>
+
+      <section>
+        <p
+          class="lead"
+          style="
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            font-weight: 400;
+            max-width: 45ch;
+            margin-bottom: 3rem;
+          "
+        >
+          Um ecossistema digital de alta performance desenvolvido para captação
+          de leads e marketing de conteúdo no setor odontológico.
+        </p>
+
+        <div class="card">
+          <h3 style="margin-top: 0">Resumo Executivo</h3>
+          <p>
+            Este projeto transcende a definição de um site institucional comum.
+            Trata-se de uma aplicação web completa (Full-Stack Application)
+            equipada com um
+            <strong>Sistema de Gerenciamento de Conteúdo (CMS)</strong>
+            personalizado.
+          </p>
+          <p>
+            A arquitetura foi desenhada meticulosamente para
+            <strong>SEO (Search Engine Optimization)</strong>, utilizando
+            renderização no servidor (SSR) para garantir indexação imediata pelo
+            Google, crucial para a estratégia de captação de pacientes da
+            clínica.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2>01. Arquitetura Tecnológica</h2>
+        <p>
+          A stack tecnológica encontra-se na fronteira da inovação ("Bleeding
+          Edge"), garantindo longevidade e performance superior.
+        </p>
+
+        <div class="stack-grid">
+          <div class="stack-item">
+            <span class="stack-label">Framework Core</span>
+            <div class="stack-value">Next.js 15</div>
+            <div style="font-size: 0.8rem; margin-top: 0.5rem; color: #888">
+              App Router & Server Actions
+            </div>
+          </div>
+          <div class="stack-item">
+            <span class="stack-label">Linguagem</span>
+            <div class="stack-value">TypeScript 5</div>
+            <div style="font-size: 0.8rem; margin-top: 0.5rem; color: #888">
+              Tipagem estática estrita
+            </div>
+          </div>
+          <div class="stack-item">
+            <span class="stack-label">Design System</span>
+            <div class="stack-value">Tailwind CSS v4</div>
+            <div style="font-size: 0.8rem; margin-top: 0.5rem; color: #888">
+              Zero-runtime & Engine Rust
+            </div>
+          </div>
+          <div class="stack-item">
+            <span class="stack-label">Banco de Dados</span>
+            <div class="stack-value">PostgreSQL</div>
+            <div style="font-size: 0.8rem; margin-top: 0.5rem; color: #888">
+              Gerenciado via Prisma ORM
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>02. Modelagem de Dados (Schema)</h2>
+        <p>
+          A estrutura de dados (definida em <code>schema.prisma</code>) revela a
+          inteligência de negócios embutida na aplicação. O sistema não apenas
+          armazena textos, mas gerencia relacionamentos complexos de marketing.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Modelo</th>
+              <th>Função Estratégica</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>User & Auth</strong></td>
+              <td>
+                Sistema robusto de autenticação baseado em sessões (NextAuth
+                v5), com suporte a múltiplos níveis de permissão (Admin, Editor,
+                Viewer).
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Content Engine</strong></td>
+              <td>
+                O modelo <code>Post</code> é o coração do SEO. Inclui campos
+                dedicados para meta-tags (<code>seoTitle</code>,
+                <code>seoDescription</code>) e métricas de engajamento
+                (<code>views</code>, <code>readingTime</code>). Suporta fluxo
+                editorial (Rascunho → Agendado → Publicado).
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Lead Intelligence</strong></td>
+              <td>
+                O modelo <code>Lead</code> vai além de um formulário de contato.
+                Ele captura parâmetros UTM (<code>utmSource</code>,
+                <code>utmCampaign</code>), permitindo rastrear exatamente qual
+                anúncio (Instagram, Google) gerou o paciente.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>03. Estrutura e Qualidade de Código</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem">
+          <div>
+            <h3>Organização Modular</h3>
+            <p>
+              O projeto segue uma arquitetura modular limpa, separando
+              responsabilidades de forma clara e segura.
+            </p>
+            <div class="file-tree">
+              src/
+              <ul>
+                <li>
+                  <span class="highlight">app/admin/</span>
+                  <span style="color: #999">// Zona Protegida</span>
+                  <ul>
+                    <li>Middleware de segurança ativo</li>
+                    <li>Dashboard analítico</li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="highlight">app/blog/</span>
+                  <span style="color: #999">// Zona Pública (SSR)</span>
+                  <ul>
+                    <li>Otimizado para Crawlers</li>
+                    <li>Performance Core Web Vitals</li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="highlight">components/</span>
+                  <ul>
+                    <li>UI (Design System)</li>
+                    <li>Logica de Negócio isolada</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h3>Destaques de Engenharia</h3>
+            <ul class="rec-list">
+              <li class="rec-item">
+                <strong>Proteção via Middleware</strong>
+                <code>middleware.ts</code> intercepta requisições na borda
+                (edge), garantindo que rotas administrativas sejam inacessíveis
+                sem token válido.
+              </li>
+              <li class="rec-item">
+                <strong>Tipografia Escalonada</strong>
+                Uso inteligente de fontes distintas para UI (<em>Inter</em>) e
+                conteúdo denso (<em>Crimson Pro</em>), melhorando a legibilidade
+                e retenção do leitor.
+              </li>
+              <li class="rec-item">
+                <strong>Editor Rico (WYSIWYG)</strong>
+                Integração do <em>Tiptap</em> permite criação de conteúdo
+                complexo sem necessidade de conhecimento técnico por parte dos
+                dentistas/editores.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>04. Preparação para Deploy</h2>
+        <p>
+          A infraestrutura está configurada para <strong>Railway</strong>, uma
+          plataforma moderna de orquestração de containers.
+        </p>
+
+        <div class="card" style="background: #111; color: #fff; border: none">
+          <div
+            style="
+              font-family: var(--font-mono);
+              font-size: 0.8rem;
+              color: #888;
+              margin-bottom: 1rem;
+            "
+          >
+            STATUS DE DEPLOY: PRONTO
+          </div>
+          <div style="display: flex; gap: 2rem; align-items: center">
+            <div style="flex: 1">
+              <strong
+                style="display: block; font-size: 1.2rem; margin-bottom: 0.5rem"
+                >Documentação Completa</strong
+              >
+              O arquivo <code>RAILWAY_DEPLOYMENT.md</code> contém um manual
+              passo-a-passo à prova de falhas para publicação.
+            </div>
+            <div style="flex: 1">
+              <strong
+                style="display: block; font-size: 1.2rem; margin-bottom: 0.5rem"
+                >Migrações Automatizadas</strong
+              >
+              Scripts de migração de banco de dados e conteúdo MDX legado já
+              estão implementados.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>05. Plano de Evolução (Roadmap)</h2>
+        <p>
+          Para elevar a plataforma ao nível "Enterprise", recomendamos as
+          seguintes ações estratégicas:
+        </p>
+
+        <ul class="rec-list">
+          <li class="rec-item">
+            <strong>1. Estratégia de Persistência de Mídia (Crítico)</strong>
+            Atualmente, o modelo <code>Media</code> armazena metadados, mas o
+            armazenamento físico de arquivos em containers (Railway) é efêmero.
+            <br /><em>Ação Recomendada:</em> Integrar <strong>AWS S3</strong> ou
+            <strong>Cloudflare R2</strong> para armazenamento definitivo de
+            imagens.
+          </li>
+          <li class="rec-item">
+            <strong>2. Notificações em Tempo Real</strong>
+            <br /><em>Ação Recomendada:</em> Implementar gatilhos de e-mail (via
+            Resend) para alertar a recepção instantaneamente quando um novo Lead
+            for cadastrado. "Tempo de resposta" é vital para conversão médica.
+          </li>
+          <li class="rec-item">
+            <strong>3. Dashboard de Business Intelligence (BI)</strong>
+            <br /><em>Ação Recomendada:</em> Transformar os dados brutos de
+            Leads em gráficos visuais no Admin. Visualizar "Pacientes por Canal
+            de Aquisição" justificará o investimento em marketing.
+          </li>
+          <li class="rec-item">
+            <strong>4. Homepage Dinâmica</strong>
+            <br /><em>Ação Recomendada:</em> Migrar os textos da Homepage
+            (atualmente hardcoded) para o banco de dados, permitindo que a
+            clínica altere ofertas e textos sem intervenção de desenvolvedores.
+          </li>
+        </ul>
+      </section>
+
+      <footer>
+        <div>Gerado por Antigravity Agentic AI</div>
+        <div>Confidencial &copy; 2026</div>
+      </footer>
+    </div>
+  </body>
+</html>
