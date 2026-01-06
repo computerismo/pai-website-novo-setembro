@@ -425,29 +425,45 @@ const DOCS_DATA = {
                 </div>
 
                 <h2 id="sub-04"><span style="color: var(--accent);">04.</span> Benefícios Estratégicos Para Sua Clínica</h2>
-                <p>Investir em um sistema como este não é apenas sobre "ter um site bonito". É sobre transformar sua presença digital em uma máquina de aquisição de pacientes. Veja os ganhos concretos:</p>
                 
-                <div class="benefits-grid">
-                    <div class="feature-block">
-                        <h3>🔓 Independência Operacional</h3>
-                        <p>Você não fica refém de uma agência para fazer pequenas alterações. Quer mudar o texto da página inicial? Quer publicar um artigo sobre um novo tratamento? Faça você mesmo, a qualquer hora, pelo seu computador ou celular.</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+                    
+                    <!-- Card 1 -->
+                    <div style="background: white; border: 2px solid black; padding: 1.5rem; box-shadow: 4px 4px 0 black;">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔓</div>
+                        <h3 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.75rem; text-transform: uppercase;">Independência Total</h3>
+                        <p style="font-size: 0.875rem; line-height: 1.6; color: #333; margin-bottom: 1rem;">Faça alterações você mesmo, sem depender de agência.</p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            <span style="background: #EBFF00; padding: 0.25rem 0.5rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Textos</span>
+                            <span style="background: #EBFF00; padding: 0.25rem 0.5rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Imagens</span>
+                            <span style="background: #EBFF00; padding: 0.25rem 0.5rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Artigos</span>
+                        </div>
                     </div>
-                    <div class="feature-block">
-                        <h3>📊 Tomada de Decisão Baseada em Dados</h3>
-                        <p>Ao saber exatamente de onde vêm seus pacientes, você para de "adivinhar" onde investir em marketing. Se o Instagram não está trazendo resultado, você redireciona a verba para o Google — e vice-versa.</p>
+
+                    <!-- Card 2 -->
+                    <div style="background: white; border: 2px solid black; padding: 1.5rem; box-shadow: 4px 4px 0 black;">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📊</div>
+                        <h3 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.75rem; text-transform: uppercase;">Decisões com Dados</h3>
+                        <p style="font-size: 0.875rem; line-height: 1.6; color: #333; margin-bottom: 1rem;">Saiba exatamente de onde vêm seus pacientes.</p>
+                        <div style="font-family: var(--font-mono); font-size: 0.8rem; background: #f5f5f5; padding: 0.75rem; border-left: 3px solid black;">
+                            Se Instagram não traz resultado → redirecione para Google Ads
+                        </div>
                     </div>
-                    <div class="feature-block">
-                        <h3>🏆 Autoridade e Credibilidade</h3>
-                        <p>Um site profissional com artigos bem escritos sobre saúde bucal posiciona você como referência na sua especialidade. O paciente que encontra seu conteúdo educativo já chega predisposto a confiar em você.</p>
-                    </div>
-                    <div class="feature-block">
-                        <h3>📈 Crescimento Orgânico Cumulativo</h3>
-                        <p>Cada artigo publicado é um "vendedor" que trabalha 24 horas por dia, 7 dias por semana. Enquanto anúncios pagos param de funcionar quando você para de pagar, o conteúdo orgânico continua atraindo pacientes indefinidamente.</p>
+
+                    <!-- Card 3 -->
+                    <div style="background: white; border: 2px solid black; padding: 1.5rem; box-shadow: 4px 4px 0 black;">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🏆</div>
+                        <h3 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.75rem; text-transform: uppercase;">Autoridade Online</h3>
+                        <p style="font-size: 0.875rem; line-height: 1.6; color: #333; margin-bottom: 1rem;">Artigos bem escritos = pacientes que já confiam em você.</p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;">
+                            <span style="color: #22c55e; font-size: 1.25rem;">✓</span>
+                            <span>Percepção de especialista</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="callout">
-                    <p><strong>💡 Resumindo:</strong> Este sistema transforma seu site de um "cartão de visitas digital" em uma ferramenta ativa de geração de receita. Você terá controle total sobre seu conteúdo, visibilidade sobre a eficácia do seu marketing, e uma plataforma que cresce com sua clínica.</p>
+                    <p><strong>💡 Resumindo:</strong> Seu site deixa de ser um "cartão de visitas" e vira uma <strong>máquina de captação</strong> que você controla.</p>
                 </div>
             `,
     },
@@ -631,47 +647,47 @@ const DOCS_DATA = {
                 <h2 id="arch-03"><span style="color: var(--accent);">03.</span> Como os Componentes se Comunicam</h2>
                 <p>Diagrama simplificado do fluxo de dados:</p>
                 
-                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
+                <div style="background: white; border: 2px solid black; padding: 1.5rem; margin: 1.5rem 0; box-shadow: 4px 4px 0 black;">
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
                         <!-- Visitante -->
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div style="width: 60px; height: 60px; background: #DBEAFE; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">👤</div>
+                            <div style="width: 50px; height: 50px; background: black; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">👤</div>
                             <div style="flex: 1;">
                                 <strong>Visitante acessa o site</strong>
-                                <div style="font-size: 0.8125rem; color: var(--text-tertiary);">Navegador (Chrome, Safari, etc.)</div>
+                                <div style="font-size: 0.8125rem; color: #666;">Navegador (Chrome, Safari, etc.)</div>
                             </div>
                         </div>
                         
-                        <div style="text-align: center; color: var(--text-tertiary);">↓</div>
+                        <div style="text-align: center; font-weight: 900; font-size: 1.25rem;">↓</div>
                         
                         <!-- Next.js -->
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div style="width: 60px; height: 60px; background: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; flex-shrink: 0;">N</div>
+                            <div style="width: 50px; height: 50px; background: black; color: #EBFF00; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.25rem; flex-shrink: 0;">N</div>
                             <div style="flex: 1;">
                                 <strong>Next.js processa a requisição</strong>
-                                <div style="font-size: 0.8125rem; color: var(--text-tertiary);">Renderiza HTML, aplica lógica de negócio</div>
+                                <div style="font-size: 0.8125rem; color: #666;">Renderiza HTML, aplica lógica de negócio</div>
                             </div>
                         </div>
                         
-                        <div style="text-align: center; color: var(--text-tertiary);">↓</div>
+                        <div style="text-align: center; font-weight: 900; font-size: 1.25rem;">↓</div>
                         
                         <!-- Prisma -->
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div style="width: 60px; height: 60px; background: #2D3748; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; flex-shrink: 0;">P</div>
+                            <div style="width: 50px; height: 50px; background: black; color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.25rem; flex-shrink: 0;">P</div>
                             <div style="flex: 1;">
                                 <strong>Prisma busca/salva dados</strong>
-                                <div style="font-size: 0.8125rem; color: var(--text-tertiary);">Traduz código para linguagem de banco de dados</div>
+                                <div style="font-size: 0.8125rem; color: #666;">Traduz código para linguagem de banco de dados</div>
                             </div>
                         </div>
                         
-                        <div style="text-align: center; color: var(--text-tertiary);">↓</div>
+                        <div style="text-align: center; font-weight: 900; font-size: 1.25rem;">↓</div>
                         
                         <!-- PostgreSQL -->
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div style="width: 60px; height: 60px; background: #336791; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">🐘</div>
+                            <div style="width: 50px; height: 50px; background: black; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">🐘</div>
                             <div style="flex: 1;">
                                 <strong>PostgreSQL armazena</strong>
-                                <div style="font-size: 0.8125rem; color: var(--text-tertiary);">Leads, artigos, usuários, categorias</div>
+                                <div style="font-size: 0.8125rem; color: #666;">Leads, artigos, usuários, categorias</div>
                             </div>
                         </div>
                     </div>
