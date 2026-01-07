@@ -5,10 +5,12 @@ import { prisma } from "@/lib/db";
 export default async function EditPostPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
+  
   const post = await prisma.post.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       category: true,
       tags: true,
