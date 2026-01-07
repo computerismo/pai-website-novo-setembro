@@ -50,16 +50,8 @@ export function HeroSection({
             <div className="absolute inset-0 bg-neutral-50 rounded-3xl border border-neutral-200 shadow-xl -m-8 p-8"></div>
 
             <div className="relative z-10">
-              {/* Enhanced Subtitle with Badge Design */}
-              <div className="mb-6">
-                <span className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 bg-blue-100 px-4 py-2 rounded-full border border-blue-200 shadow-sm">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-                  {subtitle}
-                </span>
-              </div>
-
               {/* Enhanced Typography */}
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-8 leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-8 leading-tight">
                 <span className="bg-gradient-to-r from-gray-900 via-blue-900 to-teal-800 bg-clip-text text-transparent">
                   {title}
                 </span>
@@ -73,8 +65,8 @@ export function HeroSection({
             </div>
 
             {/* Enhanced CTA Section */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center relative z-10">
-              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" asChild>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center relative z-10 w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" asChild>
                 <a href={primaryCTA.href}>
                   <Calendar className="w-5 h-5 mr-2" />
                   {primaryCTA.text}
@@ -82,7 +74,7 @@ export function HeroSection({
               </Button>
 
               {secondaryCTA && (
-                <Button size="lg" variant="outline" className="border-2 border-teal-600 text-teal-700 hover:bg-teal-50 hover:border-teal-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200" asChild>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-teal-600 text-teal-700 hover:bg-teal-50 hover:border-teal-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200" asChild>
                   <a href={secondaryCTA.href}>
                     <Phone className="w-5 h-5 mr-2" />
                     {secondaryCTA.text}

@@ -102,7 +102,7 @@ export default async function BlogPage() {
                     ⭐ Em Destaque
                   </span>
                 </div>
-                <h2 className="text-4xl font-bold mb-4 text-gray-900">
+                <h2 className="text-2xl md:text-4xl font-bold mb-4 text-gray-900">
                   Artigos em Destaque
                 </h2>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -137,7 +137,7 @@ export default async function BlogPage() {
                   📚 Biblioteca
                 </span>
               </div>
-              <h2 className="text-4xl font-bold mb-4 text-gray-900">
+              <h2 className="text-2xl md:text-4xl font-bold mb-4 text-gray-900">
                 Todos os Artigos
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -194,7 +194,7 @@ export default async function BlogPage() {
                 </span>
               </div>
 
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6">
                 Receba Nossas Dicas de Saúde Bucal
               </h2>
 

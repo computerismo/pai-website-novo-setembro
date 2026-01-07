@@ -88,12 +88,7 @@ export default function ContatoPage() {
 
           <div className="container mx-auto px-4 relative">
             <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-block mb-6">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  Entre em Contato
-                </span>
-              </div>
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-gray-900 mb-6">
                 Fale <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Conosco</span>
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
@@ -114,12 +109,7 @@ export default function ContatoPage() {
 
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  💬 Informações de Contato
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
                 Como Nos Encontrar
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -250,12 +240,7 @@ export default function ContatoPage() {
 
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  📝 Formulário de Contato
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
                 Envie Sua Mensagem
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -429,12 +414,7 @@ export default function ContatoPage() {
 
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  🗺️ Localização
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
                 Como Chegar
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -520,12 +500,7 @@ export default function ContatoPage() {
 
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-green-600 bg-green-50 px-4 py-2 rounded-full shadow-sm border border-green-100">
-                  💬 WhatsApp
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
                 Atendimento via WhatsApp
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -630,12 +605,7 @@ export default function ContatoPage() {
 
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-red-600 bg-red-50 px-4 py-2 rounded-full shadow-sm border border-red-100">
-                  🚨 Emergências
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
                 Atendimento de Emergência
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -751,13 +721,7 @@ export default function ContatoPage() {
 
           <div className="container mx-auto px-4 text-center relative">
             <div className="max-w-4xl mx-auto">
-              <div className="inline-block mb-6">
-                <span className="text-sm font-medium text-blue-100 bg-blue-500 px-4 py-2 rounded-full">
-                  🦷 Sua Saúde é Nossa Prioridade
-                </span>
-              </div>
-
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6">
                 Pronto para Cuidar do Seu Sorriso?
               </h2>
 

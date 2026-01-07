@@ -21,12 +21,7 @@ export default function SobrePage() {
 
           <div className="container mx-auto px-4 relative">
             <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-block mb-6">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  Sobre Nós
-                </span>
-              </div>
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
                 Excelência em <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Odontologia</span>
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
@@ -47,12 +42,7 @@ export default function SobrePage() {
 
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  Nossos Pilares
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
                 Missão, Visão e Valores
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -132,12 +122,7 @@ export default function SobrePage() {
 
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  Equipe Especializada
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
                 Profissionais de Excelência
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -150,7 +135,7 @@ export default function SobrePage() {
               <div className="bg-neutral-50 rounded-xl border border-neutral-200 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
                 <div className="bg-gradient-to-r from-blue-500 to-teal-500 h-2"></div>
                 <div className="p-8">
-                  <div className="flex items-start gap-6">
+                  <div className="flex flex-col sm:flex-row items-start gap-6">
                     <div className="bg-gradient-to-br from-blue-100 to-teal-100 w-24 h-24 rounded-full flex items-center justify-center flex-shrink-0">
                       <Stethoscope className="w-12 h-12 text-blue-600" />
                     </div>
@@ -219,12 +204,7 @@ export default function SobrePage() {
 
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  Por Que Nos Escolher
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-900 mb-4">
                 Diferenciais que Fazem a Diferença
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -312,12 +292,7 @@ export default function SobrePage() {
 
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  Infraestrutura
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
                 Tecnologia de Ponta
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -422,13 +397,7 @@ export default function SobrePage() {
 
           <div className="container mx-auto px-4 text-center relative">
             <div className="max-w-4xl mx-auto">
-              <div className="inline-block mb-6">
-                <span className="text-sm font-medium text-blue-100 bg-blue-500 px-4 py-2 rounded-full">
-                  Agende Sua Consulta
-                </span>
-              </div>
-
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6">
                 Pronto para Transformar Sua Vida?
               </h2>
 
@@ -443,7 +412,7 @@ export default function SobrePage() {
                   className="inline-flex items-center justify-center bg-white text-sky-700 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   <Calendar className="w-5 h-5 mr-2" />
-                  Agendar Avaliação Gratuita
+                  Agendar Avaliação
                 </a>
                 <a
                   href="/contato"

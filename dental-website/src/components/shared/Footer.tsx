@@ -29,7 +29,7 @@ export function Footer() {
         <div className="grid md:grid-cols-3 gap-8">
           {/* Company Info Card */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 shadow-xl hover:bg-white/10 transition-all duration-300">
-            <h3 className="text-2xl font-bold mb-4 text-white">{siteConfig.name}</h3>
+            <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">{siteConfig.name}</h3>
             <p className="text-white/90 mb-6 leading-relaxed">
               {siteConfig.description}
             </p>
