@@ -3,6 +3,9 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Mail, Phone, Calendar, Tag } from "lucide-react";
 
+// Skip static prerendering - render on demand
+export const dynamic = 'force-dynamic';
+
 export default async function LeadsPage() {
   const leads = await prisma.lead.findMany({
     orderBy: { createdAt: "desc" },
