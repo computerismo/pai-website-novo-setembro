@@ -35,7 +35,7 @@ const DOCS_DATA = {
                         </div>
                     </div>
                     
-                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem; max-width: 600px;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem;">
                         <strong style="color: var(--text-primary);">Este não é apenas um site.</strong> É uma plataforma digital completa para <strong style="color: var(--accent);">atrair pacientes</strong>, <strong style="color: var(--accent);">gerenciar conteúdo</strong> e <strong style="color: var(--accent);">rastrear resultados</strong> de marketing.
                     </p>
                 </div>
