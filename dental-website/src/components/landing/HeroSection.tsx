@@ -91,26 +91,7 @@ export function HeroSection({
               )}
             </div>
 
-            {/* Enhanced Social Proof */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 sm:gap-8 pt-6 relative z-10">
-              <div className="flex items-center gap-3 bg-neutral-50 px-4 py-3 rounded-2xl border border-neutral-200 shadow-sm">
-                <div className="flex items-center gap-1">
-                  <span className="text-yellow-500 text-lg">★★★★★</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-gray-900">4.9/5 no Google</span>
-                  <span className="text-xs text-gray-600">Avaliação dos pacientes</span>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-3 bg-neutral-50 px-4 py-3 rounded-2xl border border-neutral-200 shadow-sm">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-gray-900">+500 pacientes</span>
-                  <span className="text-xs text-gray-600">Atendidos com sucesso</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

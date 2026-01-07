@@ -26,7 +26,7 @@ export function Footer() {
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
 
       <div className="relative container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           {/* Company Info Card */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 shadow-xl hover:bg-white/10 transition-all duration-300">
             <h3 className="text-2xl font-bold mb-4 text-white">{siteConfig.name}</h3>
@@ -62,7 +62,6 @@ export function Footer() {
             <ul className="space-y-3">
               {[
                 { label: 'Sobre Nós', href: '/sobre' },
-                { label: 'Tratamentos', href: '/tratamentos' },
                 { label: 'Blog', href: '/blog' },
                 { label: 'Contato', href: '/contato' },
               ].map((link) => (
@@ -79,30 +78,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Treatments Card */}
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 shadow-xl hover:bg-white/10 transition-all duration-300">
-            <h4 className="text-lg font-semibold mb-6 text-white flex items-center">
-              <div className="w-2 h-2 bg-gradient-to-r from-teal-400 to-blue-400 rounded-full mr-3"></div>
-              Tratamentos
-            </h4>
-            <ul className="space-y-3">
-              {[
-                { label: 'Tratamento de Bruxismo', href: '/tratamento-bruxismo' },
-                { label: 'Placa Miorrelaxante', href: '/placa-miorrelaxante' },
-                { label: 'Botox para Bruxismo', href: '/botox-bruxismo' },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-white/90 hover:text-white transition-all duration-200 flex items-center group hover:translate-x-1"
-                  >
-                    <ChevronRight className="w-4 h-4 mr-2 text-teal-300 group-hover:text-blue-300 transition-colors" />
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+
 
           {/* Contact Card */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 shadow-xl hover:bg-white/10 transition-all duration-300">

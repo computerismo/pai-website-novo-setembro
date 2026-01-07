@@ -80,7 +80,7 @@ export default function HomePage() {
           subtitle="Tratamento Odontológico Especializado"
           description="Tratamento Odontológico para o ranger e apertar dos dentes. Recupere o seu bem-estar e melhore sua qualidade de vida com tratamentos personalizados."
           primaryCTA={{
-            text: "Agende sua Consulta Gratuita",
+            text: "Agende sua Consulta",
             href: "#agendamento"
           }}
           secondaryCTA={{
@@ -392,7 +392,7 @@ export default function HomePage() {
                   href="#agendamento"
                   className="bg-gradient-to-r from-blue-500 to-teal-500 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
                 >
-                  Agendar Consulta Gratuita
+                  Agendar Consulta
                 </a>
 
                 <a

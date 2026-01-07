@@ -33,50 +33,50 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-50/50">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 lg:hidden"
+          className="fixed inset-0 bg-neutral-900/50 z-20 lg:hidden backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-neutral-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-between h-16 px-6 border-b">
-            <Link href="/admin/dashboard" className="text-xl font-bold text-primary">
+          <div className="flex items-center justify-between h-16 px-6 border-b border-neutral-100">
+            <Link href="/admin/dashboard" className="text-xl font-bold text-gray-900 tracking-tight">
               Admin Panel
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden"
+              className="lg:hidden text-gray-500 hover:text-gray-700"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                  className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                     isActive
-                      ? "bg-primary text-white"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-100"
+                      : "text-gray-600 hover:bg-neutral-50 hover:text-gray-900"
                   }`}
                 >
-                  <item.icon className="w-5 h-5 mr-3" />
+                  <item.icon className={`w-5 h-5 mr-3 ${isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-500"}`} />
                   {item.name}
                 </Link>
               );
@@ -84,10 +84,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </nav>
 
           {/* User info & logout */}
-          <div className="p-4 border-t">
-            <div className="flex items-center mb-4">
+          <div className="p-4 border-t border-neutral-100">
+            <div className="flex items-center mb-4 px-2">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
                   {session?.user?.name?.charAt(0) || "A"}
                 </div>
               </div>
@@ -104,7 +104,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               onClick={() => signOut({ callbackUrl: "/login" })}
               className="flex items-center w-full px-4 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors"
             >
-              <LogOut className="w-5 h-5 mr-3" />
+              <LogOut className="w-4 h-4 mr-3" />
               Sair
             </button>
           </div>
@@ -114,11 +114,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Top bar */}
-        <header className="bg-white shadow-sm sticky top-0 z-10">
+        <header className="bg-white/80 backdrop-blur-md border-b border-neutral-200 sticky top-0 z-10">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden"
+              className="lg:hidden text-gray-500"
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -126,9 +126,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Link
               href="/"
               target="_blank"
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-2"
             >
-              Ver Site
+              Ver Site <span className="text-xs">↗</span>
             </Link>
           </div>
         </header>
