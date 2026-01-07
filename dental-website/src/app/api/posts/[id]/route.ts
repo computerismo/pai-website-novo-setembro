@@ -21,11 +21,13 @@ const postSchema = z.object({
 // GET /api/posts/[id] - Get a single post
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const post = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         author: { select: { id: true, name: true, email: true } },
         category: true,
@@ -41,7 +43,7 @@ export async function GET(
     const session = await auth();
     if (!session) {
       await prisma.post.update({
-        where: { id: params.id },
+        where: { id },
         data: { views: { increment: 1 } },
       });
     }
@@ -59,9 +61,10 @@ export async function GET(
 // PUT /api/posts/[id] - Update a post
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -73,7 +76,7 @@ export async function PUT(
 
     // Check if post exists
     const existingPost = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingPost) {
@@ -116,7 +119,7 @@ export async function PUT(
     }
 
     const post = await prisma.post.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         author: { select: { id: true, name: true, email: true } },
@@ -145,9 +148,10 @@ export async function PUT(
 // DELETE /api/posts/[id] - Delete a post
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -156,7 +160,7 @@ export async function DELETE(
 
     // Check if post exists
     const existingPost = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingPost) {
@@ -164,7 +168,7 @@ export async function DELETE(
     }
 
     await prisma.post.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Post deletado com sucesso" });
