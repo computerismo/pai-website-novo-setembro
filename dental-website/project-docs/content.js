@@ -649,8 +649,8 @@ const DOCS_DATA = {
                 <h2 id="arch-03"><span style="color: var(--accent);">03.</span> Como os Componentes se Comunicam</h2>
                 <p>Diagrama simplificado do fluxo de dados:</p>
                 
-                <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin: 1.5rem 0; box-shadow: var(--shadow-sm);">
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin: 1.5rem auto; box-shadow: var(--shadow-sm); width: fit-content;">
+                    <div style="display: flex; flex-direction: column; gap: 1rem; margin: 0 auto; width: fit-content;">
                         <!-- Visitante -->
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             <div style="width: 50px; height: 50px; background: var(--bg-hover); color: var(--text-primary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">👤</div>
@@ -660,7 +660,9 @@ const DOCS_DATA = {
                             </div>
                         </div>
                         
-                        <div style="text-align: center; color: var(--text-tertiary); font-weight: 900; font-size: 1.25rem;">↓</div>
+                        <div style="display: flex; justify-content: center; padding: 0.5rem 0;">
+                            <div style="color: var(--text-tertiary); font-weight: 700; font-size: 1.25rem;">↓</div>
+                        </div>
                         
                         <!-- Next.js -->
                         <div style="display: flex; align-items: center; gap: 1rem;">
@@ -671,7 +673,9 @@ const DOCS_DATA = {
                             </div>
                         </div>
                         
-                        <div style="text-align: center; color: var(--text-tertiary); font-weight: 900; font-size: 1.25rem;">↓</div>
+                        <div style="display: flex; justify-content: center; padding: 0.5rem 0;">
+                            <div style="color: var(--text-tertiary); font-weight: 700; font-size: 1.25rem;">↓</div>
+                        </div>
                         
                         <!-- Prisma -->
                         <div style="display: flex; align-items: center; gap: 1rem;">
@@ -682,7 +686,9 @@ const DOCS_DATA = {
                             </div>
                         </div>
                         
-                        <div style="text-align: center; color: var(--text-tertiary); font-weight: 900; font-size: 1.25rem;">↓</div>
+                        <div style="display: flex; justify-content: center; padding: 0.5rem 0;">
+                            <div style="color: var(--text-tertiary); font-weight: 700; font-size: 1.25rem;">↓</div>
+                        </div>
                         
                         <!-- PostgreSQL -->
                         <div style="display: flex; align-items: center; gap: 1rem;">
