@@ -75,13 +75,13 @@ const DOCS_DATA = {
                     
                     <!-- Antes / Depois -->
                     <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: center; margin-bottom: 2rem;">
-                        <div style="background: var(--bg-hover); padding: 1.5rem; border-radius: var(--radius-md); text-align: center;">
+                        <div style="background: var(--bg-hover); padding: 1.5rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
                             <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); font-weight: 600; margin-bottom: 0.5rem;">😕 Antes</div>
                             <div style="font-size: 0.875rem; color: var(--text-secondary);">"De onde veio esse paciente?"</div>
                         </div>
                         <div style="font-size: 1.25rem; color: var(--text-tertiary); font-weight: 300;">→</div>
-                        <div style="background: var(--bg-active); padding: 1.5rem; text-align: center; border-radius: var(--radius-md); border: 1px solid var(--accent-light);">
-                            <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); font-weight: 700; margin-bottom: 0.5rem;">✅ Depois</div>
+                        <div style="background: #FFFBEB; padding: 1.5rem; text-align: center; border-radius: var(--radius-md); border: 1px solid #FCD34D;">
+                            <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #D97706; font-weight: 700; margin-bottom: 0.5rem;">✅ Depois</div>
                             <div style="font-size: 0.875rem; color: var(--text-primary); font-weight: 600;">"70% vieram do Google Ads!"</div>
                         </div>
                     </div>
@@ -144,13 +144,13 @@ const DOCS_DATA = {
                     <!-- Comparativo -->
                     <!-- Comparativo -->
                     <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: center; margin-bottom: 2rem;">
-                        <div style="background: var(--bg-hover); padding: 1.5rem; border-radius: var(--radius-md); text-align: center;">
+                        <div style="background: var(--bg-hover); padding: 1.5rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
                             <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem;">📱 Rede Social</div>
                             <div style="font-size: 0.875rem; color: var(--text-secondary);">Post some em 24h</div>
                         </div>
                         <div style="font-size: 1.25rem; color: var(--text-tertiary); font-weight: 300;">vs</div>
-                        <div style="background: var(--bg-active); padding: 1.5rem; text-align: center; border-radius: var(--radius-md); border: 1px solid var(--accent-light);">
-                            <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); font-weight: 700; margin-bottom: 0.5rem;">📖 Blog</div>
+                        <div style="background: #FFFBEB; padding: 1.5rem; text-align: center; border-radius: var(--radius-md); border: 1px solid #FCD34D;">
+                            <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #D97706; font-weight: 700; margin-bottom: 0.5rem;">✅ Depois</div>
                             <div style="font-size: 0.875rem; color: var(--text-primary); font-weight: 600;">Atrai pacientes por anos</div>
                         </div>
                     </div>
@@ -214,13 +214,13 @@ const DOCS_DATA = {
                     <!-- Antes / Depois -->
                     <!-- Antes / Depois -->
                     <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: center; margin-bottom: 2rem;">
-                        <div style="background: var(--bg-hover); padding: 1.5rem; border-radius: var(--radius-md); text-align: center;">
+                        <div style="background: var(--bg-hover); padding: 1.5rem; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border);">
                             <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); font-weight: 600; margin-bottom: 0.5rem;">😕 Antes</div>
                             <div style="font-size: 0.875rem; color: var(--text-secondary);">"Preciso ligar pra agência..."</div>
                         </div>
                         <div style="font-size: 1.25rem; color: var(--text-tertiary); font-weight: 300;">→</div>
-                        <div style="background: var(--bg-active); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--accent-light); text-align: center;">
-                            <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); font-weight: 700; margin-bottom: 0.5rem;">✅ Depois</div>
+                        <div style="background: #FFFBEB; padding: 1.5rem; text-align: center; border-radius: var(--radius-md); border: 1px solid #FCD34D;">
+                            <div style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #D97706; font-weight: 700; margin-bottom: 0.5rem;">✅ Depois</div>
                             <div style="font-size: 0.875rem; color: var(--text-primary); font-weight: 600;">"Alterei em 2 minutos!"</div>
                         </div>
                     </div>
@@ -306,11 +306,11 @@ const DOCS_DATA = {
                         <span style="color: var(--text-tertiary);">→</span>
                         <span style="background: white; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary);">💡 Lê e confia</span>
                         <span style="color: var(--text-tertiary);">→</span>
-                        <span style="background: var(--text-primary); color: white; padding: 0.5rem 0.75rem; font-weight: 600; border-radius: var(--radius-sm);">📞 Agenda consulta</span>
+                        <span style="background: var(--accent); color: white; padding: 0.5rem 0.75rem; font-weight: 600; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">📞 Agenda consulta</span>
                     </div>
                     
                     <div style="background: var(--bg-hover); border-radius: var(--radius-md); padding: 1rem; font-size: 0.8125rem; color: var(--text-secondary); border: 1px solid var(--border);">
-                        <strong>📊 Rastreamento:</strong> O sistema registra <code>utm_source: google</code>, <code>utm_medium: organic</code> e qual artigo ela leu.
+                        <strong>📊 Rastreamento:</strong> O sistema registra <code style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 0.1rem 0.3rem; border-radius: 4px;">utm_source: google</code>, <code style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 0.1rem 0.3rem; border-radius: 4px;">utm_medium: organic</code> e qual artigo ela leu.
                     </div>
                 </div>
 
@@ -326,11 +326,11 @@ const DOCS_DATA = {
                         <span style="color: var(--text-tertiary);">→</span>
                         <span style="background: white; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary);">📋 Preenche formulário</span>
                         <span style="color: var(--text-tertiary);">→</span>
-                        <span style="background: var(--text-primary); color: white; padding: 0.5rem 0.75rem; font-weight: 600; border-radius: var(--radius-sm);">📱 WhatsApp</span>
+                        <span style="background: var(--accent); color: white; padding: 0.5rem 0.75rem; font-weight: 600; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">📱 WhatsApp</span>
                     </div>
                     
                     <div style="background: var(--bg-hover); border-radius: var(--radius-md); padding: 1rem; font-size: 0.8125rem; color: var(--text-secondary); border: 1px solid var(--border);">
-                        <strong>📊 Rastreamento:</strong> Sistema captura <code>gclid</code> (ID do Google Ads) + <code>utm_campaign: bruxismo-jan2026</code>. Você sabe exatamente qual anúncio converteu.
+                        <strong>📊 Rastreamento:</strong> Sistema captura <code style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 0.1rem 0.3rem; border-radius: 4px;">gclid</code> (ID do Google Ads) + <code style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 0.1rem 0.3rem; border-radius: 4px;">utm_campaign: bruxismo-jan2026</code>. Você sabe exatamente qual anúncio converteu.
                     </div>
                 </div>
 
@@ -346,11 +346,11 @@ const DOCS_DATA = {
                         <span style="color: var(--text-tertiary);">→</span>
                         <span style="background: white; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary);">📄 Lê página do tratamento</span>
                         <span style="color: var(--text-tertiary);">→</span>
-                        <span style="background: var(--text-primary); color: white; padding: 0.5rem 0.75rem; font-weight: 600; border-radius: var(--radius-sm);">💬 Contato</span>
+                        <span style="background: var(--accent); color: white; padding: 0.5rem 0.75rem; font-weight: 600; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">💬 Contato</span>
                     </div>
                     
                     <div style="background: var(--bg-hover); border-radius: var(--radius-md); padding: 1rem; font-size: 0.8125rem; color: var(--text-secondary); border: 1px solid var(--border);">
-                        <strong>📊 Rastreamento:</strong> Sistema captura <code>fbclid</code> (Facebook/Instagram) + <code>utm_source: instagram</code>, <code>utm_medium: stories</code>.
+                        <strong>📊 Rastreamento:</strong> Sistema captura <code style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 0.1rem 0.3rem; border-radius: 4px;">fbclid</code> (Facebook/Instagram) + <code style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 0.1rem 0.3rem; border-radius: 4px;">utm_source: instagram</code>, <code style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 0.1rem 0.3rem; border-radius: 4px;">utm_medium: stories</code>.
                     </div>
                 </div>
 
@@ -366,11 +366,11 @@ const DOCS_DATA = {
                         <span style="color: var(--text-tertiary);">→</span>
                         <span style="background: white; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary);">📋 Preenche formulário</span>
                         <span style="color: var(--text-tertiary);">→</span>
-                        <span style="background: var(--text-primary); color: white; padding: 0.5rem 0.75rem; font-weight: 600; border-radius: var(--radius-sm);">✅ Lead</span>
+                        <span style="background: var(--accent); color: white; padding: 0.5rem 0.75rem; font-weight: 600; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">✅ Lead</span>
                     </div>
                     
                     <div style="background: var(--bg-hover); border-radius: var(--radius-md); padding: 1rem; font-size: 0.8125rem; color: var(--text-secondary); border: 1px solid var(--border);">
-                        <strong>📊 Rastreamento:</strong> Sem parâmetros UTM = registrado como <code>origem: direta</code>. No futuro, pode-se adicionar campo "Como nos conheceu?" no formulário.
+                        <strong>📊 Rastreamento:</strong> Sem parâmetros UTM = registrado como <code style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D; padding: 0.1rem 0.3rem; border-radius: 4px;">origem: direta</code>. No futuro, pode-se adicionar campo "Como nos conheceu?" no formulário.
                     </div>
                 </div>
 
@@ -447,7 +447,7 @@ const DOCS_DATA = {
                         <div style="font-size: 2.5rem; margin-bottom: 1rem;">📊</div>
                         <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-primary);">Decisões com Dados</h3>
                         <p style="font-size: 0.875rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 1rem;">Saiba exatamente de onde vêm seus pacientes.</p>
-                        <div style="font-family: var(--font-mono); font-size: 0.8rem; background: var(--bg-hover); padding: 0.75rem; border-left: 3px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--text-secondary);">
+                        <div style="font-family: var(--font-mono); font-size: 0.8rem; background: var(--bg-hover); padding: 0.75rem; border-radius: var(--radius-sm); color: var(--text-secondary);">
                             Se Instagram não traz resultado → redirecione para Google Ads
                         </div>
                     </div>
@@ -482,7 +482,7 @@ const DOCS_DATA = {
                 <!-- Hero Section -->
                 <div style="margin-bottom: 2.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                        <div style="width: 48px; height: 48px; background: black; border: 2px solid black; display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 48px; height: 48px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm);">
                             <span style="font-size: 1.5rem;">⚙️</span>
                         </div>
                         <div>
@@ -491,7 +491,7 @@ const DOCS_DATA = {
                         </div>
                     </div>
                     
-                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem; max-width: 600px;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem;">
                         <strong style="color: var(--text-primary);">Tecnologia de ponta, não por modismo.</strong> Cada escolha foi feita pensando em <strong style="color: var(--accent);">velocidade</strong>, <strong style="color: var(--accent);">segurança</strong> e <strong style="color: var(--accent);">facilidade de manutenção</strong> a longo prazo.
                     </p>
                 </div>
@@ -714,7 +714,7 @@ const DOCS_DATA = {
                 <!-- Hero Section -->
                 <div style="margin-bottom: 2.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                        <div style="width: 48px; height: 48px; background: black; border: 2px solid black; display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 48px; height: 48px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm);">
                             <span style="font-size: 1.5rem;">🗄️</span>
                         </div>
                         <div>
@@ -723,7 +723,7 @@ const DOCS_DATA = {
                         </div>
                     </div>
                     
-                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem; max-width: 600px;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem;">
                         <strong style="color: var(--text-primary);">Mais que um depósito de dados.</strong> O banco foi projetado para <strong style="color: var(--accent);">relacionar informações</strong>, permitindo você saber exatamente <strong style="color: var(--accent);">qual campanha trouxe qual paciente</strong>.
                     </p>
                 </div>
@@ -782,7 +782,7 @@ const DOCS_DATA = {
                 <h2 id="db-02"><span style="color: var(--accent);">02.</span> Modelo Lead (Contatos)</h2>
                 <p>O modelo mais estratégico do sistema — cada contato recebido é armazenado com inteligência de marketing:</p>
                 
-                <div class="feature-block" style="border-left: 3px solid var(--success);">
+                <div class="feature-block">
                     <h3 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); font-weight: 600; margin-bottom: 0.5rem;">📞 LEAD</h3>
                     <p style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); line-height: 1.4; margin-bottom: 1rem;">"Cada contato é uma ficha completa com dados de identificação e origem."</p>
                     
@@ -930,7 +930,7 @@ const DOCS_DATA = {
                 <!-- Hero Section -->
                 <div style="margin-bottom: 2.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                        <div style="width: 48px; height: 48px; background: black; border: 2px solid black; display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 48px; height: 48px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm);">
                             <span style="font-size: 1.5rem;">📁</span>
                         </div>
                         <div>
@@ -939,28 +939,28 @@ const DOCS_DATA = {
                         </div>
                     </div>
                     
-                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem; max-width: 600px;">
-                        <strong style="color: var(--text-primary);">Organização = Manutenibilidade.</strong> O código está separado em <strong style="color: var(--highlight);">pastas por responsabilidade</strong>, facilitando encontrar e modificar qualquer funcionalidade.
+                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem;">
+                        <strong style="color: var(--text-primary);">Organização = Manutenibilidade.</strong> O código está separado em <strong style="color: var(--accent);">pastas por responsabilidade</strong>, facilitando encontrar e modificar qualquer funcionalidade.
                     </p>
                 </div>
 
                 <!-- Status Cards -->
                 <div class="card-grid">
-                    <div class="stat-card" style="border-left: 3px solid #EF4444;">
+                    <div class="stat-card">
                         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.375rem;">
                             <span style="font-size: 1rem;">🔒</span>
                             <div class="label" style="margin: 0;">Admin</div>
                         </div>
                         <div class="value">Área Protegida</div>
                     </div>
-                    <div class="stat-card" style="border-left: 3px solid var(--success);">
+                    <div class="stat-card">
                         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.375rem;">
                             <span style="font-size: 1rem;">🌐</span>
                             <div class="label" style="margin: 0;">Blog</div>
                         </div>
                         <div class="value">Área Pública SEO</div>
                     </div>
-                    <div class="stat-card" style="border-left: 3px solid var(--accent);">
+                    <div class="stat-card">
                         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.375rem;">
                             <span style="font-size: 1rem;">🧩</span>
                             <div class="label" style="margin: 0;">Components</div>
@@ -996,7 +996,7 @@ const DOCS_DATA = {
                     <p style="font-size: 1.25rem; font-weight: 600; color: black; line-height: 1.4; margin-bottom: 1rem;">"Apenas usuários logados veem esta área."</p>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                        <div style="background: white; padding: 1rem; border: 2px solid black;">
+                        <div style="background: white; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
                             <div style="font-size: 0.6875rem; text-transform: uppercase; color: black; font-weight: 600; margin-bottom: 0.5rem;">📊 Dashboard</div>
                             <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8125rem; color: var(--text-secondary);">
                                 <li>• <code>/admin</code> — Visão geral</li>
@@ -1004,7 +1004,7 @@ const DOCS_DATA = {
                                 <li>• <code>/admin/posts</code> — Gerenciar artigos</li>
                             </ul>
                         </div>
-                        <div style="background: white; padding: 1rem; border: 2px solid black;">
+                        <div style="background: white; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
                             <div style="font-size: 0.6875rem; text-transform: uppercase; color: black; font-weight: 600; margin-bottom: 0.5rem;">📝 Edição</div>
                             <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8125rem; color: var(--text-secondary);">
                                 <li>• <code>/admin/posts/new</code> — Criar artigo</li>
@@ -1038,17 +1038,17 @@ const DOCS_DATA = {
                     <p style="font-size: 1.25rem; font-weight: 600; color: black; line-height: 1.4; margin-bottom: 1rem;">"O que o Google e os pacientes veem."</p>
                     
                     <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                        <div style="background: white; padding: 0.75rem 1rem; border: 2px solid black; flex: 1; min-width: 150px;">
+                        <div style="background: white; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); flex: 1; min-width: 150px;">
                             <div style="font-size: 1rem; margin-bottom: 0.25rem;">📄</div>
                             <strong style="font-size: 0.875rem; color: black;">/blog</strong>
                             <div style="font-size: 0.6875rem; color: black;">Lista de artigos</div>
                         </div>
-                        <div style="background: white; padding: 0.75rem 1rem; border: 2px solid black; flex: 1; min-width: 150px;">
+                        <div style="background: white; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); flex: 1; min-width: 150px;">
                             <div style="font-size: 1rem; margin-bottom: 0.25rem;">📖</div>
                             <strong style="font-size: 0.875rem; color: black;">/blog/[slug]</strong>
                             <div style="font-size: 0.6875rem; color: black;">Artigo individual</div>
                         </div>
-                        <div style="background: white; padding: 0.75rem 1rem; border: 2px solid black; flex: 1; min-width: 150px;">
+                        <div style="background: white; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); flex: 1; min-width: 150px;">
                             <div style="font-size: 1rem; margin-bottom: 0.25rem;">🏷️</div>
                             <strong style="font-size: 0.875rem; color: black;">/blog/categoria/[slug]</strong>
                             <div style="font-size: 0.6875rem; color: black;">Por categoria</div>
@@ -1125,7 +1125,7 @@ const DOCS_DATA = {
                         </div>
                     </div>
                     
-                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem; max-width: 600px;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem;">
                         <strong style="color: var(--text-primary);">Pronto para produção.</strong> O sistema está configurado para rodar no <strong style="color: black;">Railway</strong>, uma plataforma moderna que <strong style="color: black;">simplifica o deploy</strong> e <strong style="color: black;">escala automaticamente</strong>.
                     </p>
                 </div>
@@ -1304,7 +1304,7 @@ const DOCS_DATA = {
                         </div>
                     </div>
                     
-                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem; max-width: 600px;">
+                    <p style="font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem;">
                         <strong style="color: var(--text-primary);">O sistema está funcional, mas pode evoluir.</strong> Abaixo estão <strong style="color: black;">melhorias sugeridas</strong> para tornar a plataforma ainda mais poderosa e automatizada.
                     </p>
                 </div>
