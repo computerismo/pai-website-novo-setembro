@@ -17,14 +17,21 @@ interface BlogPostPageProps {
 }
 
 export async function generateStaticParams() {
-  const posts = await prisma.post.findMany({
-    where: { status: 'published' },
-    select: { slug: true },
-  });
+  try {
+    const posts = await prisma.post.findMany({
+      where: { status: 'published' },
+      select: { slug: true },
+    });
 
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+    return posts.map((post) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    // Return empty array if database is unreachable during build
+    // Pages will be generated on-demand instead
+    console.log('generateStaticParams: Database unreachable, skipping static generation');
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
