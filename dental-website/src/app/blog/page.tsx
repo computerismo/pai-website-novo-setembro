@@ -14,75 +14,84 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  // Fetch published posts from database
-  const allPostsData = await prisma.post.findMany({
-    where: {
-      status: 'published',
-      publishedAt: { lte: new Date() },
-    },
-    orderBy: { publishedAt: 'desc' },
-    include: {
-      author: { select: { name: true } },
-      category: { select: { name: true } },
-      tags: { select: { name: true } },
-    },
-  });
+  // Initialize empty arrays for fallback
+  let allPostsData: any[] = [];
+  let featuredPostsData: any[] = [];
+  let categoriesData: any[] = [];
 
-  const featuredPostsData = await prisma.post.findMany({
-    where: {
-      status: 'published',
-      publishedAt: { lte: new Date() },
-      featured: true,
-    },
-    orderBy: { publishedAt: 'desc' },
-    take: 3,
-    include: {
-      author: { select: { name: true } },
-      category: { select: { name: true } },
-      tags: { select: { name: true } },
-    },
-  });
+  // Try to fetch from database, fallback to empty if unavailable
+  try {
+    allPostsData = await prisma.post.findMany({
+      where: {
+        status: 'published',
+        publishedAt: { lte: new Date() },
+      },
+      orderBy: { publishedAt: 'desc' },
+      include: {
+        author: { select: { name: true } },
+        category: { select: { name: true } },
+        tags: { select: { name: true } },
+      },
+    });
 
-  const categoriesData = await prisma.category.findMany({
-    orderBy: { name: 'asc' },
-    include: {
-      _count: { select: { posts: true } },
-    },
-  });
+    featuredPostsData = await prisma.post.findMany({
+      where: {
+        status: 'published',
+        publishedAt: { lte: new Date() },
+        featured: true,
+      },
+      orderBy: { publishedAt: 'desc' },
+      take: 3,
+      include: {
+        author: { select: { name: true } },
+        category: { select: { name: true } },
+        tags: { select: { name: true } },
+      },
+    });
+
+    categoriesData = await prisma.category.findMany({
+      orderBy: { name: 'asc' },
+      include: {
+        _count: { select: { posts: true } },
+      },
+    });
+  } catch (error) {
+    console.log('Blog page: Database unreachable, using empty data');
+  }
 
   // Transform data to match the expected format
-  const allPosts = allPostsData.map(post => ({
+  const allPosts = allPostsData.map((post: any) => ({
     slug: post.slug,
     title: post.title,
     excerpt: post.excerpt || '',
     content: '', // Not needed for card display
     date: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
-    author: post.author.name || 'Admin',
+    author: post.author?.name || 'Admin',
     category: post.category?.name || 'Geral',
-    tags: post.tags.map((t: { name: string }) => t.name),
+    tags: post.tags?.map((t: { name: string }) => t.name) || [],
     image: post.featuredImage || '/images/blog/default.jpg',
     featured: post.featured,
     readingTime: post.readingTime || '5 min',
   }));
 
-  const featuredPosts = featuredPostsData.map(post => ({
+  const featuredPosts = featuredPostsData.map((post: any) => ({
     slug: post.slug,
     title: post.title,
     excerpt: post.excerpt || '',
     content: '', // Not needed for card display
     date: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
-    author: post.author.name || 'Admin',
+    author: post.author?.name || 'Admin',
     category: post.category?.name || 'Geral',
-    tags: post.tags.map((t: { name: string }) => t.name),
+    tags: post.tags?.map((t: { name: string }) => t.name) || [],
     image: post.featuredImage || '/images/blog/default.jpg',
     featured: post.featured,
     readingTime: post.readingTime || '5 min',
   }));
 
-  const categories = categoriesData.map(cat => ({
+  const categories = categoriesData.map((cat: any) => ({
     name: cat.name,
     slug: cat.slug,
-    count: cat._count.posts,
+    count: cat._count?.posts || 0,
   }));
 
   return (
