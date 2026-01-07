@@ -1,8 +1,13 @@
 import Link from 'next/link';
-import { Tag } from 'lucide-react';
+
+interface Category {
+  name: string;
+  slug: string;
+  count: number;
+}
 
 interface BlogCategoriesProps {
-  categories: string[];
+  categories: Category[];
 }
 
 export function BlogCategories({ categories }: BlogCategoriesProps) {
@@ -18,11 +23,6 @@ export function BlogCategories({ categories }: BlogCategoriesProps) {
 
       <div className="container mx-auto px-4 relative">
         <div className="text-center mb-8">
-          <div className="inline-block mb-4">
-            <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-              🏷️ Categorias
-            </span>
-          </div>
           <h2 className="text-2xl font-bold text-gray-900">
             Explore por Categoria
           </h2>
@@ -34,12 +34,15 @@ export function BlogCategories({ categories }: BlogCategoriesProps) {
         <div className="flex flex-wrap justify-center gap-4">
           {categories.map((category) => (
             <Link
-              key={category}
-              href={`/blog/categoria/${category.toLowerCase()}`}
+              key={category.slug}
+              href={`/blog/categoria/${category.slug}`}
               className="group bg-gradient-to-r from-white to-gray-50 hover:from-blue-50 hover:to-teal-50 active:bg-sky-700 active:border-sky-700 active:text-white border border-gray-200 hover:border-blue-300 active:shadow-xl text-gray-700 hover:text-blue-700 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-105"
             >
               <span className="group-hover:scale-105 transition-transform inline-block">
-                {category}
+                {category.name}
+                {category.count > 0 && (
+                  <span className="ml-2 text-sm text-gray-500">({category.count})</span>
+                )}
               </span>
             </Link>
           ))}

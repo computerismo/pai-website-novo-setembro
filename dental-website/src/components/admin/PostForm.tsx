@@ -298,7 +298,7 @@ export default function PostForm({ postId, initialData }: PostFormProps) {
                       } else {
                         setFormData({
                           ...formData,
-                          tags: formData.tags.filter((t) => t !== tag.id),
+                          tags: formData.tags.filter((t: string) => t !== tag.id),
                         });
                       }
                     }}

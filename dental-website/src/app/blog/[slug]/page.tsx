@@ -82,7 +82,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     include: {
       author: { select: { name: true } },
       category: { select: { name: true, slug: true } },
-      tags: { select: { name: true, slug: true } },
+      tags: { select: { id: true, name: true, slug: true } },
     },
   });
 
@@ -135,6 +135,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     slug: p.slug,
     title: p.title,
     excerpt: p.excerpt || '',
+    content: '', // Not needed for card display
     date: p.publishedAt?.toISOString() || p.createdAt.toISOString(),
     author: p.author.name || 'Admin',
     category: p.category?.name || 'Geral',
