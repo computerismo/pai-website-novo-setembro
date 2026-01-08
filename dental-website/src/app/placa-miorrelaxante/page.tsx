@@ -5,6 +5,7 @@ import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
 import { CheckCircle, Shield, Clock, Brain, Moon, Info, Calendar } from 'lucide-react';
+import { ScheduleModalButton } from '@/components/landing/ScheduleModalButton';
 
 export const metadata: Metadata = {
   title: 'Placa Miorrelaxante para Bruxismo | Tratamento Especializado',
@@ -27,7 +28,7 @@ export default function PlacaMiorrelaxantePage() {
               </h1>
               <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
                 A placa miorrelaxante é o tratamento padrão-ouro para o controle do bruxismo. 
-                Preserve a estrutura dos seus dentes e melhore sua qualidade de vida com um dispositivo personalizado.
+                Preserve a estrutura dos seus dentes e melhore sua qualidade de vida com um dispositivo personalizado em Governador Valadares.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -51,53 +52,55 @@ export default function PlacaMiorrelaxantePage() {
         {/* Educational Section: What is it? */}
         <section className="py-20 bg-white" id="sobre">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="bg-slate-100 rounded-3xl h-full min-h-[400px] relative overflow-hidden group shadow-lg">
-                 <Image 
-                   src="/images/placa-miorrelaxante.png"
-                   alt="Placa Miorrelaxante Transparente em Alta Resolução"
-                   fill
-                   className="object-cover transition-transform duration-700 group-hover:scale-105"
-                   sizes="(max-width: 768px) 100vw, 50vw"
-                   priority
-                 />
-                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent" />
-              </div>
-              
-              <div className="space-y-6">
+            <div className="max-w-4xl mx-auto space-y-12">
+              <div className="space-y-8 text-center">
                 <h2 className="text-3xl font-bold text-slate-900">
                   Entendendo o Bruxismo e a Função da Placa
                 </h2>
-                <div className="prose prose-lg text-slate-600">
-                  <p>
-                    O bruxismo é o hábito involuntário de ranger ou apertar os dentes, 
-                    frequentemente ocorrendo durante o sono. Sem tratamento, pode levar a:
-                  </p>
-                  <ul className="list-none space-y-2 mt-4 mb-6">
-                    <li className="flex items-start">
-                      <div className="mt-1.5 min-w-5">
-                       <div className="h-2 w-2 rounded-full bg-red-400"></div>
-                      </div>
-                      <span className="ml-3">Desgaste acentuado e fratura dos dentes</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mt-1.5 min-w-5">
-                       <div className="h-2 w-2 rounded-full bg-red-400"></div>
-                      </div>
-                      <span className="ml-3">Dores de cabeça tensionais e na mandíbula (ATM)</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mt-1.5 min-w-5">
-                       <div className="h-2 w-2 rounded-full bg-red-400"></div>
-                      </div>
-                      <span className="ml-3">Retração gengival e sensibilidade dentária</span>
-                    </li>
-                  </ul>
-                  <p>
-                    A <strong>placa miorrelaxante</strong> atua como uma barreira protetora, 
-                    absorvendo a força do impacto e promovendo o relaxamento da musculatura mastigatória.
-                  </p>
+                
+                <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+                  O bruxismo é o hábito involuntário de ranger ou apertar os dentes, frequentemente ocorrendo durante o sono. 
+                  Sem tratamento, as consequências podem ser severas:
+                </p>
+
+                {/* Hazard Cards Grid */}
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="bg-red-50 p-6 rounded-xl border border-red-100 flex flex-col items-center hover:scale-105 transition-transform duration-300">
+                    <div className="w-2 h-2 rounded-full bg-red-400 mb-4" />
+                    <h3 className="font-semibold text-slate-900 mb-2">Desgaste Dental</h3>
+                    <p className="text-sm text-slate-600">Perda progressiva de esmalte e fraturas frequentes.</p>
+                  </div>
+                  
+                  <div className="bg-red-50 p-6 rounded-xl border border-red-100 flex flex-col items-center hover:scale-105 transition-transform duration-300">
+                    <div className="w-2 h-2 rounded-full bg-red-400 mb-4" />
+                    <h3 className="font-semibold text-slate-900 mb-2">Dores Orofaciais</h3>
+                    <p className="text-sm text-slate-600">Tensões musculares, cefaleias e desconforto na ATM.</p>
+                  </div>
+
+                  <div className="bg-red-50 p-6 rounded-xl border border-red-100 flex flex-col items-center hover:scale-105 transition-transform duration-300">
+                    <div className="w-2 h-2 rounded-full bg-red-400 mb-4" />
+                    <h3 className="font-semibold text-slate-900 mb-2">Retração Gengival</h3>
+                    <p className="text-sm text-slate-600">Sensibilidade dentária e danos ao suporte ósseo.</p>
+                  </div>
                 </div>
+
+                {/* Highlight Box Solution */}
+                <div className="bg-blue-600 rounded-2xl p-8 text-white shadow-xl max-w-3xl mx-auto mt-12 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                  <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 text-left">
+                    <div className="bg-white/20 p-3 rounded-lg shrink-0">
+                       <Shield className="w-8 h-8 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-xl mb-2">A Solução Ideal</h3>
+                      <p className="text-blue-50 leading-relaxed">
+                        A <strong>placa miorrelaxante</strong> atua como uma barreira física inteligente, 
+                        absorvendo as forças do impacto e "reprogramando" a musculatura para o relaxamento.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -206,7 +209,7 @@ export default function PlacaMiorrelaxantePage() {
         <section className="py-20 bg-slate-50">
           <div className="container mx-auto px-4 max-w-3xl">
             <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">
-              Dúvidas Comuns
+              Dúvidas Comuns em Governador Valadares
             </h2>
             
             <div className="space-y-4">
@@ -243,20 +246,16 @@ export default function PlacaMiorrelaxantePage() {
         </section>
 
         {/* CTA Section */}
-        <section id="agendamento" className="py-20 bg-blue-600 text-white">
+        <section id="agendamento" className="py-20 bg-gradient-to-r from-slate-900 to-blue-900 text-white">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Cuide da Saúde do Seu Sorriso
             </h2>
             <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-              Se você acorda com dores de cabeça ou nota seus dentes desgastados, agende uma avaliação para verificarmos a necessidade da placa miorrelaxante.
+              Se você acorda com dores de cabeça ou nota seus dentes desgastados, agende uma avaliação em Governador Valadares para verificarmos a necessidade da placa miorrelaxante.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="xl" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold border-none" asChild>
-                <a href="#contato">
-                  Agendar Avaliação
-                </a>
-              </Button>
+              <ScheduleModalButton source="placa-miorrelaxante" label="Agendar Avaliação" />
               <Button size="xl" variant="outline" className="border-blue-400 text-white hover:bg-blue-700 hover:border-blue-300" asChild>
                 <a href="https://wa.me/55999999999" target="_blank" rel="noopener noreferrer">
                   Conversar no WhatsApp

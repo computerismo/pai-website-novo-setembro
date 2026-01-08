@@ -7,6 +7,8 @@ import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Modal } from '@/components/ui/Modal';
+import { LeadForm } from '@/components/landing/LeadForm';
 
 // FAQ Component
 function FAQItem({ question, answer, isOpen, onToggle }: {
@@ -50,6 +52,9 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
 
 export default function HomePage() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => setIsModalOpen(true);
 
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
@@ -379,7 +384,7 @@ export default function HomePage() {
         </section>
 
         {/* Enhanced CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-sky-700 to-cyan-700 text-white relative overflow-hidden">
+        <section id="agendamento" className="py-20 bg-gradient-to-br from-sky-700 to-cyan-700 text-white relative overflow-hidden">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl -translate-y-48 translate-x-48"></div>
@@ -397,12 +402,12 @@ export default function HomePage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto">
-                <a
-                  href="#agendamento"
+                <button
+                  onClick={handleOpenModal}
                   className="bg-gradient-to-r from-blue-500 to-teal-500 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   Agendar Consulta
-                </a>
+                </button>
 
                 <a
                   href="/tratamento-bruxismo"
@@ -416,6 +421,20 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)}
+          title="Agendar Diagnóstico"
+        >
+          <p className="text-sm text-gray-500 mb-4">
+            Preencha seus dados abaixo e nossa equipe entrará em contato para agendar sua avaliação.
+          </p>
+          <LeadForm 
+            source="homepage"
+            onSuccess={() => setTimeout(() => setIsModalOpen(false), 3000)}
+          />
+        </Modal>
       </main>
       <Footer />
       <WhatsAppButton />

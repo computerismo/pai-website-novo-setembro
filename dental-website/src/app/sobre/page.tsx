@@ -1,6 +1,7 @@
 import { Navigation } from "@/components/shared/Navigation";
 import { Footer } from "@/components/shared/Footer";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
+import { ScheduleModalButton } from "@/components/landing/ScheduleModalButton";
 import {
   Calendar,
   Award,
@@ -228,13 +229,7 @@ export default function SobrePage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
-                <a
-                  href="#agendamento"
-                  className="inline-flex items-center justify-center bg-white text-sky-700 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
-                >
-                  <Calendar className="w-5 h-5 mr-2" />
-                  Agendar Avaliação
-                </a>
+                <ScheduleModalButton source="sobre-cta" label="Agendar Avaliação" />
                 <a
                   href="/contato"
                   className="inline-flex items-center justify-center border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-teal-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"

@@ -5,6 +5,7 @@ import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
 import { CheckCircle, Zap, Clock, Award, Info, Calendar, Syringe, Brain } from 'lucide-react';
+import { ScheduleModalButton } from '@/components/landing/ScheduleModalButton';
 
 export const metadata: Metadata = {
   title: 'Toxina Botulínica para Bruxismo | Terapêutica Odontológica',
@@ -23,15 +24,15 @@ export default function BotoxBruxismoPage() {
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
                 Controle do Bruxismo com <br className="hidden md:block" />
-                <span className="text-purple-600">Toxina Botulínica</span>
+                <span className="text-blue-600">Toxina Botulínica</span>
               </h1>
               <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
-                Uma abordagem terapêutica eficaz para reduzir a hiperatividade muscular, 
+                Uma abordagem terapêutica eficaz, disponível em Governador Valadares, para reduzir a hiperatividade muscular, 
                 aliviar dores tensionais e proteger sua estrutura dentária.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/20" asChild>
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20" asChild>
                   <a href="#agendamento">
                     <Calendar className="w-5 h-5 mr-2" />
                     Agendar Avaliação
@@ -51,39 +52,40 @@ export default function BotoxBruxismoPage() {
         {/* Mechanism of Action */}
         <section className="py-20 bg-white" id="mecanismo">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="bg-slate-100 rounded-3xl h-full min-h-[400px] relative overflow-hidden group shadow-lg">
-                 <Image 
-                   src="/images/botox-bruxismo.png"
-                   alt="Aplicação Terapêutica de Toxina Botulínica"
-                   fill
-                   className="object-cover transition-transform duration-700 group-hover:scale-105"
-                   sizes="(max-width: 768px) 100vw, 50vw"
-                   priority
-                 />
-                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent" />
-              </div>
-              
-              <div className="space-y-6">
+            <div className="max-w-4xl mx-auto space-y-12">
+              <div className="space-y-8 text-center">
                 <h2 className="text-3xl font-bold text-slate-900">
                   Como a Toxina Atua no Bruxismo?
                 </h2>
-                <div className="prose prose-lg text-slate-600">
-                  <p>
-                    O bruxismo é frequentemente causado por uma hiperatividade dos músculos da mastigação (masseter e temporal). 
-                    A toxina botulínica atua como um potente relaxante muscular neuromuscular.
-                  </p>
-                  <div className="bg-purple-50 border-l-4 border-purple-500 p-4 my-6 rounded-r-lg">
-                    <p className="text-sm text-purple-900 font-medium">
-                      <strong>Mecanismo de Ação:</strong> A substância bloqueia temporariamente a liberação de acetilcolina, 
-                      o neurotransmissor responsável pela contração muscular. Isso reduz a força excessiva da mordida 
-                      sem comprometer a capacidade de mastigação.
-                    </p>
+                
+                <p className="text-lg text-slate-600 max-w-3xl mx-auto">
+                   Muitas vezes, a origem das dores está na <strong>hiperatividade dos músculos</strong> da mastigação 
+                   (masseter e temporal). É aqui que entra a intervenção terapêutica.
+                </p>
+
+                {/* Highlight Mechanism Card */}
+                <div className="bg-white rounded-2xl p-8 shadow-lg border border-purple-100 max-w-3xl mx-auto relative overflow-hidden group hover:border-purple-200 transition-colors">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-purple-500 to-purple-700" />
+                  
+                  <div className="flex flex-col md:flex-row items-center gap-6">
+                    <div className="bg-purple-100 p-4 rounded-full shrink-0 group-hover:scale-110 transition-transform duration-500">
+                      <Zap className="w-8 h-8 text-purple-600" />
+                    </div>
+                    
+                    <div className="text-left">
+                      <h3 className="text-xl font-bold text-purple-900 mb-2">Bloqueio Neuromuscular</h3>
+                      <p className="text-slate-600 leading-relaxed">
+                        A toxina age bloqueando temporariamente os sinais nervosos que causam a contração excessiva. 
+                        Isso <span className="font-semibold text-purple-700">reduz a força da mordida involuntária</span> sem 
+                        comprometer a fala ou a mastigação normal.
+                      </p>
+                    </div>
                   </div>
-                  <p>
-                    O resultado é um alívio significativo da tensão, prevenindo o desgaste dental e as dores orofaciais associadas.
-                  </p>
                 </div>
+
+                <p className="text-slate-600 max-w-2xl mx-auto italic">
+                  "O resultado é um alívio da tensão muscular, protegendo seus dentes e eliminando as dores de cabeça tensionais."
+                </p>
               </div>
             </div>
           </div>
@@ -173,7 +175,7 @@ export default function BotoxBruxismoPage() {
                   }
                 ].map((item, i) => (
                   <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 group-[.is-active]:bg-purple-600 text-slate-500 group-[.is-active]:text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 group-[.is-active]:bg-blue-600 text-slate-500 group-[.is-active]:text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
                       <span className="font-bold text-sm">{item.step}</span>
                     </div>
                     
@@ -192,7 +194,7 @@ export default function BotoxBruxismoPage() {
         <section className="py-20 bg-slate-50">
           <div className="container mx-auto px-4 max-w-3xl">
             <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">
-              Dúvidas Frequentes
+              Dúvidas Frequentes sobre Botox em Valadares
             </h2>
             
             <div className="space-y-4">
@@ -216,7 +218,7 @@ export default function BotoxBruxismoPage() {
               ].map((faq, index) => (
                 <div key={index} className="bg-white p-6 rounded-xl border border-slate-200">
                   <h3 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
-                    <Info className="w-4 h-4 text-purple-600" />
+                    <Info className="w-4 h-4 text-blue-600" />
                     {faq.q}
                   </h3>
                   <p className="text-slate-600 text-sm leading-relaxed ml-6">
@@ -229,21 +231,17 @@ export default function BotoxBruxismoPage() {
         </section>
 
         {/* CTA Section */}
-        <section id="agendamento" className="py-20 bg-purple-700 text-white">
+        <section id="agendamento" className="py-20 bg-gradient-to-r from-slate-900 to-blue-900 text-white">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Recupere seu Bem-Estar
             </h2>
-            <p className="text-purple-100 text-lg mb-8 max-w-2xl mx-auto">
-              Agende uma avaliação especializada para entender como a terapia com toxina botulínica pode beneficiar seu caso específico.
+            <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+              Agende uma avaliação especializada em Governador Valadares para entender como a terapia com toxina botulínica pode beneficiar seu caso específico.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="xl" className="bg-white text-purple-700 hover:bg-purple-50 font-semibold border-none" asChild>
-                <a href="#contato">
-                  Agendar Avaliação
-                </a>
-              </Button>
-              <Button size="xl" variant="outline" className="border-purple-400 text-white hover:bg-purple-600 hover:border-purple-300" asChild>
+              <ScheduleModalButton source="botox-bruxismo" label="Agendar Avaliação" />
+              <Button size="xl" variant="outline" className="border-blue-400 text-white hover:bg-white/10" asChild>
                 <a href="https://wa.me/55999999999" target="_blank" rel="noopener noreferrer">
                   Conversar no WhatsApp
                 </a>

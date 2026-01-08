@@ -5,6 +5,7 @@ import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
 import { Stethoscope, ClipboardCheck, Microscope, Brain, ArrowRight, Shield, Award, Calendar } from 'lucide-react';
+import { ScheduleModalButton } from '@/components/landing/ScheduleModalButton';
 
 export const metadata: Metadata = {
   title: 'Tratamento de Bruxismo | Diagnóstico e Abordagem Multidisciplinar',
@@ -27,7 +28,7 @@ export default function TratamentoBruxismoPage() {
               </h1>
               <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
                 O bruxismo é uma condição complexa que exige diagnóstico preciso. 
-                Oferecemos terapias integradas para controlar os sintomas e proteger sua saúde bucal a longo prazo.
+                Oferecemos terapias integradas em Governador Valadares para controlar os sintomas e proteger sua saúde bucal a longo prazo.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -51,46 +52,46 @@ export default function TratamentoBruxismoPage() {
         {/* Diagnosis / Context */}
         <section className="py-20 bg-white" id="diagnostico">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="order-2 md:order-1 space-y-6">
+            <div className="max-w-4xl mx-auto space-y-12">
+              <div className="space-y-8 text-center">
                 <h2 className="text-3xl font-bold text-slate-900">
                   Diagnóstico Personalizado
                 </h2>
-                <div className="prose prose-lg text-slate-600">
-                  <p>
+                
+                {/* Highlight Box */}
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-8 rounded-r-xl text-left shadow-sm max-w-3xl mx-auto">
+                  <p className="text-lg text-blue-900 leading-relaxed">
                     O primeiro passo para o controle efetivo do bruxismo é entender sua origem e severidade. 
-                    Nossa avaliação clínica considera fatores dentários, musculares e emocionais.
-                  </p>
-                  <ul className="space-y-4 my-6 list-none pl-0">
-                    <li className="flex items-start gap-3">
-                      <div className="mt-1 bg-blue-100 p-1.5 rounded-lg">
-                        <Microscope className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <span><strong>Análise Clínica:</strong> Avaliação do desgaste dental, saúde gengival e palpação muscular.</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <div className="mt-1 bg-purple-100 p-1.5 rounded-lg">
-                        <Brain className="w-5 h-5 text-purple-600" />
-                      </div>
-                      <span><strong>Fatores Associados:</strong> Identificação de gatilhos como estresse, ansiedade e qualidade do sono.</span>
-                    </li>
-                  </ul>
-                  <p>
-                    Com base nesse diagnóstico, elaboramos um plano de tratamento único, que pode envolver uma ou mais modalidades terapêuticas.
+                    Nossa avaliação clínica considera fatores <span className="font-semibold">dentários, musculares e emocionais</span>.
                   </p>
                 </div>
-              </div>
 
-              <div className="order-1 md:order-2 bg-slate-100 rounded-3xl h-full min-h-[400px] relative overflow-hidden group shadow-lg">
-                 <Image 
-                   src="/images/tratamento-bruxismo.png"
-                   alt="Consulta de Diagnóstico Odontológico Digital"
-                   fill
-                   className="object-cover transition-transform duration-700 group-hover:scale-105"
-                   sizes="(max-width: 768px) 100vw, 50vw"
-                   priority
-                 />
-                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent" />
+                {/* Feature Cards Grid */}
+                <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                  <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center group">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <Microscope className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">Análise Clínica</h3>
+                    <p className="text-slate-600 text-sm">
+                      Avaliação detalhada do nível de desgaste dental, saúde da gengiva e palpação da musculatura.
+                    </p>
+                  </div>
+
+                  <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center group">
+                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <Brain className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">Fatores Associados</h3>
+                    <p className="text-slate-600 text-sm">
+                      Mapeamento de gatilhos comportamentais como níveis de estresse, ansiedade e qualidade do sono.
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-slate-600 max-w-2xl mx-auto">
+                  Com base nesse diagnóstico, elaboramos um plano de tratamento único, que pode envolver uma ou mais modalidades terapêuticas.
+                </p>
               </div>
             </div>
           </div>
@@ -158,7 +159,7 @@ export default function TratamentoBruxismoPage() {
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4 max-w-3xl">
             <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">
-              Mitos e Verdades
+              Mitos e Verdades sobre o Tratamento em Valadares
             </h2>
             
             <div className="space-y-6">
@@ -202,15 +203,10 @@ export default function TratamentoBruxismoPage() {
               Dê o Primeiro Passo
             </h2>
             <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-              Não conviva com a dor ou o risco de perder estrutura dental. Agende uma avaliação diagnóstica para entendermos seu caso.
+              Não conviva com a dor ou o risco de perder estrutura dental. Agende uma avaliação diagnóstica em Governador Valadares para entendermos seu caso.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="xl" className="bg-white text-blue-900 hover:bg-blue-50 font-semibold border-none" asChild>
-                <a href="#contato">
-                  <Calendar className="w-5 h-5 mr-2" />
-                  Agendar Diagnóstico
-                </a>
-              </Button>
+              <ScheduleModalButton source="tratamento-bruxismo" />
               <Button size="xl" variant="outline" className="border-blue-400 text-white hover:bg-white/10" asChild>
                 <a href="https://wa.me/55999999999" target="_blank" rel="noopener noreferrer">
                   Falar com Especialista

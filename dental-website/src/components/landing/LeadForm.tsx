@@ -167,7 +167,7 @@ export function LeadForm({ campaignId, source, onSuccess }: LeadFormProps) {
         isLoading={isSubmitting}
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Enviando...' : 'Solicitar Avaliação Gratuita'}
+        {isSubmitting ? 'Enviando...' : 'Solicitar Avaliação'}
       </Button>
 
       <p className="text-xs text-gray-500 text-center">

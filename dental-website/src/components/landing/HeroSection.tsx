@@ -13,6 +13,7 @@ interface HeroSectionProps {
     text: string;
     href: string;
   };
+  onPrimaryAction?: () => void;
   backgroundImage?: string;
   variant?: 'centered' | 'left-aligned' | 'split';
 }
@@ -23,6 +24,7 @@ export function HeroSection({
   description,
   primaryCTA,
   secondaryCTA,
+  onPrimaryAction,
   backgroundImage,
   variant = 'split',
 }: HeroSectionProps) {
@@ -66,12 +68,23 @@ export function HeroSection({
 
             {/* Enhanced CTA Section */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center relative z-10 w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" asChild>
-                <a href={primaryCTA.href}>
+              {onPrimaryAction ? (
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                  onClick={onPrimaryAction}
+                >
                   <Calendar className="w-5 h-5 mr-2" />
                   {primaryCTA.text}
-                </a>
-              </Button>
+                </Button>
+              ) : (
+                <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" asChild>
+                  <a href={primaryCTA.href}>
+                    <Calendar className="w-5 h-5 mr-2" />
+                    {primaryCTA.text}
+                  </a>
+                </Button>
+              )}
 
               {secondaryCTA && (
                 <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-teal-600 text-teal-700 hover:bg-teal-50 hover:border-teal-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200" asChild>
@@ -115,9 +128,15 @@ export function HeroSection({
         )}
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" asChild>
-            <a href={primaryCTA.href}>{primaryCTA.text}</a>
-          </Button>
+          {onPrimaryAction ? (
+             <Button size="lg" onClick={onPrimaryAction}>
+               {primaryCTA.text}
+             </Button>
+          ) : (
+            <Button size="lg" asChild>
+              <a href={primaryCTA.href}>{primaryCTA.text}</a>
+            </Button>
+          )}
 
           {secondaryCTA && (
             <Button size="lg" variant="outline" asChild>
