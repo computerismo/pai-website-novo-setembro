@@ -3,7 +3,7 @@ import {
   MapPin,
   Phone,
   Mail,
-  Clock,
+
   Facebook,
   Instagram,
   ChevronRight
@@ -120,18 +120,7 @@ export function Footer() {
                   {siteConfig.email}
                 </a>
               </li>
-              <li>
-                <div className="flex items-start group">
-                  <div className="bg-white/10 backdrop-blur-sm p-2 rounded-lg mr-3 flex-shrink-0 mt-0.5">
-                    <Clock className="w-4 h-4 text-blue-300 group-hover:text-teal-300 transition-colors" />
-                  </div>
-                  <div className="text-white/90 text-sm leading-relaxed">
-                    <p>{siteConfig.openingHours.weekdays}</p>
-                    <p>{siteConfig.openingHours.saturday}</p>
-                    <p>{siteConfig.openingHours.sunday}</p>
-                  </div>
-                </div>
-              </li>
+
             </ul>
           </div>
         </div>

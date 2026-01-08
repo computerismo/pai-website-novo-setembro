@@ -6,6 +6,7 @@ import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // FAQ Component
 function FAQItem({ question, answer, isOpen, onToggle }: {
@@ -28,11 +29,21 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
         )}
       </button>
 
-      {isOpen && (
-        <div className="px-6 pb-6">
-          <p className="text-gray-700 leading-relaxed">{answer}</p>
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-6">
+              <p className="text-gray-700 leading-relaxed">{answer}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -267,12 +278,12 @@ export default function HomePage() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
               {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div className="absolute top-10 left-10 w-32 h-32 bg-green-200 rounded-full filter blur-2xl"></div>
                 <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-200 rounded-full filter blur-2xl"></div>
               </div>
 
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
+              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gradient-to-br from-green-500 to-green-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                     <span className="text-white text-xl">😌</span>
@@ -282,7 +293,7 @@ export default function HomePage() {
                 <p className="text-gray-600 leading-relaxed mt-3">Eliminação das dores de cabeça, musculares e da mandíbula causadas pelo bruxismo.</p>
               </div>
 
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
+              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                     <span className="text-white text-xl">🛡️</span>
@@ -292,7 +303,7 @@ export default function HomePage() {
                 <p className="text-gray-600 leading-relaxed mt-3">Prevenção do desgaste dentário e proteção contra fraturas e danos futuros.</p>
               </div>
 
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
+              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                     <span className="text-white text-xl">😴</span>
@@ -302,7 +313,7 @@ export default function HomePage() {
                 <p className="text-gray-600 leading-relaxed mt-3">Noites mais tranquilas e sono reparador, com redução dos despertares noturnos.</p>
               </div>
 
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
+              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gradient-to-br from-teal-500 to-teal-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                     <span className="text-white text-xl">💆</span>
@@ -312,7 +323,7 @@ export default function HomePage() {
                 <p className="text-gray-600 leading-relaxed mt-3">Relaxamento dos músculos faciais, pescoço e ombros, melhorando o bem-estar geral.</p>
               </div>
 
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
+              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                     <span className="text-white text-xl">😊</span>
@@ -322,7 +333,7 @@ export default function HomePage() {
                 <p className="text-gray-600 leading-relaxed mt-3">Maior autoestima e confiança ao sorrir, sabendo que seus dentes estão protegidos.</p>
               </div>
 
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
+              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
                 <div className="flex items-center gap-4">
                   <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                     <span className="text-white text-xl">🌟</span>
@@ -401,9 +412,7 @@ export default function HomePage() {
                 </a>
               </div>
 
-              <p className="text-sm text-blue-100 mt-6">
-                ⚡ Resposta rápida • 📞 Atendimento personalizado • 🎯 Diagnóstico preciso
-              </p>
+
             </div>
           </div>
         </section>
