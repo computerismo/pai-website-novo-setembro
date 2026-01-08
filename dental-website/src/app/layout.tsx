@@ -51,7 +51,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.className} ${crimsonPro.variable}`}>{children}</body>
+      <body className={`${inter.className} ${crimsonPro.variable}`} suppressHydrationWarning>{children}</body>
     </html>
   );
 }

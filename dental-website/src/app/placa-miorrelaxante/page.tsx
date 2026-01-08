@@ -2,14 +2,14 @@ import { Metadata } from 'next';
 import { Navigation } from '@/components/shared/Navigation';
 import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
-import { LeadForm } from '@/components/landing/LeadForm';
 import { Button } from '@/components/ui/Button';
-import { CheckCircle, Shield, Clock, Zap, Heart, Star, Award, Users, Stethoscope } from 'lucide-react';
+import Image from 'next/image';
+import { CheckCircle, Shield, Clock, Brain, Moon, Info, Calendar } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Placa Miorrelaxante - Proteção Completa contra Bruxismo',
-  description: 'Placa dental personalizada para tratamento de bruxismo. Confecção sob medida, material de alta qualidade e resultados imediatos.',
-  keywords: 'placa miorrelaxante, placa dental, protetor bucal, bruxismo, ranger dentes',
+  title: 'Placa Miorrelaxante para Bruxismo | Tratamento Especializado',
+  description: 'Proteja seus dentes e alivie dores orofaciais com a placa miorrelaxante personalizada. Tratamento eficaz para bruxismo e DTM.',
+  keywords: 'placa miorrelaxante, bruxismo, placa de bruxismo, dtm, protetor bucal, dentista bruxismo',
 };
 
 export default function PlacaMiorrelaxantePage() {
@@ -18,268 +18,182 @@ export default function PlacaMiorrelaxantePage() {
       <Navigation />
       <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 py-20 pt-36 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-100 rounded-full opacity-30 transform translate-x-40 -translate-y-40"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-100 rounded-full opacity-30 transform -translate-x-32 translate-y-32"></div>
-
+        <section className="bg-gradient-to-br from-slate-50 to-blue-50 py-20 pt-32 relative overflow-hidden">
           <div className="container mx-auto px-4 relative">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-8">
-                <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold">
-                  <Award className="w-4 h-4" />
-                  <span>Tratamento Gold Standard FDA</span>
-                </div>
-
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                  Placa Miorrelaxante{' '}
-                  <span className="text-emerald-600 relative">
-                    Premium
-                    <div className="absolute -bottom-2 left-0 w-full h-1 bg-emerald-200 rounded"></div>
-                  </span>
-                </h1>
-
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  A tecnologia mais avançada em placas odontológicas. Proteção total
-                  contra bruxismo com conforto excepcional e resultados imediatos.
-                </p>
-
-                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400 p-6 rounded-r-xl">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Zap className="w-4 h-4 text-amber-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-amber-800 mb-2">PROMOÇÃO LIMITADA</h3>
-                      <p className="text-amber-700">
-                        Avaliação + Moldagem Digital 3D + Plano Personalizado
-                        <br />
-                        <span className="font-semibold">TOTALMENTE GRÁTIS</span> para os próximos 10 pacientes!
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button size="xl" className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4">
-                    Garantir Oferta Especial
-                  </Button>
-                  <Button size="xl" variant="secondary" className="border-2 border-teal-600 text-teal-600 hover:bg-teal-50">
-                    Ver Depoimentos
-                  </Button>
-                </div>
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                Proteção para seu Sorriso e <br className="hidden md:block" />
+                <span className="text-blue-600">Alívio das Tensões</span>
+              </h1>
+              <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+                A placa miorrelaxante é o tratamento padrão-ouro para o controle do bruxismo. 
+                Preserve a estrutura dos seus dentes e melhore sua qualidade de vida com um dispositivo personalizado.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20" asChild>
+                  <a href="#agendamento">
+                    <Calendar className="w-5 h-5 mr-2" />
+                    Agendar Avaliação
+                  </a>
+                </Button>
+                <Button size="lg" variant="outline" className="border-slate-300 hover:bg-white" asChild>
+                  <a href="#como-funciona">
+                    <Info className="w-5 h-5 mr-2" />
+                    Como Funciona
+                  </a>
+                </Button>
               </div>
+            </div>
+          </div>
+        </section>
 
-              <div className="relative">
-                <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 relative">
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-emerald-600 text-white px-6 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
-                      <Heart className="w-4 h-4" />
-                      <span>Oferta Exclusiva</span>
-                    </div>
-                  </div>
-
-                  <div className="text-center mb-8 pt-4">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                      Placa Premium Personalizada
-                    </h2>
-
-                    <div className="bg-gray-50 rounded-xl p-6 mb-6">
-                      <div className="flex justify-between items-center mb-4">
-                        <span className="text-gray-600">Avaliação + Moldagem:</span>
-                        <span className="text-gray-500 line-through">R$ 450,00</span>
+        {/* Educational Section: What is it? */}
+        <section className="py-20 bg-white" id="sobre">
+          <div className="container mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="bg-slate-100 rounded-3xl h-full min-h-[400px] relative overflow-hidden group shadow-lg">
+                 <Image 
+                   src="/images/placa-miorrelaxante.png"
+                   alt="Placa Miorrelaxante Transparente em Alta Resolução"
+                   fill
+                   className="object-cover transition-transform duration-700 group-hover:scale-105"
+                   sizes="(max-width: 768px) 100vw, 50vw"
+                   priority
+                 />
+                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent" />
+              </div>
+              
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold text-slate-900">
+                  Entendendo o Bruxismo e a Função da Placa
+                </h2>
+                <div className="prose prose-lg text-slate-600">
+                  <p>
+                    O bruxismo é o hábito involuntário de ranger ou apertar os dentes, 
+                    frequentemente ocorrendo durante o sono. Sem tratamento, pode levar a:
+                  </p>
+                  <ul className="list-none space-y-2 mt-4 mb-6">
+                    <li className="flex items-start">
+                      <div className="mt-1.5 min-w-5">
+                       <div className="h-2 w-2 rounded-full bg-red-400"></div>
                       </div>
-                      <div className="flex justify-between items-center mb-4">
-                        <span className="text-gray-600">Confecção da Placa:</span>
-                        <span className="text-gray-900 font-semibold">R$ 997,00</span>
+                      <span className="ml-3">Desgaste acentuado e fratura dos dentes</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mt-1.5 min-w-5">
+                       <div className="h-2 w-2 rounded-full bg-red-400"></div>
                       </div>
-                      <div className="border-t border-gray-200 pt-4">
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-semibold">Total Hoje:</span>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-emerald-600">R$ 997,00</div>
-                            <div className="text-sm text-green-600">Economia de R$ 450,00</div>
-                          </div>
-                        </div>
+                      <span className="ml-3">Dores de cabeça tensionais e na mandíbula (ATM)</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mt-1.5 min-w-5">
+                       <div className="h-2 w-2 rounded-full bg-red-400"></div>
                       </div>
-                    </div>
-
-                    <div className="text-sm text-gray-600 mb-6">
-                      💳 Parcelamento em até 12x de R$ 97,90
-                    </div>
-                  </div>
-
-                  <LeadForm campaignId="placa-miorrelaxante" source="landing-page" />
-
-                  <div className="mt-6 text-center">
-                    <div className="flex items-center justify-center gap-1 text-yellow-500">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-current" />
-                      ))}
-                    </div>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Avaliado por 300+ pacientes satisfeitos
-                    </p>
-                  </div>
+                      <span className="ml-3">Retração gengival e sensibilidade dentária</span>
+                    </li>
+                  </ul>
+                  <p>
+                    A <strong>placa miorrelaxante</strong> atua como uma barreira protetora, 
+                    absorvendo a força do impacto e promovendo o relaxamento da musculatura mastigatória.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="py-20 bg-gray-50">
+        {/* Benefits Cards */}
+        <section className="py-20 bg-slate-50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                O que Torna Nossa Placa Única?
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                Benefícios do Uso da Placa
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Tecnologia de ponta, materiais premium e um processo
-                de confecção que garante máxima precisão e conforto.
+              <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+                Mais do que proteger os dentes, o tratamento visa devolver o conforto e a qualidade do seu sono.
               </p>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all group">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <Shield className="w-10 h-10 text-blue-600" />
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
+                    <Shield className="w-6 h-6 text-blue-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Material Biocompatível</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    Resina termoplástica de gra FDA, antialérgica e ultra resistente.
-                    Desenvolvida especificamente para uso odontológico prolongado.
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span>Certificado FDA</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span>Garantia 2 anos</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span>0% BPA</span>
-                    </div>
-                  </div>
+                  <h3 className="text-xl font-bold text-slate-900">Proteção Dentária</h3>
                 </div>
+                <p className="text-slate-600 leading-relaxed">
+                  Evita o contato direto entre os dentes, impedindo o desgaste do esmalte e reduzindo o risco de fraturas em restaurações e próteses.
+                </p>
               </div>
 
-              <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all group">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <Zap className="w-10 h-10 text-purple-600" />
+              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center shrink-0">
+                    <Brain className="w-6 h-6 text-purple-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Tecnologia 3D</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    Scanner intraoral de alta precisão para moldagem digital.
-                    Elimina o desconforto das moldagens tradicionais com massa.
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span>Scanner 3D German</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span>Sem desconforto</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span>Precisão 0,1mm</span>
-                    </div>
-                  </div>
+                  <h3 className="text-xl font-bold text-slate-900">Alívio de Dores</h3>
                 </div>
+                <p className="text-slate-600 leading-relaxed">
+                  Reduz a sobrecarga nas articulações (ATM) e relaxa a musculatura, diminuindo dores de cabeça e tensões no pescoço.
+                </p>
               </div>
 
-              <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all group">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <Heart className="w-10 h-10 text-emerald-600" />
+              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center shrink-0">
+                    <Moon className="w-6 h-6 text-teal-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Conforto Total</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    Design anatômico personalizado que se adapta perfeitamente à sua boca.
-                    Uso noturno sem incômodo ou interferência na respiração.
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span>100% personalizada</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span>Não interfere na respiração</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span>Adaptação em 2-3 noites</span>
-                    </div>
-                  </div>
+                  <h3 className="text-xl font-bold text-slate-900">Sono Reparador</h3>
                 </div>
-              </div>
-            </div>
-
-            <div className="text-center mt-16">
-              <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-6 py-3 rounded-full">
-                <Award className="w-5 h-5" />
-                <span className="font-semibold">Certificado ISO 13485 - Dispositivos Médicos</span>
+                <p className="text-slate-600 leading-relaxed">
+                  Ao eliminar a tensão do apertamento noturno, você pode experimentar noites de sono mais tranquilas e acordar mais descansado.
+                </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Process Section */}
-        <section className="py-16 bg-gray-50">
+        {/* Process Steps */}
+        <section className="py-20 bg-white" id="como-funciona">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">
-              Como Funciona o Tratamento?
-            </h2>
-            <div className="max-w-3xl mx-auto">
-              <div className="space-y-6">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">
+                Etapas do Tratamento
+              </h2>
+              
+              <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
                 {[
                   {
-                    step: '1',
-                    title: 'Avaliação Completa',
-                    description: 'Análise detalhada da sua condição, incluindo exame clínico e radiográfico.',
-                    time: '30 min'
+                    step: 1,
+                    title: "Avaliação Clínica",
+                    desc: "Análise da saúde bucal, nível de desgaste dentário e palpação muscular para confirmar o diagnóstico."
                   },
                   {
-                    step: '2',
-                    title: 'Moldagem Digital 3D',
-                    description: 'Escaneamento digital da sua boca, sem massa de moldagem desconfortável.',
-                    time: '15 min'
+                    step: 2,
+                    title: "Escaneamento ou Moldagem",
+                    desc: "Registro preciso da arcada dentária. Utilizamos tecnologias digitais para maior conforto sempre que possível."
                   },
                   {
-                    step: '3',
-                    title: 'Confecção Personalizada',
-                    description: 'Sua placa é fabricada em laboratório especializado com tecnologia CAD/CAM.',
-                    time: '5-7 dias'
+                    step: 3,
+                    title: "Confecção Personalizada",
+                    desc: "A placa é fabricada em laboratório especializado, utilizando materiais resistentes e biocompatíveis (acrílico termopolimerizável)."
                   },
                   {
-                    step: '4',
-                    title: 'Entrega e Ajustes',
-                    description: 'Prova, ajustes finais e instruções de uso e cuidados.',
-                    time: '30 min'
+                    step: 4,
+                    title: "Ajuste e Entrega",
+                    desc: "Ajuste fino dos contatos oclusais para garantir que a placa esteja perfeitamente equilibrada e confortável."
                   }
-                ].map((item, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-secondary-500 text-white rounded-full flex items-center justify-center font-bold">
-                        {item.step}
-                      </div>
+                ].map((item, i) => (
+                  <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 group-[.is-active]:bg-blue-600 text-slate-500 group-[.is-active]:text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                      <span className="font-bold text-sm">{item.step}</span>
                     </div>
-                    <div className="flex-grow bg-white p-6 rounded-lg shadow-sm">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-semibold">{item.title}</h3>
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {item.time}
-                        </div>
-                      </div>
-                      <p className="text-gray-600">{item.description}</p>
+                    
+                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
+                      <h3 className="font-bold text-slate-900 mb-2">{item.title}</h3>
+                      <p className="text-sm text-slate-600">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -288,168 +202,66 @@ export default function PlacaMiorrelaxantePage() {
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">
-              O que Nossos Pacientes Dizem
+        {/* FAQ */}
+        <section className="py-20 bg-slate-50">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">
+              Dúvidas Comuns
             </h2>
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            
+            <div className="space-y-4">
               {[
                 {
-                  name: 'Maria Silva',
-                  age: '34 anos',
-                  text: 'Acabaram as dores de cabeça matinais! A placa é super confortável e nem sinto que estou usando.'
+                  q: "A placa de silicone funciona?",
+                  a: "Placas de silicone (moles) geralmente não são indicadas para bruxismo, pois podem estimular o hábito de mastigação. As placas rígidas de acrílico são consideradas o padrão para proteção duradoura e relaxamento muscular efetivo."
                 },
                 {
-                  name: 'João Santos',
-                  age: '42 anos',
-                  text: 'Minha esposa agradece! Parei de ranger os dentes e voltamos a dormir tranquilos.'
+                  q: "É difícil dormir com a placa?",
+                  a: "Pode haver um período curto de adaptação (2 a 3 dias), mas como a placa é feita sob medida, ela deve se encaixar confortavelmente sem causar dor ou atrapalhar o sono."
                 },
                 {
-                  name: 'Ana Costa',
-                  age: '28 anos',
-                  text: 'Vale cada centavo! Meus dentes estão protegidos e não tenho mais dor na mandíbula.'
-                }
-              ].map((testimonial, index) => (
-                <div key={index} className="bg-white p-6 rounded-xl shadow-md">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 italic mb-4">"{testimonial.text}"</p>
-                  <div>
-                    <div className="font-semibold">{testimonial.name}</div>
-                    <div className="text-sm text-gray-500">{testimonial.age}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">
-              Perguntas Frequentes
-            </h2>
-            <div className="max-w-3xl mx-auto space-y-6">
-              {[
-                {
-                  question: 'Quanto tempo dura a placa?',
-                  answer: 'Com os cuidados adequados, a placa dura em média 2 a 3 anos. Oferecemos garantia de 2 anos contra defeitos de fabricação.'
+                  q: "Quanto tempo dura uma placa?",
+                  a: "Depende da intensidade do bruxismo e dos cuidados de higiene. Em média, pode durar de 1 a 3 anos. Revisões periódicas são importantes para polimento e ajustes."
                 },
                 {
-                  question: 'É desconfortável para dormir?',
-                  answer: 'Não! Nossa placa é confeccionada sob medida e com material flexível. A maioria dos pacientes se adapta em 2-3 noites.'
-                },
-                {
-                  question: 'Posso parcelar o pagamento?',
-                  answer: 'Sim! Parcelamos em até 12x no cartão de crédito ou oferecemos desconto especial para pagamento à vista.'
-                },
-                {
-                  question: 'Preciso usar todas as noites?',
-                  answer: 'Sim, o uso deve ser diário para máxima eficácia. A placa protege seus dentes e mantém a musculatura relaxada durante o sono.'
+                  q: "Como devo limpar minha placa?",
+                  a: "Lave diariamente com água fria e sabão neutro e escova macia. Evite água quente (pode deformar) e cremes dentais abrasivos (podem criar ranhuras)."
                 }
               ].map((faq, index) => (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-sm">
-                  <h3 className="text-lg font-semibold mb-3">{faq.question}</h3>
-                  <p className="text-gray-600">{faq.answer}</p>
+                <div key={index} className="bg-white p-6 rounded-xl border border-slate-200">
+                  <h3 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
+                    <Info className="w-4 h-4 text-blue-600" />
+                    {faq.q}
+                  </h3>
+                  <p className="text-slate-600 text-sm leading-relaxed ml-6">
+                    {faq.a}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="py-20 bg-gradient-to-br from-emerald-600 via-teal-600 to-green-600 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full transform translate-x-48 -translate-y-48"></div>
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-white opacity-5 rounded-full transform -translate-x-40 translate-y-40"></div>
-
-          <div className="container mx-auto px-4 text-center relative">
-            <div className="max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 mb-8">
-                <Stethoscope className="w-5 h-5" />
-                <span className="text-sm font-medium">Solução Clinicamente Comprovada</span>
-              </div>
-
-              <h2 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                Sua Última Chance de Proteger
-                <br />
-                <span className="text-yellow-300">Seus Dentes para Sempre!</span>
-              </h2>
-
-              <p className="text-xl mb-8 text-emerald-100 max-w-3xl mx-auto leading-relaxed">
-                Não deixe o bruxismo destruir seu sorriso. Aproveite nossa promoção
-                exclusiva e garante sua placa personalizada com tecnologia 3D.
-              </p>
-
-              <div className="bg-white/15 backdrop-blur-sm rounded-3xl p-8 mb-8 max-w-3xl mx-auto border border-white/20">
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div>
-                    <div className="text-2xl font-bold text-yellow-300 mb-2">
-                      SUPER OFERTA LIMITADA
-                    </div>
-                    <div className="text-lg text-white mb-4">
-                      Avaliação + Moldagem 3D + Placa Premium
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-white/70 line-through text-2xl">R$ 1.447</div>
-                      <div className="text-4xl font-bold text-yellow-300">R$ 997</div>
-                    </div>
-                    <div className="text-sm text-emerald-200 mt-2">
-                      ou 12x de R$ 97,90 sem juros
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="bg-red-500 text-white rounded-full px-4 py-2 text-sm font-bold mb-4 inline-block animate-pulse">
-                      APENAS 7 VAGAS RESTANTES
-                    </div>
-                    <div className="text-sm text-white/80">
-                      ⏳ Oferta expira em 24 horas
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4 mb-8">
-                <Button size="xl" className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold px-12 py-4 text-lg">
-                  🎆 GARANTIR MINHA PLACA AGORA
-                </Button>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" variant="secondary" className="bg-white/20 border-white/40 text-white hover:bg-white/30">
-                    📞 WhatsApp: (11) 99999-9999
-                  </Button>
-                  <Button size="lg" variant="secondary" className="bg-white/20 border-white/40 text-white hover:bg-white/30">
-                    📧 Enviar Mensagem
-                  </Button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <Users className="w-8 h-8 text-yellow-300 mx-auto mb-2" />
-                  <div className="text-2xl font-bold">300+</div>
-                  <div className="text-sm text-emerald-200">Placas Entregues</div>
-                </div>
-                <div className="text-center">
-                  <Star className="w-8 h-8 text-yellow-300 mx-auto mb-2" />
-                  <div className="text-2xl font-bold">4.9/5</div>
-                  <div className="text-sm text-emerald-200">Avaliação Média</div>
-                </div>
-                <div className="text-center">
-                  <Shield className="w-8 h-8 text-yellow-300 mx-auto mb-2" />
-                  <div className="text-2xl font-bold">2 Anos</div>
-                  <div className="text-sm text-emerald-200">de Garantia</div>
-                </div>
-                <div className="text-center">
-                  <Clock className="w-8 h-8 text-yellow-300 mx-auto mb-2" />
-                  <div className="text-2xl font-bold">24h</div>
-                  <div className="text-sm text-emerald-200">Para Entrega</div>
-                </div>
-              </div>
+        {/* CTA Section */}
+        <section id="agendamento" className="py-20 bg-blue-600 text-white">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Cuide da Saúde do Seu Sorriso
+            </h2>
+            <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+              Se você acorda com dores de cabeça ou nota seus dentes desgastados, agende uma avaliação para verificarmos a necessidade da placa miorrelaxante.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="xl" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold border-none" asChild>
+                <a href="#contato">
+                  Agendar Avaliação
+                </a>
+              </Button>
+              <Button size="xl" variant="outline" className="border-blue-400 text-white hover:bg-blue-700 hover:border-blue-300" asChild>
+                <a href="https://wa.me/55999999999" target="_blank" rel="noopener noreferrer">
+                  Conversar no WhatsApp
+                </a>
+              </Button>
             </div>
           </div>
         </section>
