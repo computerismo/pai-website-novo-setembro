@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   keywords: ['blog odontológico', 'saúde bucal', 'bruxismo', 'dicas dentárias'],
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function BlogPage() {
   const allPostsData = await prisma.post.findMany({
     where: {
