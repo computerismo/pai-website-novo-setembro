@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: dental_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: dental_db
+    ports:
+      - "5433:5432" # Mapped to 5433 to avoid conflict with your local Postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Optional: PGAdmin running in Docker too, so you don't need the local app
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: dental_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

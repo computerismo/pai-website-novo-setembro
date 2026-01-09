@@ -78,7 +78,7 @@ export default function PostsPage() {
         </div>
         <Link
           href="/admin/posts/new"
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Novo Post

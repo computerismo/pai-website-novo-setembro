@@ -60,6 +60,7 @@ export default function RichTextEditor({
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
+    immediatelyRender: false,
   });
 
   const addLink = useCallback(() => {

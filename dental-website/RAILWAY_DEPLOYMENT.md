@@ -103,31 +103,24 @@ railway run npx ts-node scripts/migrate-mdx-to-db.ts
 ```
 
 This will:
+
 - Create an admin user: `admin@clinica.com` / `admin123`
 - Migrate existing MDX posts to database
 
-### Option B: Manually Create Admin User
-
-Use Railway's PostgreSQL shell or a tool like Prisma Studio:
+### Option B: Use Admin Creation Script
 
 ```bash
-# Hash a password first (use bcrypt)
-const bcrypt = require('bcryptjs');
-const hash = await bcrypt.hash('your-password', 10);
-console.log(hash);
-
-# Then insert into database
-INSERT INTO "User" (id, email, password, name, role, "createdAt", "updatedAt")
-VALUES (
-  gen_random_uuid()::text,
-  'admin@clinica.com',
-  '<hashed-password>',
-  'Admin',
-  'admin',
-  NOW(),
-  NOW()
-);
+# Using Railway CLI
+railway run npx tsx scripts/create-admin.ts
 ```
+
+This will create a default admin user:
+
+- Email: `admin@dental.com`
+- Password: `admin`
+- Role: `admin`
+
+**Note:** You should immediately login and change your password.
 
 ## Step 7: Access Admin Panel
 
@@ -159,13 +152,13 @@ VALUES (
 
 ## Environment Variables Reference
 
-| Variable | Description | Required | Example |
-|----------|-------------|----------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | ✅ | Auto-set by Railway |
-| `NEXTAUTH_SECRET` | NextAuth encryption key | ✅ | Generate with OpenSSL |
-| `NEXTAUTH_URL` | Your app URL | ✅ | https://your-app.railway.app |
-| `NEXT_PUBLIC_GA_ID` | Google Analytics ID | ❌ | G-XXXXXXXXXX |
-| `NEXT_PUBLIC_SITE_URL` | Site URL for metadata | ❌ | https://your-app.railway.app |
+| Variable               | Description                  | Required | Example                      |
+| ---------------------- | ---------------------------- | -------- | ---------------------------- |
+| `DATABASE_URL`         | PostgreSQL connection string | ✅       | Auto-set by Railway          |
+| `NEXTAUTH_SECRET`      | NextAuth encryption key      | ✅       | Generate with OpenSSL        |
+| `NEXTAUTH_URL`         | Your app URL                 | ✅       | https://your-app.railway.app |
+| `NEXT_PUBLIC_GA_ID`    | Google Analytics ID          | ❌       | G-XXXXXXXXXX                 |
+| `NEXT_PUBLIC_SITE_URL` | Site URL for metadata        | ❌       | https://your-app.railway.app |
 
 ## Custom Domain (Optional)
 
@@ -196,6 +189,7 @@ VALUES (
 **Issue**: App can't connect to database
 
 **Solution**:
+
 1. Check `DATABASE_URL` is set correctly
 2. Ensure PostgreSQL service is running
 3. Check Railway logs for connection errors
@@ -211,6 +205,7 @@ VALUES (
 **Issue**: Uploaded images return 404
 
 **Solution**: Railway doesn't persist file uploads. Use external storage:
+
 - Cloudinary
 - AWS S3
 - Uploadcare
@@ -240,6 +235,7 @@ Railway pricing (as of 2024):
 - **Average cost for this app**: ~$5-10/month
 
 Typical usage:
+
 - Next.js app: ~$3-5/month
 - PostgreSQL: ~$2-3/month
 

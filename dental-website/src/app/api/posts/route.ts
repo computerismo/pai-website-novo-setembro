@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
         seoTitle: validatedData.seoTitle,
         seoDescription: validatedData.seoDescription,
         authorId: session.user.id,
-        categoryId: validatedData.categoryId,
+        categoryId: validatedData.categoryId || null,
         tags: {
           connect: validTagIds as any,
         },

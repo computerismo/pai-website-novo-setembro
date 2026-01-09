@@ -16,6 +16,7 @@ import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { marked } from 'marked';
 
 const prisma = new PrismaClient();
 
@@ -109,23 +110,33 @@ async function main() {
         tagRecords.push({ id: tag.id });
       }
 
-      // Check if post already exists
-      const existingPost = await prisma.post.findUnique({
+      // Convert Markdown to HTML
+      const htmlContent = await marked.parse(post.content);
+
+      // Create or update post
+      await prisma.post.upsert({
         where: { slug: post.slug },
-      });
-
-      if (existingPost) {
-        console.log(`  ⚠️  Post already exists, skipping: ${post.slug}\n`);
-        continue;
-      }
-
-      // Create post
-      await prisma.post.create({
-        data: {
+        update: {
+          title: post.title,
+          excerpt: post.excerpt,
+          content: htmlContent,
+          featuredImage: post.image,
+          status: 'published',
+          publishedAt: new Date(post.date),
+          featured: post.featured,
+          readingTime: post.readingTime,
+          authorId: adminUser.id,
+          categoryId: category.id,
+          tags: {
+            set: [], // Clear existing tags
+            connect: tagRecords,
+          },
+        },
+        create: {
           title: post.title,
           slug: post.slug,
           excerpt: post.excerpt,
-          content: post.content,
+          content: htmlContent,
           featuredImage: post.image,
           status: 'published',
           publishedAt: new Date(post.date),
