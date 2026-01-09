@@ -14,50 +14,40 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  // Initialize empty arrays for fallback
-  let allPostsData: any[] = [];
-  let featuredPostsData: any[] = [];
-  let categoriesData: any[] = [];
+  const allPostsData = await prisma.post.findMany({
+    where: {
+      status: 'published',
+      publishedAt: { lte: new Date() },
+    },
+    orderBy: { publishedAt: 'desc' },
+    include: {
+      author: { select: { name: true } },
+      category: { select: { name: true } },
+      tags: { select: { name: true } },
+    },
+  });
 
-  // Try to fetch from database, fallback to empty if unavailable
-  try {
-    allPostsData = await prisma.post.findMany({
-      where: {
-        status: 'published',
-        publishedAt: { lte: new Date() },
-      },
-      orderBy: { publishedAt: 'desc' },
-      include: {
-        author: { select: { name: true } },
-        category: { select: { name: true } },
-        tags: { select: { name: true } },
-      },
-    });
+  const featuredPostsData = await prisma.post.findMany({
+    where: {
+      status: 'published',
+      publishedAt: { lte: new Date() },
+      featured: true,
+    },
+    orderBy: { publishedAt: 'desc' },
+    take: 3,
+    include: {
+      author: { select: { name: true } },
+      category: { select: { name: true } },
+      tags: { select: { name: true } },
+    },
+  });
 
-    featuredPostsData = await prisma.post.findMany({
-      where: {
-        status: 'published',
-        publishedAt: { lte: new Date() },
-        featured: true,
-      },
-      orderBy: { publishedAt: 'desc' },
-      take: 3,
-      include: {
-        author: { select: { name: true } },
-        category: { select: { name: true } },
-        tags: { select: { name: true } },
-      },
-    });
-
-    categoriesData = await prisma.category.findMany({
-      orderBy: { name: 'asc' },
-      include: {
-        _count: { select: { posts: true } },
-      },
-    });
-  } catch (error) {
-    console.log('Blog page: Database unreachable, using empty data');
-  }
+  const categoriesData = await prisma.category.findMany({
+    orderBy: { name: 'asc' },
+    include: {
+      _count: { select: { posts: true } },
+    },
+  });
 
   // Transform data to match the expected format
   const allPosts = allPostsData.map((post: any) => ({
