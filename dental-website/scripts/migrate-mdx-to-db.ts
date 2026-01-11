@@ -75,21 +75,6 @@ async function main() {
     console.log(`📝 Migrating: ${post.title}`);
 
     try {
-      // Create or get category
-      let category = await prisma.category.findUnique({
-        where: { slug: slugify(post.category) },
-      });
-
-      if (!category) {
-        category = await prisma.category.create({
-          data: {
-            name: post.category,
-            slug: slugify(post.category),
-          },
-        });
-        console.log(`  ✅ Created category: ${post.category}`);
-      }
-
       // Create or get tags
       const tagRecords = [];
       for (const tagName of post.tags) {
@@ -126,7 +111,6 @@ async function main() {
           featured: post.featured,
           readingTime: post.readingTime,
           authorId: adminUser.id,
-          categoryId: category.id,
           tags: {
             set: [], // Clear existing tags
             connect: tagRecords,
@@ -143,7 +127,6 @@ async function main() {
           featured: post.featured,
           readingTime: post.readingTime,
           authorId: adminUser.id,
-          categoryId: category.id,
           tags: {
             connect: tagRecords,
           },
@@ -160,12 +143,10 @@ async function main() {
   console.log('\n📊 Summary:');
   const stats = await Promise.all([
     prisma.post.count(),
-    prisma.category.count(),
     prisma.tag.count(),
   ]);
   console.log(`  Posts: ${stats[0]}`);
-  console.log(`  Categories: ${stats[1]}`);
-  console.log(`  Tags: ${stats[2]}`);
+  console.log(`  Tags: ${stats[1]}`);
 }
 
 function slugify(text: string): string {
