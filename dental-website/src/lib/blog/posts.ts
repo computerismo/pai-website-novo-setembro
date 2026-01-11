@@ -10,7 +10,7 @@ export interface BlogPost {
   content: string;
   date: string;
   author: string;
-  category: string;
+
   tags: string[];
   image: string;
   featured: boolean;
@@ -23,7 +23,7 @@ export interface BlogPostFrontmatter {
   excerpt: string;
   date: string;
   author: string;
-  category: string;
+
   tags: string[];
   image: string;
   featured: boolean;
@@ -62,7 +62,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
       content,
       date: data.date,
       author: data.author,
-      category: data.category,
+
       tags: data.tags || [],
       image: data.image,
       featured: data.featured || false,
@@ -88,11 +88,7 @@ export function getFeaturedPosts(): BlogPost[] {
   return getAllPosts().filter(post => post.featured);
 }
 
-export function getPostsByCategory(category: string): BlogPost[] {
-  return getAllPosts().filter(post =>
-    post.category.toLowerCase() === category.toLowerCase()
-  );
-}
+
 
 export function getPostsByTag(tag: string): BlogPost[] {
   return getAllPosts().filter(post =>
@@ -112,10 +108,7 @@ export function getRelatedPosts(currentSlug: string, limit: number = 3): BlogPos
   const scoredPosts = allPosts.map(post => {
     let score = 0;
 
-    // Same category gets higher score
-    if (post.category === currentPost.category) {
-      score += 3;
-    }
+
 
     // Shared tags get points
     const sharedTags = post.tags.filter(tag =>
@@ -133,11 +126,7 @@ export function getRelatedPosts(currentSlug: string, limit: number = 3): BlogPos
     .map(item => item.post);
 }
 
-export function getAllCategories(): string[] {
-  const posts = getAllPosts();
-  const categories = Array.from(new Set(posts.map(post => post.category)));
-  return categories.sort();
-}
+
 
 export function getAllTags(): string[] {
   const posts = getAllPosts();

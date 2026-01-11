@@ -12,7 +12,7 @@ const postSchema = z.object({
   status: z.enum(["draft", "published", "scheduled"]).optional(),
   publishedAt: z.string().optional(),
   featured: z.boolean().optional(),
-  categoryId: z.string().optional(),
+
   tags: z.array(z.string()).optional(),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
@@ -30,7 +30,7 @@ export async function GET(
       where: { id },
       include: {
         author: { select: { id: true, name: true, email: true } },
-        category: true,
+
         tags: true,
       },
     });
@@ -123,7 +123,6 @@ export async function PUT(
       data: updateData,
       include: {
         author: { select: { id: true, name: true, email: true } },
-        category: true,
         tags: true,
       },
     });

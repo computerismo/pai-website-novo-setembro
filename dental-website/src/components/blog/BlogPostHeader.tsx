@@ -18,12 +18,7 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
 
       <div className="container mx-auto px-6 relative">
         <div className="max-w-4xl mx-auto">
-          {/* Category Badge */}
-          <div className="mb-6 text-center">
-            <span className="inline-block text-sm font-medium text-blue-600 bg-blue-100 px-4 py-2 rounded-full shadow-sm">
-              {post.category}
-            </span>
-          </div>
+
 
           {/* Title */}
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight text-center">
@@ -31,9 +26,7 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
           </h1>
 
           {/* Excerpt */}
-          <p className="text-xl text-gray-600 mb-8 leading-relaxed text-center max-w-3xl mx-auto">
-            {post.excerpt}
-          </p>
+
 
           {/* Meta Information */}
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">

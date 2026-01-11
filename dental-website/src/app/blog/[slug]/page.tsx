@@ -82,7 +82,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     where: { slug },
     include: {
       author: { select: { name: true } },
-      category: { select: { name: true, slug: true } },
       tags: { select: { id: true, name: true, slug: true } },
     },
   });
@@ -104,7 +103,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       publishedAt: { lte: new Date() },
       slug: { not: slug },
       OR: [
-        { categoryId: postData.categoryId },
         { tags: { some: { id: { in: postData.tags.map(t => t.id) } } } },
       ],
     },
@@ -112,7 +110,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     orderBy: { publishedAt: 'desc' },
     include: {
       author: { select: { name: true } },
-      category: { select: { name: true } },
       tags: { select: { name: true } },
     },
   });
@@ -125,7 +122,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     content: postData.content,
     date: postData.publishedAt?.toISOString() || postData.createdAt.toISOString(),
     author: postData.author.name || 'Admin',
-    category: postData.category?.name || 'Geral',
+
     tags: postData.tags.map(t => t.name),
     image: postData.featuredImage || '/images/blog/default.jpg',
     featured: postData.featured,
@@ -139,7 +136,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     content: '', // Not needed for card display
     date: p.publishedAt?.toISOString() || p.createdAt.toISOString(),
     author: p.author.name || 'Admin',
-    category: p.category?.name || 'Geral',
+
     tags: p.tags.map(t => t.name),
     image: p.featuredImage || '/images/blog/default.jpg',
     featured: p.featured,
@@ -164,17 +161,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="grid lg:grid-cols-4 gap-8 mt-8">
               {/* Main Content */}
               <div className="lg:col-span-3">
-                {post.image && post.image !== '/images/blog/default.jpg' && (
-                  <div className="relative w-full h-64 md:h-96 mb-8 rounded-2xl overflow-hidden shadow-lg">
-                    <NextImage
-                      src={post.image}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
+                {/* Split Intro Section (Variation C) */}
+                <div className="flex flex-col md:flex-row gap-8 mb-12 items-stretch">
+                  {/* Image Side - 4:3 Aspect Ratio */}
+                  {post.image && post.image !== '/images/blog/default.jpg' && (
+                    <div className="w-full md:w-1/2 rounded-2xl overflow-hidden shadow-lg border border-gray-100 relative min-h-[300px]">
+                      <NextImage
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                        priority
+                      />
+                    </div>
+                  )}
+
+                  {/* Intro/Hook Side */}
+                  <div className="w-full md:w-1/2 flex flex-col justify-center">
+                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/60 h-full flex items-center shadow-md">
+                      <p className="text-xl md:text-2xl text-slate-600 leading-relaxed font-medium italic">
+                        {/* Note: text-gray-700 (#374151) is research-backed as optimal for reading on white */}
+                        {post.excerpt || "Leia abaixo para saber mais sobre este assunto importante."}
+                      </p>
+                    </div>
                   </div>
-                )}
+                </div>
 
                 <BlogPostContent>
                   <div

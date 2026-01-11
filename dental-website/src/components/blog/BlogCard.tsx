@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { BlogPost } from '@/lib/blog/posts';
 import { Calendar, Clock, User } from 'lucide-react';
 import { format } from 'date-fns';
@@ -10,46 +11,57 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ post, featured = false }: BlogCardProps) {
+  const showImage = post.image && post.image !== '/images/blog/default.jpg';
+
   return (
     <article className="group h-full">
       <Link href={`/blog/${post.slug}`} className="block h-full">
-        <div className={`bg-white rounded-xl border-2 p-6 h-full flex flex-col transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-100/50 group-hover:-translate-y-1 ${
+        <div className={`bg-white rounded-xl border-2 h-full flex flex-col transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-100/50 group-hover:-translate-y-1 overflow-hidden ${
           featured ? 'border-blue-300 shadow-md shadow-blue-50' : 'border-gray-200 hover:border-blue-300'
         }`}>
-          {/* Category */}
-          <div className="mb-4">
-            <span className="inline-block text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full">
-              {post.category}
-            </span>
-          </div>
+          {/* Conditional Image */}
+          {showImage && (
+            <div className="relative w-full h-48 sm:h-56">
+              <Image
+                src={post.image}
+                alt={post.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+          )}
 
-          {/* Title */}
-          <h2 className={`font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight ${
-            featured ? 'text-2xl' : 'text-xl'
-          }`}>
-            {post.title}
-          </h2>
+          <div className="p-6 flex flex-col flex-grow">
 
-          {/* Excerpt */}
-          <p className="text-gray-600 mb-6 leading-relaxed line-clamp-3 flex-grow">
-            {post.excerpt}
-          </p>
 
-          {/* Meta Information */}
-          <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-            <time dateTime={post.date}>
-              {format(new Date(post.date), "d 'de' MMMM, yyyy", { locale: ptBR })}
-            </time>
-            <span>•</span>
-            <span>{post.readingTime}</span>
-            <span>•</span>
-            <span>{post.author}</span>
-          </div>
+            {/* Title */}
+            <h2 className={`font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight ${
+              featured ? 'text-2xl' : 'text-xl'
+            }`}>
+              {post.title}
+            </h2>
 
-          {/* Read More */}
-          <div className="flex items-center gap-2 text-blue-600 group-hover:text-blue-700 font-medium text-sm transition-colors">
-            <span>Ler mais</span>
-            <span className="group-hover:translate-x-1 transition-transform">→</span>
+            {/* Excerpt */}
+            <p className="text-gray-600 mb-6 leading-relaxed line-clamp-2 md:line-clamp-3 flex-grow">
+              {post.excerpt}
+            </p>
+
+            {/* Meta Information */}
+            <div className="flex items-center gap-4 text-sm text-gray-500 mb-4 flex-wrap">
+              <time dateTime={post.date}>
+                {format(new Date(post.date), "d 'de' MMMM, yyyy", { locale: ptBR })}
+              </time>
+              <span>•</span>
+              <span>{post.readingTime}</span>
+              <span>•</span>
+              <span>{post.author}</span>
+            </div>
+
+            {/* Read More */}
+            <div className="flex items-center gap-2 text-blue-600 group-hover:text-blue-700 font-medium text-sm transition-colors mt-auto">
+              <span>Ler mais</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </div>
           </div>
         </div>
       </Link>

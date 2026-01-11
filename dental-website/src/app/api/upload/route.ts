@@ -1,5 +1,5 @@
 
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 
@@ -22,6 +22,10 @@ export async function POST(request: NextRequest) {
     // Ensure uploads directory exists (should be handled by deployment, but good for local)
     // Note: In Vercel/Railway ephemeral instances, this persists only for the lifetime of the container
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    
+    // Create directory if it doesn't exist (fixing local dev issue)
+    await mkdir(uploadDir, { recursive: true });
+
     const filepath = path.join(uploadDir, uniqueFilename);
     
     // In a real production app without persistent volumes, you'd upload to S3/R2 here

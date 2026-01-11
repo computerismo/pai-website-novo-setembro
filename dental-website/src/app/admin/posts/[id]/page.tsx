@@ -12,7 +12,6 @@ export default async function EditPostPage({
   const post = await prisma.post.findUnique({
     where: { id },
     include: {
-      category: true,
       tags: true,
     },
   });

@@ -4,7 +4,7 @@ import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { BlogHero } from '@/components/blog/BlogHero';
-import { BlogCategories } from '@/components/blog/BlogCategories';
+
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -24,7 +24,6 @@ export default async function BlogPage() {
     orderBy: { publishedAt: 'desc' },
     include: {
       author: { select: { name: true } },
-      category: { select: { name: true } },
       tags: { select: { name: true } },
     },
   });
@@ -39,52 +38,38 @@ export default async function BlogPage() {
     take: 3,
     include: {
       author: { select: { name: true } },
-      category: { select: { name: true } },
       tags: { select: { name: true } },
     },
   });
 
-  const categoriesData = await prisma.category.findMany({
-    orderBy: { name: 'asc' },
-    include: {
-      _count: { select: { posts: true } },
-    },
-  });
-
   // Transform data to match the expected format
-  const allPosts = allPostsData.map((post: any) => ({
+  const allPosts = allPostsData.map((post) => ({
     slug: post.slug,
     title: post.title,
     excerpt: post.excerpt || '',
     content: '', // Not needed for card display
     date: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
     author: post.author?.name || 'Admin',
-    category: post.category?.name || 'Geral',
-    tags: post.tags?.map((t: { name: string }) => t.name) || [],
+    tags: post.tags?.map((t) => t.name) || [],
     image: post.featuredImage || '/images/blog/default.jpg',
     featured: post.featured,
     readingTime: post.readingTime || '5 min',
   }));
 
-  const featuredPosts = featuredPostsData.map((post: any) => ({
+  const featuredPosts = featuredPostsData.map((post) => ({
     slug: post.slug,
     title: post.title,
     excerpt: post.excerpt || '',
     content: '', // Not needed for card display
     date: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
     author: post.author?.name || 'Admin',
-    category: post.category?.name || 'Geral',
-    tags: post.tags?.map((t: { name: string }) => t.name) || [],
+    tags: post.tags?.map((t) => t.name) || [],
     image: post.featuredImage || '/images/blog/default.jpg',
     featured: post.featured,
     readingTime: post.readingTime || '5 min',
   }));
 
-  const categories = categoriesData.map((cat: any) => ({
-    name: cat.name,
-    slug: cat.slug,
-    count: cat._count?.posts || 0,
-  }));
+
 
   return (
     <>
@@ -125,8 +110,7 @@ export default async function BlogPage() {
           </section>
         )}
 
-        {/* Categories */}
-        <BlogCategories categories={categories} />
+
 
         {/* All Posts */}
         <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-t border-blue-100/50">

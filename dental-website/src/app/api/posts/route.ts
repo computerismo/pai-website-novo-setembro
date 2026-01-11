@@ -13,7 +13,7 @@ const postSchema = z.object({
   status: z.enum(["draft", "published", "scheduled"]).default("draft"),
   publishedAt: z.string().optional(),
   featured: z.boolean().default(false),
-  categoryId: z.string().optional(),
+
   tags: z.array(z.string()).optional(),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: "desc" },
         include: {
           author: { select: { id: true, name: true, email: true } },
-          category: true,
+
           tags: true,
         },
       }),
@@ -128,14 +128,12 @@ export async function POST(request: NextRequest) {
         seoTitle: validatedData.seoTitle,
         seoDescription: validatedData.seoDescription,
         authorId: session.user.id,
-        categoryId: validatedData.categoryId || null,
         tags: {
           connect: validTagIds as any,
         },
       },
       include: {
         author: { select: { id: true, name: true, email: true } },
-        category: true,
         tags: true,
       },
     });

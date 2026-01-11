@@ -66,16 +66,7 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Category model for organizing posts
-model Category {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  slug        String   @unique
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  posts       Post[]
-}
+
 
 // Tag model for post tagging
 model Tag {
@@ -106,8 +97,6 @@ model Post {
   // Relations
   authorId     String
   author       User     @relation(fields: [authorId], references: [id])
-  categoryId   String?
-  category     Category? @relation(fields: [categoryId], references: [id])
   tags         Tag[]
 
   createdAt    DateTime @default(now())

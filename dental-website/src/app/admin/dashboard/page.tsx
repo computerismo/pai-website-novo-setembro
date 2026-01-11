@@ -27,7 +27,7 @@ export default async function DashboardPage() {
       prisma.post.findMany({
         take: 5,
         orderBy: { createdAt: "desc" },
-        include: { author: { select: { name: true } }, category: true },
+        include: { author: { select: { name: true } } },
       }),
       prisma.lead.findMany({
         take: 5,
@@ -115,9 +115,7 @@ export default async function DashboardPage() {
                     >
                       {post.status === "published" ? "Publicado" : "Rascunho"}
                     </span>
-                    {post.category && (
-                      <span className="text-gray-400">• {post.category.name}</span>
-                    )}
+
                     <span className="text-gray-400">
                       • {format(new Date(post.createdAt), "dd MMM yyyy", {
                         locale: ptBR,

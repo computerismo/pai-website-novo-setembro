@@ -6,11 +6,6 @@ import RichTextEditor from "./RichTextEditor";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 
-interface Category {
-  id: string;
-  name: string;
-}
-
 interface Tag {
   id: string;
   name: string;
@@ -24,7 +19,6 @@ interface PostFormProps {
 export default function PostForm({ postId, initialData }: PostFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
 
   const [formData, setFormData] = useState({
@@ -35,14 +29,12 @@ export default function PostForm({ postId, initialData }: PostFormProps) {
     featuredImage: initialData?.featuredImage || "",
     status: initialData?.status || "draft",
     featured: initialData?.featured || false,
-    categoryId: initialData?.categoryId || "",
     tags: initialData?.tags?.map((t: any) => t.id) || [],
     seoTitle: initialData?.seoTitle || "",
     seoDescription: initialData?.seoDescription || "",
   });
 
   useEffect(() => {
-    fetchCategories();
     fetchTags();
   }, []);
 
@@ -59,15 +51,7 @@ export default function PostForm({ postId, initialData }: PostFormProps) {
     }
   }, [formData.title, postId]);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch("/api/categories");
-      const data = await response.json();
-      setCategories(data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+
 
   const fetchTags = async () => {
     try {
@@ -322,24 +306,7 @@ export default function PostForm({ postId, initialData }: PostFormProps) {
             />
           </div>
 
-          {/* Category */}
-          <div className="bg-white rounded-lg shadow p-6 space-y-4">
-            <h3 className="text-lg font-semibold">Categoria</h3>
-            <select
-              value={formData.categoryId}
-              onChange={(e) =>
-                setFormData({ ...formData, categoryId: e.target.value })
-              }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              <option value="">Selecione uma categoria</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
+
 
           {/* Tags */}
           <div className="bg-white rounded-lg shadow p-6 space-y-4">
