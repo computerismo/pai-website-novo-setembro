@@ -243,22 +243,83 @@ export default function PostForm({ postId, initialData }: PostFormProps) {
           {/* Featured Image */}
           <div className="bg-white rounded-lg shadow p-6 space-y-4">
             <h3 className="text-lg font-semibold">Imagem Destacada</h3>
+            
+            {/* Image Preview */}
+            {formData.featuredImage ? (
+              <div className="relative group">
+                <img
+                  src={formData.featuredImage}
+                  alt="Preview"
+                  className="w-full rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, featuredImage: "" })}
+                  className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <span className="sr-only">Remover</span>
+                  &times;
+                </button>
+              </div>
+            ) : (
+               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      const data = new FormData();
+                      data.append('file', file);
+
+                      try {
+                        // Optimistic feedback? Loading state usually better
+                        const res = await fetch('/api/upload', {
+                          method: 'POST',
+                          body: data
+                        });
+                        
+                        if (!res.ok) throw new Error('Upload failed');
+                        
+                        const json = await res.json();
+                        setFormData({ ...formData, featuredImage: json.url });
+                      } catch (err) {
+                         console.error(err);
+                         alert('Erro ao fazer upload da imagem');
+                      }
+                    }}
+                    className="hidden"
+                    id="file-upload"
+                  />
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    <div className="mx-auto h-12 w-12 text-gray-400 mb-2">
+                      <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">Clique para upload</span>
+                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF até 10MB</p>
+                  </label>
+               </div>
+            )}
+            
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="px-2 bg-white text-sm text-gray-500">ou URL externa</span>
+                </div>
+            </div>
+
             <input
               type="url"
               value={formData.featuredImage}
               onChange={(e) =>
                 setFormData({ ...formData, featuredImage: e.target.value })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="URL da imagem"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+              placeholder="https://exemplo.com/imagem.jpg"
             />
-            {formData.featuredImage && (
-              <img
-                src={formData.featuredImage}
-                alt="Preview"
-                className="w-full rounded-lg"
-              />
-            )}
           </div>
 
           {/* Category */}

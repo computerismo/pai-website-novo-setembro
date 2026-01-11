@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
+import NextImage from 'next/image';
 import { Navigation } from '@/components/shared/Navigation';
 import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
@@ -60,14 +61,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       type: 'article',
       title: post.title,
       description: post.excerpt || '',
-      images: post.featuredImage ? [
-        {
-          url: post.featuredImage,
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ] : [],
+      images: post.featuredImage ? [post.featuredImage] : [],
       publishedTime: post.publishedAt?.toISOString(),
       authors: [post.author.name || 'Admin'],
       tags: post.tags.map(t => t.name),
@@ -170,6 +164,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="grid lg:grid-cols-4 gap-8 mt-8">
               {/* Main Content */}
               <div className="lg:col-span-3">
+                {post.image && post.image !== '/images/blog/default.jpg' && (
+                  <div className="relative w-full h-64 md:h-96 mb-8 rounded-2xl overflow-hidden shadow-lg">
+                    <NextImage
+                      src={post.image}
+                      alt={post.title}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                )}
+
                 <BlogPostContent>
                   <div
                     className="prose prose-lg max-w-none"
