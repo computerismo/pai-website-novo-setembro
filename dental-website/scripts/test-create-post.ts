@@ -25,8 +25,6 @@ async function main() {
         content: '<p>This is a test post content.</p>',
         status: 'draft',
         authorId: author.id,
-        // Intentionally leaving categoryId null to test that fix
-        categoryId: null,
       },
     });
 
