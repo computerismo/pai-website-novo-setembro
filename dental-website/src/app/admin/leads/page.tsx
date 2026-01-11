@@ -7,9 +7,10 @@ export const dynamic = 'force-dynamic';
 export default async function LeadsPage({
   searchParams,
 }: {
-  searchParams: { q?: string; status?: string };
+  searchParams: Promise<{ q?: string; status?: string }>;
 }) {
-  const query = searchParams?.q || "";
+  const { q, status } = await searchParams;
+  const query = q || "";
   
   const where: any = {};
   
