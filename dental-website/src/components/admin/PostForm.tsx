@@ -312,7 +312,7 @@ export default function PostForm({ postId, initialData }: PostFormProps) {
             </div>
 
             <input
-              type="url"
+              type="text"
               value={formData.featuredImage}
               onChange={(e) =>
                 setFormData({ ...formData, featuredImage: e.target.value })
