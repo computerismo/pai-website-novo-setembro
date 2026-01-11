@@ -63,23 +63,7 @@ export function BlogPostSidebar({ post }: BlogPostSidebarProps) {
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-          Estatísticas do Blog
-        </h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">50+</div>
-            <div className="text-xs text-gray-500">Artigos</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">10k+</div>
-            <div className="text-xs text-gray-500">Leitores</div>
-          </div>
-        </div>
-      </div>
+
     </aside>
   );
 }
