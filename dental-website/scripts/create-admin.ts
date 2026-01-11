@@ -5,27 +5,21 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = 'admin@dental.com';
-  const password = 'admin'; // Simple password for development
-  const name = 'Admin User';
+  const email = 'sergio@oespdental.com.br';
+  const password = 'jpgkl1'; 
+  const name = 'Dr. Sérgio';
 
   try {
-    // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      console.log('Admin user already exists.');
-      return;
-    }
-
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
+    const user = await prisma.user.upsert({
+      where: { email },
+      update: {
+        password: hashedPassword,
+        name,
+        role: 'admin',
+      },
+      create: {
         email,
         name,
         password: hashedPassword,
@@ -35,12 +29,12 @@ async function main() {
     });
 
     console.log(`
-✅ Admin user created successfully:
+✅ Admin user upserted successfully:
 -----------------------------------
 Email:    ${email}
-Password: ${password}
 Role:     admin
 -----------------------------------
+    `);
 You can now log in at /admin
     `);
 
