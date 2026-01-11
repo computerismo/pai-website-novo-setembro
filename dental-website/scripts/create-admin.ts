@@ -28,13 +28,12 @@ async function main() {
       },
     });
 
-    console.log(`
+console.log(`
 ✅ Admin user upserted successfully:
 -----------------------------------
 Email:    ${email}
 Role:     admin
 -----------------------------------
-    `);
 You can now log in at /admin
     `);
 
