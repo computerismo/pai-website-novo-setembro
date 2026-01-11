@@ -24,6 +24,8 @@ model User {
   posts         Post[]
   accounts      Account[]
   sessions      Session[]
+  leadNotes     LeadNote[]
+  leadHistory   LeadHistory[]
 }
 
 // NextAuth Account model
@@ -164,4 +166,40 @@ model Lead {
   @@index([email])
   @@index([status])
   @@index([createdAt])
+  history       LeadHistory[]
+  leadNotes     LeadNote[]
+}
+
+// Lead Note model for individualized, chronological notes
+model LeadNote {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  content     String   @db.Text
+  createdBy   String?  // Legacy text field
+  userId      String?  // Relation to User
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([leadId])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+// Lead History model for timeline tracking
+model LeadHistory {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  action      String   // STATUS_CHANGE, NOTE_ADDED, CALL_LOGGED, EMAIL_SENT, etc.
+  description String   @db.Text
+  createdBy   String?  // Legacy text field
+  userId      String?  // Relation to User
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([leadId])
+  @@index([createdAt])
+  @@index([userId])
 }

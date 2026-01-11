@@ -19,18 +19,31 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-const navigation = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { name: "Posts", href: "/admin/posts", icon: FileText },
-  { name: "Media", href: "/admin/media", icon: Image },
-  { name: "Leads", href: "/admin/leads", icon: Users },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
-];
+// Navigation items are now defined inline for better grouping
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const isActive = (path: string) => pathname === path || pathname?.startsWith(path + "/");
+
+  const NavItem = ({ href, icon: Icon, label }: { href: string; icon: any; label: string }) => {
+    const active = isActive(href);
+    return (
+      <Link
+        href={href}
+        className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+          active
+            ? "bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-100"
+            : "text-gray-600 hover:bg-neutral-50 hover:text-gray-900"
+        }`}
+      >
+        <Icon className={`w-5 h-5 mr-3 ${active ? "text-blue-600" : "text-gray-400 group-hover:text-gray-500"}`} />
+        {label}
+      </Link>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-neutral-50/50">
@@ -64,23 +77,26 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-100"
-                      : "text-gray-600 hover:bg-neutral-50 hover:text-gray-900"
-                  }`}
-                >
-                  <item.icon className={`w-5 h-5 mr-3 ${isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-500"}`} />
-                  {item.name}
-                </Link>
-              );
-            })}
+            <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />
+            
+            <div className="py-2">
+              <div className="border-t border-gray-100 mx-2"></div>
+            </div>
+
+            <NavItem href="/admin/posts" icon={FileText} label="Posts" />
+            <NavItem href="/admin/media" icon={Image} label="Media" />
+
+            <div className="py-2">
+              <div className="border-t border-gray-100 mx-2"></div>
+            </div>
+
+            <NavItem href="/admin/leads" icon={Users} label="Gerenciador de Leads" />
+
+            <div className="py-2">
+              <div className="border-t border-gray-100 mx-2"></div>
+            </div>
+
+            <NavItem href="/admin/settings" icon={Settings} label="Configurações" />
           </nav>
 
           {/* User info & logout */}

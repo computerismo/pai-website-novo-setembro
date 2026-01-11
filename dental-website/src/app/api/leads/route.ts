@@ -75,8 +75,11 @@ export async function POST(request: NextRequest) {
           treatment: validatedData.treatment,
           message: validatedData.message,
           // Tracking fields
+          // If utm_source is present, use it. Otherwise fall back to internal source prop.
           utmSource: validatedData.utm_source || validatedData.source,
-          utmMedium: validatedData.utm_medium,
+          // If utm_medium is present, use it. 
+          // If NOT present, and we didn't have a specific utm_source (meaning it's a direct page visit), label as 'direct'.
+          utmMedium: validatedData.utm_medium || (validatedData.utm_source ? null : 'direct'),
           utmCampaign: validatedData.utm_campaign || validatedData.campaignId,
           utmTerm: validatedData.utm_term,
           utmContent: validatedData.utm_content,

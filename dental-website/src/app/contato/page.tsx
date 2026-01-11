@@ -1,74 +1,20 @@
-'use client';
+"use client";
 
-import { Navigation } from '@/components/shared/Navigation';
-import { Footer } from '@/components/shared/Footer';
-import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
-import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
-import { Button } from '@/components/ui/Button';
-import { useState } from 'react';
+import { Navigation } from "@/components/shared/Navigation";
+import { Footer } from "@/components/shared/Footer";
+import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
+import { LeadForm } from '@/components/landing/LeadForm';
 import {
   MapPin,
   Phone,
-
   MessageCircle,
-  Car,
-  Bus,
   AlertTriangle,
-  Send,
   CheckCircle,
-
   Navigation as NavigationIcon,
-  PhoneCall
-} from 'lucide-react';
-import { siteConfig } from '@/lib/constants/site';
+} from "lucide-react";
+import { siteConfig } from "@/lib/constants/site";
 
 export default function ContatoPage() {
-  const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    telefone: '',
-    assunto: '',
-    mensagem: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({
-        nome: '',
-        email: '',
-        telefone: '',
-        assunto: '',
-        mensagem: ''
-      });
-    }, 2000);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const subjectOptions = [
-    { value: 'consulta', label: 'Agendamento de Consulta' },
-    { value: 'bruxismo', label: 'Tratamento de Bruxismo' },
-    { value: 'placa', label: 'Placa Miorrelaxante' },
-    { value: 'botox', label: 'Botox para Bruxismo' },
-    { value: 'emergencia', label: 'Emergência Odontológica' },
-    { value: 'informacoes', label: 'Informações Gerais' },
-    { value: 'convenio', label: 'Convênios e Pagamentos' },
-    { value: 'outro', label: 'Outro Assunto' }
-  ];
 
   return (
     <>
@@ -88,11 +34,15 @@ export default function ContatoPage() {
           <div className="container mx-auto px-4 relative">
             <div className="text-center max-w-4xl mx-auto">
               <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                Fale <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Conosco</span>
+                Fale{" "}
+                <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
+                  Conosco
+                </span>
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
-                Estamos prontos para atendê-lo com dedicação e carinho. Entre em contato para agendar
-                sua consulta gratuita ou tirar suas dúvidas sobre nossos tratamentos especializados.
+                Estamos prontos para atendê-lo com dedicação e carinho. Entre em
+                contato para agendar sua consulta gratuita ou tirar suas dúvidas
+                sobre nossos tratamentos especializados.
               </p>
             </div>
           </div>
@@ -100,8 +50,6 @@ export default function ContatoPage() {
           {/* Bottom Decorative Line */}
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
         </section>
-
-
 
         {/* Contact Form Section */}
         <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-b border-blue-100/50">
@@ -120,112 +68,7 @@ export default function ContatoPage() {
 
             <div className="max-w-2xl mx-auto">
               <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-8 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300">
-                {isSubmitted ? (
-                  <div className="text-center py-12">
-                    <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <CheckCircle className="w-10 h-10 text-green-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                      Mensagem Enviada!
-                    </h3>
-                    <p className="text-gray-600 mb-6">
-                      Obrigado pelo contato! Responderemos em breve.
-                    </p>
-                    <Button
-                      onClick={() => setIsSubmitted(false)}
-                      variant="outline"
-                    >
-                      Enviar Nova Mensagem
-                    </Button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <Input
-                        label="Nome Completo"
-                        name="nome"
-                        value={formData.nome}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Seu nome completo"
-                        className="bg-white"
-                      />
-                      <Input
-                        label="E-mail"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="seu@email.com"
-                        className="bg-white"
-                      />
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <Input
-                        label="Telefone"
-                        name="telefone"
-                        type="tel"
-                        value={formData.telefone}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="(33) 99999-9999"
-                        className="bg-white"
-                      />
-                      <Select
-                        label="Assunto"
-                        name="assunto"
-                        value={formData.assunto}
-                        onChange={handleInputChange}
-                        options={subjectOptions}
-                        required
-                        className="bg-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Mensagem
-                      </label>
-                      <textarea
-                        name="mensagem"
-                        value={formData.mensagem}
-                        onChange={handleInputChange}
-                        required
-                        rows={5}
-                        placeholder="Descreva como podemos ajudá-lo..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <p className="text-sm text-blue-700">
-                        <strong>Política de Privacidade:</strong> Seus dados são protegidos e utilizados apenas
-                        para fins de contato e agendamento. Não compartilhamos informações com terceiros.
-                      </p>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full"
-                      size="lg"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Enviando...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-5 h-5 mr-2" />
-                          Enviar Mensagem
-                        </>
-                      )}
-                    </Button>
-                  </form>
-                )}
+                <LeadForm source="contact_page" />
               </div>
             </div>
           </div>
@@ -245,23 +88,24 @@ export default function ContatoPage() {
                 Como Chegar
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Estamos localizados no centro de Governador Valadares, com fácil acesso
+                Estamos localizados no centro de Governador Valadares, com fácil
+                acesso
               </p>
             </div>
 
             <div className="max-w-6xl mx-auto">
               <div className="bg-neutral-50 rounded-xl border border-neutral-200 shadow-xl overflow-hidden h-[500px] relative">
-                <iframe 
+                <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1891.1!2d-41.9510286!3d-18.8435404!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDUwJzM2LjciUyA0McKwNTcnMDMuNyJX!5e0!3m2!1spt-BR!2sbr!4v1650000000000!5m2!1spt-BR!2sbr"
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 0 }} 
-                  allowFullScreen 
-                  loading="lazy" 
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   className="absolute inset-0 w-full h-full"
                 ></iframe>
-                
+
                 <a
                   href="https://www.google.com/maps/search/rua+monte+azul+232+governador+valadares+cep+esperan%C3%A7a/@-18.8435404,-41.9510286,8978m/data=!3m1!1e3?entry=ttu&g_ep=EgoyMDI2MDEwNC4wIKXMDSoKLDEwMDc5MjA2OUgBUAM%3D"
                   target="_blank"
@@ -290,7 +134,8 @@ export default function ContatoPage() {
                 Atendimento via WhatsApp
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Fale conosco diretamente pelo WhatsApp para um atendimento mais rápido e personalizado
+                Fale conosco diretamente pelo WhatsApp para um atendimento mais
+                rápido e personalizado
               </p>
             </div>
 
@@ -300,7 +145,9 @@ export default function ContatoPage() {
                   <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <MessageCircle className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">Agendamento</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    Agendamento
+                  </h3>
                   <p className="text-gray-600 mb-4">
                     Agende sua consulta rapidamente via WhatsApp
                   </p>
@@ -321,7 +168,9 @@ export default function ContatoPage() {
                   <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <AlertTriangle className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">Emergência</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    Emergência
+                  </h3>
                   <p className="text-gray-600 mb-4">
                     Para situações de emergência odontológica
                   </p>
@@ -342,7 +191,9 @@ export default function ContatoPage() {
                   <div className="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <Phone className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">Informações</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    Informações
+                  </h3>
                   <p className="text-gray-600 mb-4">
                     Tire suas dúvidas sobre tratamentos
                   </p>
@@ -358,8 +209,6 @@ export default function ContatoPage() {
                 </div>
               </div>
             </div>
-
-
           </div>
 
           {/* Bottom Decorative Line */}
@@ -377,7 +226,8 @@ export default function ContatoPage() {
                 Atendimento de Emergência
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Para situações de urgência odontológica, oferecemos atendimento especial
+                Para situações de urgência odontológica, oferecemos atendimento
+                especial
               </p>
             </div>
 
@@ -388,8 +238,9 @@ export default function ContatoPage() {
                     <AlertTriangle className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900">Linha de Emergência</h3>
-
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      Linha de Emergência
+                    </h3>
                   </div>
                 </div>
 
@@ -403,57 +254,74 @@ export default function ContatoPage() {
                     <MessageCircle className="w-5 h-5 text-green-600 mr-3" />
                     <div>
                       <p className="font-bold text-gray-900">(33) 99810-7802</p>
-                      <p className="text-sm text-gray-600">WhatsApp de Emergência</p>
+                      <p className="text-sm text-gray-600">
+                        WhatsApp de Emergência
+                      </p>
                     </div>
                   </a>
                 </div>
 
                 <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <p className="text-sm text-yellow-800">
-                    <strong>Atenção:</strong> Em casos de emergência fora do horário comercial,
-                    será cobrada taxa adicional conforme tabela de plantão.
+                    <strong>Atenção:</strong> Em casos de emergência fora do
+                    horário comercial, será cobrada taxa adicional conforme
+                    tabela de plantão.
                   </p>
                 </div>
               </div>
 
               <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-xl">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Situações de Emergência</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                  Situações de Emergência
+                </h3>
                 <ul className="space-y-4">
                   <li className="flex items-start">
                     <CheckCircle className="w-5 h-5 text-red-500 mr-3 mt-1 flex-shrink-0" />
                     <div>
-                      <strong className="text-gray-900">Dor intensa de dente</strong>
-                      <p className="text-gray-600 text-sm">Dor que não cede com analgésicos comuns</p>
+                      <strong className="text-gray-900">
+                        Dor intensa de dente
+                      </strong>
+                      <p className="text-gray-600 text-sm">
+                        Dor que não cede com analgésicos comuns
+                      </p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="w-5 h-5 text-red-500 mr-3 mt-1 flex-shrink-0" />
                     <div>
                       <strong className="text-gray-900">Trauma dental</strong>
-                      <p className="text-gray-600 text-sm">Dente quebrado, avulsionado ou com mobilidade</p>
+                      <p className="text-gray-600 text-sm">
+                        Dente quebrado, avulsionado ou com mobilidade
+                      </p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="w-5 h-5 text-red-500 mr-3 mt-1 flex-shrink-0" />
                     <div>
-                      <strong className="text-gray-900">Sangramento intenso</strong>
-                      <p className="text-gray-600 text-sm">Sangramento que não para após 30 minutos</p>
+                      <strong className="text-gray-900">
+                        Sangramento intenso
+                      </strong>
+                      <p className="text-gray-600 text-sm">
+                        Sangramento que não para após 30 minutos
+                      </p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="w-5 h-5 text-red-500 mr-3 mt-1 flex-shrink-0" />
                     <div>
                       <strong className="text-gray-900">Infecção severa</strong>
-                      <p className="text-gray-600 text-sm">Inchaço facial, febre ou dificuldade para engolir</p>
+                      <p className="text-gray-600 text-sm">
+                        Inchaço facial, febre ou dificuldade para engolir
+                      </p>
                     </div>
                   </li>
-
                 </ul>
 
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    <strong>Primeiro Socorro:</strong> Enquanto aguarda o atendimento, aplique gelo
-                    externamente e evite alimentos quentes. Mantenha a calma e entre em contato conosco.
+                    <strong>Primeiro Socorro:</strong> Enquanto aguarda o
+                    atendimento, aplique gelo externamente e evite alimentos
+                    quentes. Mantenha a calma e entre em contato conosco.
                   </p>
                 </div>
               </div>
@@ -479,8 +347,9 @@ export default function ContatoPage() {
               </h2>
 
               <p className="text-xl mb-10 text-blue-100 max-w-2xl mx-auto leading-relaxed">
-                Entre em contato hoje mesmo e dê o primeiro passo para recuperar sua qualidade de vida.
-                Nossa equipe está pronta para atendê-lo com excelência e carinho.
+                Entre em contato hoje mesmo e dê o primeiro passo para recuperar
+                sua qualidade de vida. Nossa equipe está pronta para atendê-lo
+                com excelência e carinho.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto">
@@ -502,8 +371,6 @@ export default function ContatoPage() {
                   Ligar Agora
                 </a>
               </div>
-
-
             </div>
           </div>
         </section>
