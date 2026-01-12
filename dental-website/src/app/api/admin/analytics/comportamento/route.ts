@@ -36,21 +36,27 @@ export async function GET(request: Request) {
   const startAt = endAt - (periodMap[period] || periodMap['7d']);
 
   try {
-    // Fetch behavior-related data
-    const [topPages, entryPages, exitPages, events, pageviews] = await Promise.all([
+    // Fetch behavior-related data including expanded metrics
+    const [topPages, topPagesExpanded, entryPages, exitPages, events, eventsSeries, pageviews, sessionsWeekly] = await Promise.all([
       umamiClient.getMetrics(startAt, endAt, 'path', 20),
+      umamiClient.getExpandedMetrics(startAt, endAt, 'path', 10),
       umamiClient.getMetrics(startAt, endAt, 'entry', 15),
       umamiClient.getMetrics(startAt, endAt, 'exit', 15),
       umamiClient.getMetrics(startAt, endAt, 'event', 20),
+      umamiClient.getEventsSeries(startAt, endAt, period === '24h' ? 'hour' : 'day'),
       umamiClient.getPageviews(startAt, endAt, period === '24h' ? 'hour' : 'day'),
+      umamiClient.getSessionsWeekly(startAt, endAt),
     ]);
 
     return NextResponse.json({
       topPages,
+      topPagesExpanded,
       entryPages,
       exitPages,
       events,
+      eventsSeries,
       pageviews,
+      sessionsWeekly,
       period,
       startAt,
       endAt,

@@ -23,16 +23,46 @@ interface UmamiMetric {
   y: number; // visitor count
 }
 
+// Expanded metrics with detailed stats per item
+interface UmamiExpandedMetric {
+  name: string;
+  pageviews: number;
+  visitors: number;
+  visits: number;
+  bounces: number;
+  totaltime: number;
+}
+
+// Realtime event detail
+interface UmamiRealtimeEvent {
+  __type: string;
+  sessionId: string;
+  eventName: string;
+  createdAt: string;
+  browser: string;
+  os: string;
+  device: string;
+  country: string;
+  urlPath: string;
+  referrerDomain: string;
+}
+
 interface UmamiRealtime {
   countries: Record<string, number>;
   urls: Record<string, number>;
   referrers: Record<string, number>;
+  events: UmamiRealtimeEvent[];
+  series: {
+    views: UmamiPageview[];
+    visitors: UmamiPageview[];
+  };
   totals: {
     views: number;
     visitors: number;
     events: number;
     countries: number;
   };
+  timestamp: number;
 }
 
 class UmamiClient {
@@ -171,6 +201,91 @@ class UmamiClient {
    */
   async getActiveVisitors(): Promise<{ visitors: number }> {
     return this.request(`/api/websites/${this.websiteId}/active`);
+  }
+
+  /**
+   * Get expanded metrics with detailed stats (pageviews, bounces, totaltime per item)
+   */
+  async getExpandedMetrics(
+    startAt: number, 
+    endAt: number, 
+    type: 'path' | 'entry' | 'exit' | 'referrer' | 'channel' | 'browser' | 'os' | 'device' | 'country' | 'city' | 'region',
+    limit: number = 10
+  ): Promise<UmamiExpandedMetric[]> {
+    return this.request(`/api/websites/${this.websiteId}/metrics/expanded`, {
+      startAt,
+      endAt,
+      type,
+      limit,
+    });
+  }
+
+  /**
+   * Get pageviews with comparison to previous period
+   */
+  async getPageviewsWithComparison(
+    startAt: number, 
+    endAt: number, 
+    unit: 'hour' | 'day' | 'month' | 'year' = 'day',
+    compare: 'prev' | 'yoy' = 'prev'
+  ): Promise<{
+    pageviews: UmamiPageview[];
+    sessions: UmamiPageview[];
+  }> {
+    return this.request(`/api/websites/${this.websiteId}/pageviews`, {
+      startAt,
+      endAt,
+      unit,
+      compare,
+      timezone: 'America/Sao_Paulo',
+    });
+  }
+
+  /**
+   * Get stats with comparison to previous period
+   */
+  async getStatsWithComparison(startAt: number, endAt: number): Promise<UmamiStats & { comparison: UmamiStats }> {
+    // Calculate previous period
+    const duration = endAt - startAt;
+    const prevEndAt = startAt;
+    const prevStartAt = startAt - duration;
+    
+    const [current, previous] = await Promise.all([
+      this.getStats(startAt, endAt),
+      this.getStats(prevStartAt, prevEndAt),
+    ]);
+    
+    return {
+      ...current,
+      comparison: previous,
+    };
+  }
+
+  /**
+   * Get sessions by day of week and hour (for heatmap)
+   */
+  async getSessionsWeekly(startAt: number, endAt: number): Promise<number[][]> {
+    return this.request(`/api/websites/${this.websiteId}/sessions/weekly`, {
+      startAt,
+      endAt,
+      timezone: 'America/Sao_Paulo',
+    });
+  }
+
+  /**
+   * Get events over time
+   */
+  async getEventsSeries(
+    startAt: number, 
+    endAt: number, 
+    unit: 'hour' | 'day' = 'day'
+  ): Promise<{ x: string; t: string; y: number }[]> {
+    return this.request(`/api/websites/${this.websiteId}/events/series`, {
+      startAt,
+      endAt,
+      unit,
+      timezone: 'America/Sao_Paulo',
+    });
   }
 
   /**

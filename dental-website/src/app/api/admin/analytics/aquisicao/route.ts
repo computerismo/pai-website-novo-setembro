@@ -33,16 +33,18 @@ export async function GET(request: Request) {
   const startAt = endAt - (periodMap[period] || periodMap['7d']);
 
   try {
-    // Fetch acquisition-related data
-    const [referrers, channels, queries] = await Promise.all([
+    // Fetch acquisition-related data with expanded metrics
+    const [referrers, channels, channelsExpanded, queries] = await Promise.all([
       umamiClient.getMetrics(startAt, endAt, 'referrer', 20),
       umamiClient.getMetrics(startAt, endAt, 'channel', 10),
+      umamiClient.getExpandedMetrics(startAt, endAt, 'channel', 10),
       umamiClient.getMetrics(startAt, endAt, 'query', 20),
     ]);
 
     return NextResponse.json({
       referrers,
       channels,
+      channelsExpanded,
       queries,
       period,
       startAt,

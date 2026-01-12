@@ -49,7 +49,9 @@ interface MetricData {
 }
 
 interface AnalyticsData {
-  stats: UmamiStats;
+  stats: UmamiStats & {
+    comparison: UmamiStats;
+  };
   pageviews: {
     pageviews: PageviewData[];
     sessions: PageviewData[];
@@ -97,16 +99,18 @@ function formatChartDate(dateString: string, period: string): string {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 }
 
-// Stats Card Component
+// Stats Card Component with Trend
 function StatsCard({ 
   title, 
   value, 
+  previousValue,
   icon: Icon, 
   color = 'blue',
   suffix = ''
 }: { 
   title: string; 
   value: string | number; 
+  previousValue?: number;
   icon: React.ElementType;
   color?: 'blue' | 'green' | 'purple' | 'orange';
   suffix?: string;
@@ -118,6 +122,14 @@ function StatsCard({
     orange: 'from-orange-500 to-orange-600',
   };
 
+  // Calculate trend
+  let trend = 0;
+  let trendDirection: 'up' | 'down' | 'neutral' = 'neutral';
+  if (previousValue && previousValue > 0 && typeof value === 'number') {
+    trend = ((value - previousValue) / previousValue) * 100;
+    trendDirection = trend > 0 ? 'up' : trend < 0 ? 'down' : 'neutral';
+  }
+
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center justify-between">
@@ -127,6 +139,19 @@ function StatsCard({
             {typeof value === 'number' ? value.toLocaleString('pt-BR') : value}
             {suffix && <span className="text-lg font-normal text-slate-400 ml-1">{suffix}</span>}
           </p>
+          {previousValue !== undefined && trendDirection !== 'neutral' && (
+            <div className={`flex items-center gap-1 mt-2 text-sm font-medium ${
+              trendDirection === 'up' ? 'text-emerald-600' : 'text-red-500'
+            }`}>
+              {trendDirection === 'up' ? (
+                <TrendingUp className="w-4 h-4" />
+              ) : (
+                <TrendingUp className="w-4 h-4 rotate-180" />
+              )}
+              <span>{Math.abs(trend).toFixed(1)}%</span>
+              <span className="text-slate-400 font-normal">vs anterior</span>
+            </div>
+          )}
         </div>
         <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center`}>
           <Icon className="w-6 h-6 text-white" />
@@ -135,6 +160,7 @@ function StatsCard({
     </div>
   );
 }
+
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -176,6 +202,7 @@ export default function AnalyticsPage() {
 
   // Calculate bounce rate
   const bounceRate = data?.stats ? Math.round((data.stats.bounces / data.stats.visits) * 100) : 0;
+  const prevBounceRate = data?.stats?.comparison ? Math.round((data.stats.comparison.bounces / data.stats.comparison.visits) * 100) : undefined;
 
   // Calculate avg time
   const avgTime = data?.stats ? data.stats.totaltime / data.stats.visits : 0;
@@ -283,18 +310,21 @@ export default function AnalyticsPage() {
         <StatsCard
           title="Visitantes Únicos"
           value={data?.stats?.visitors || 0}
+          previousValue={data?.stats?.comparison?.visitors}
           icon={Users}
           color="blue"
         />
         <StatsCard
           title="Visualizações"
           value={data?.stats?.pageviews || 0}
+          previousValue={data?.stats?.comparison?.pageviews}
           icon={Eye}
           color="green"
         />
         <StatsCard
           title="Taxa de Rejeição"
           value={bounceRate}
+          previousValue={prevBounceRate}
           suffix="%"
           icon={TrendingUp}
           color="orange"

@@ -36,13 +36,15 @@ export async function GET(request: Request) {
   const startAt = endAt - (periodMap[period] || periodMap["7d"]);
 
   try {
-    // Fetch audience-related data
-    const [devices, browsers, os, countries, cities, languages, screens] =
+    // Fetch audience-related data with expanded metrics
+    const [devices, devicesExpanded, browsers, os, countries, regions, cities, languages, screens] =
       await Promise.all([
         umamiClient.getMetrics(startAt, endAt, "device", 10),
+        umamiClient.getExpandedMetrics(startAt, endAt, "device", 5),
         umamiClient.getMetrics(startAt, endAt, "browser", 10),
         umamiClient.getMetrics(startAt, endAt, "os", 10),
         umamiClient.getMetrics(startAt, endAt, "country", 20),
+        umamiClient.getExpandedMetrics(startAt, endAt, "region", 15),
         umamiClient.getMetrics(startAt, endAt, "city", 20),
         umamiClient.getMetrics(startAt, endAt, "language", 10),
         umamiClient.getMetrics(startAt, endAt, "screen", 10),
@@ -50,9 +52,11 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       devices,
+      devicesExpanded,
       browsers,
       os,
       countries,
+      regions,
       cities,
       languages,
       screens,
