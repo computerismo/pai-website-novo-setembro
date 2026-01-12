@@ -30,9 +30,17 @@ type Lead = {
   utmSource: string | null;
   utmMedium: string | null;
   utmCampaign: string | null;
+  assignedTo?: { id: string; name: string | null; email: string } | null;
 };
 
-export function LeadCard({ lead, onSelect }: { lead: Lead; onSelect?: () => void }) {
+interface LeadCardProps {
+  lead: Lead;
+  onSelect?: () => void;
+  isSelected?: boolean;
+  onToggleSelect?: () => void;
+}
+
+export function LeadCard({ lead, onSelect, isSelected = false, onToggleSelect }: LeadCardProps) {
   const [isPending, startTransition] = useTransition();
   const [notes, setNotes] = useState(lead.notes || '');
   const [isEditingNotes, setIsEditingNotes] = useState(false);
@@ -65,27 +73,43 @@ export function LeadCard({ lead, onSelect }: { lead: Lead; onSelect?: () => void
   };
 
   return (
-    <div className="p-6 bg-white border-b hover:bg-gray-50 transition-colors group relative">
+    <div className={`p-6 bg-white border-b hover:bg-gray-50 transition-colors group relative ${isSelected ? 'bg-blue-50 ring-2 ring-blue-200 ring-inset' : ''}`}>
       <div className="flex flex-col gap-4">
-        {/* Top Row: Name and Status */}
+        {/* Top Row: Checkbox, Name and Status */}
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-               <h3 className="text-lg font-semibold text-gray-900">{lead.name}</h3>
-               {onSelect && (
-                 <button 
-                  onClick={onSelect}
-                  className="text-xs text-blue-600 hover:text-blue-800 underline font-medium opacity-0 group-hover:opacity-100 transition-opacity"
-                 >
-                   Ver Detalhes
-                 </button>
-               )}
+          <div className="flex items-start gap-3">
+            {onToggleSelect && (
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={onToggleSelect}
+                onClick={(e) => e.stopPropagation()}
+                className="mt-1.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+              />
+            )}
+            <div>
+              <div className="flex items-center gap-3">
+                 <h3 className="text-lg font-semibold text-gray-900">{lead.name}</h3>
+                 {lead.assignedTo && (
+                   <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
+                     {lead.assignedTo.name || lead.assignedTo.email}
+                   </span>
+                 )}
+                 {onSelect && (
+                   <button 
+                    onClick={onSelect}
+                    className="text-xs text-blue-600 hover:text-blue-800 underline font-medium opacity-0 group-hover:opacity-100 transition-opacity"
+                   >
+                     Ver Detalhes
+                   </button>
+                 )}
+              </div>
+              <p className="text-sm text-gray-500">
+                {format(new Date(lead.createdAt), "dd 'de' MMM 'às' HH:mm", {
+                  locale: ptBR,
+                })}
+              </p>
             </div>
-            <p className="text-sm text-gray-500">
-              {format(new Date(lead.createdAt), "dd 'de' MMM 'às' HH:mm", {
-                locale: ptBR,
-              })}
-            </p>
           </div>
           
           <div className="flex items-center gap-2">

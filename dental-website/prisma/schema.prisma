@@ -26,6 +26,7 @@ model User {
   sessions      Session[]
   leadNotes     LeadNote[]
   leadHistory   LeadHistory[]
+  assignedLeads Lead[]    @relation("AssignedLeads")
 }
 
 // NextAuth Account model
@@ -149,12 +150,18 @@ model Lead {
   status        String   @default("new") // new, contacted, qualified, converted
   notes         String?  @db.Text
 
+  // Assignment
+  assignedToId  String?
+  assignedTo    User?    @relation("AssignedLeads", fields: [assignedToId], references: [id])
+  assignedAt    DateTime?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@index([email])
   @@index([status])
   @@index([createdAt])
+  @@index([assignedToId])
   history       LeadHistory[]
   leadNotes     LeadNote[]
 }

@@ -1,10 +1,11 @@
 import { useState, useTransition, useEffect } from 'react';
-import { X, MessageCircle, Calendar, History, Phone, Mail, Loader2, Save, Send, StickyNote, User, Trash2 } from 'lucide-react';
+import { X, MessageCircle, Calendar, History, Phone, Mail, Loader2, Save, Send, StickyNote, User, Trash2, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { ptBR } from 'date-fns/locale';
 import { updateLeadStatus, addLeadNote, deleteLead } from '@/app/actions/leads';
+import { assignLead, getUsers } from '@/app/actions/assign-lead';
 
 interface LeadDetailsSidebarProps {
   lead: any; // Ideally typed
@@ -17,9 +18,17 @@ export function LeadDetailsSidebar({ lead, isOpen, onClose }: LeadDetailsSidebar
   const [newNote, setNewNote] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [users, setUsers] = useState<{ id: string; name: string | null; email: string }[]>([]);
+  const [isAssigning, setIsAssigning] = useState(false);
 
-  // No longer need to sync legacy 'notes' state, as we are adding new ones.
-  // Legacy notes will be displayed as a static item.
+  // Fetch users for assignment dropdown
+  useEffect(() => {
+    getUsers().then((res) => {
+      if (res.success && res.users) {
+        setUsers(res.users);
+      }
+    });
+  }, []);
   
   // Reset confirmation state when lead changes
   useEffect(() => {
@@ -27,6 +36,14 @@ export function LeadDetailsSidebar({ lead, isOpen, onClose }: LeadDetailsSidebar
       setConfirmDelete(false);
     }
   }, [lead]);
+
+  const handleAssign = (userId: string) => {
+    setIsAssigning(true);
+    startTransition(async () => {
+      await assignLead(lead.id, userId || null);
+      setIsAssigning(false);
+    });
+  };
 
   if (!isOpen || !lead) return null;
 
@@ -134,6 +151,35 @@ export function LeadDetailsSidebar({ lead, isOpen, onClose }: LeadDetailsSidebar
               <Calendar className="w-6 h-6 text-blue-600 mb-2 group-hover:scale-110 transition-transform" />
               <span className="font-semibold text-blue-900 text-sm">Agendar</span>
            </a>
+        </div>
+
+        {/* Lead Assignment */}
+        <div className="space-y-3">
+          <h3 className="font-bold text-gray-900 border-b pb-2 flex items-center gap-2">
+            <UserCheck className="w-4 h-4" />
+            Atribuição
+          </h3>
+          <div className="flex items-center gap-3">
+            <select
+              value={lead.assignedToId || ''}
+              onChange={(e) => handleAssign(e.target.value)}
+              disabled={isAssigning}
+              className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              <option value="">Não atribuído</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name || user.email}
+                </option>
+              ))}
+            </select>
+            {isAssigning && <Loader2 className="w-4 h-4 animate-spin text-blue-600" />}
+          </div>
+          {lead.assignedTo && (
+            <p className="text-xs text-gray-500">
+              Atribuído em {lead.assignedAt ? formatInTimeZone(lead.assignedAt, "dd/MM/yyyy 'às' HH:mm") : ''}
+            </p>
+          )}
         </div>
 
         {/* Contact Info */}

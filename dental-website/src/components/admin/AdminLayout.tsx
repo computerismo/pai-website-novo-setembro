@@ -85,19 +85,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
 
             <NavItem href="/admin/posts" icon={FileText} label="Posts" />
-            <NavItem href="/admin/media" icon={Image} label="Media" />
 
             <div className="py-2">
               <div className="border-t border-gray-100 mx-2"></div>
             </div>
 
             <NavItem href="/admin/leads" icon={Users} label="Gerenciador de Leads" />
-
-            <div className="py-2">
-              <div className="border-t border-gray-100 mx-2"></div>
-            </div>
-
-            <NavItem href="/admin/settings" icon={Settings} label="Configurações" />
           </nav>
 
           {/* User info & logout */}

@@ -75,6 +75,9 @@ export default async function LeadsPage({
         },
         include: { user: true },
       },
+      assignedTo: {
+        select: { id: true, name: true, email: true },
+      },
     },
   });
 
