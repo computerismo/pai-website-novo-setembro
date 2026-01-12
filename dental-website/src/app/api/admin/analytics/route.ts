@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     const [stats, pageviews, topPages, referrers, channels, devices, browsers, countries, activeVisitors] = await Promise.all([
       umamiClient.getStatsWithComparison(startAt, endAt),
       umamiClient.getPageviews(startAt, endAt, unit),
-      umamiClient.getMetrics(startAt, endAt, 'path', 10),
+      umamiClient.getMetrics(startAt, endAt, 'path', 50),
       umamiClient.getMetrics(startAt, endAt, 'referrer', 10),
       umamiClient.getMetrics(startAt, endAt, 'channel', 10),
       umamiClient.getMetrics(startAt, endAt, 'device', 5),

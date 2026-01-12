@@ -34,11 +34,12 @@ export async function GET(request: Request) {
 
   try {
     // Fetch acquisition-related data with expanded metrics
-    const [referrers, channels, channelsExpanded, queries] = await Promise.all([
+    const [referrers, channels, channelsExpanded, queries, stats] = await Promise.all([
       umamiClient.getMetrics(startAt, endAt, 'referrer', 20),
       umamiClient.getMetrics(startAt, endAt, 'channel', 10),
       umamiClient.getExpandedMetrics(startAt, endAt, 'channel', 10),
       umamiClient.getMetrics(startAt, endAt, 'query', 20),
+      umamiClient.getStats(startAt, endAt),
     ]);
 
     return NextResponse.json({
@@ -47,6 +48,7 @@ export async function GET(request: Request) {
       channelsExpanded,
       queries,
       period,
+      totalVisitors: stats.visitors,
       startAt,
       endAt,
     });

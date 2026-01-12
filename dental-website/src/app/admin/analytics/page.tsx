@@ -411,7 +411,10 @@ export default function AnalyticsPage() {
             <h3 className="font-semibold text-slate-900">Páginas Mais Visitadas</h3>
           </div>
           <div className="space-y-3">
-            {data?.topPages?.slice(0, 7).map((page, i) => (
+            {data?.topPages
+              ?.filter(page => !page.x.startsWith('/admin') && !page.x.startsWith('/login'))
+              .slice(0, 7)
+              .map((page, i) => (
               <div key={i} className="flex items-center justify-between group">
                 <span className="text-sm text-slate-600 truncate flex-1" title={page.x}>
                   {page.x === '/' ? 'Página Inicial' : page.x}
@@ -421,7 +424,7 @@ export default function AnalyticsPage() {
                 </span>
               </div>
             ))}
-            {(!data?.topPages || data.topPages.length === 0) && (
+            {(!data?.topPages || data.topPages.filter(page => !page.x.startsWith('/admin') && !page.x.startsWith('/login')).length === 0) && (
               <p className="text-sm text-slate-400 text-center py-4">Nenhum dado disponível</p>
             )}
           </div>
@@ -434,27 +437,35 @@ export default function AnalyticsPage() {
             <h3 className="font-semibold text-slate-900">Fontes de Tráfego</h3>
           </div>
           <div className="space-y-3">
-            {data?.channels?.slice(0, 7).map((channel, i) => {
-              const channelNames: Record<string, string> = {
-                'Direct': 'Direto',
-                'Organic': 'Orgânico',
-                'Referral': 'Referência',
-                'Social': 'Redes Sociais',
-                'Email': 'Email',
-                'Paid': 'Pago',
-              };
-              return (
-                <div key={i} className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600 truncate flex-1">
-                    {channelNames[channel.x] || channel.x}
-                  </span>
-                  <span className="text-sm font-medium text-slate-900 ml-2">
-                    {channel.y.toLocaleString('pt-BR')}
-                  </span>
-                </div>
-              );
-            })}
-            {(!data?.channels || data.channels.length === 0) && (
+            {(() => {
+              // Fallback logic: If no channels data but we have visitors, assume it's Direct traffic
+              let displayChannels = data?.channels || [];
+              if (displayChannels.length === 0 && (data?.stats?.visitors || 0) > 0) {
+                displayChannels = [{ x: 'Direct', y: data?.stats?.visitors || 0 }];
+              }
+
+              return displayChannels.slice(0, 7).map((channel, i) => {
+                const channelNames: Record<string, string> = {
+                  'Direct': 'Direto',
+                  'Organic': 'Orgânico',
+                  'Referral': 'Referência',
+                  'Social': 'Redes Sociais',
+                  'Email': 'Email',
+                  'Paid': 'Pago',
+                };
+                return (
+                  <div key={i} className="flex items-center justify-between">
+                    <span className="text-sm text-slate-600 truncate flex-1">
+                      {channelNames[channel.x] || channel.x}
+                    </span>
+                    <span className="text-sm font-medium text-slate-900 ml-2">
+                      {channel.y.toLocaleString('pt-BR')}
+                    </span>
+                  </div>
+                );
+              });
+            })()}
+            {(!data?.channels || (data.channels.length === 0 && (!data?.stats?.visitors || data.stats.visitors === 0))) && (
               <p className="text-sm text-slate-400 text-center py-4">Nenhum dado disponível</p>
             )}
           </div>

@@ -43,7 +43,9 @@ interface AcquisitionData {
   referrers: MetricData[];
   channels: MetricData[];
   queries: MetricData[];
+  activeVisitors?: number; 
   period: string;
+  totalVisitors?: number; // Needed for fallback
 }
 
 // Channel icons and colors
@@ -148,12 +150,27 @@ function DataTable({
 }
 
 // Channel overview card
-function ChannelOverview({ data }: { data: MetricData[] }) {
-  const chartData = data.slice(0, 6).map((item, i) => ({
+function ChannelOverview({ data, totalVisitors = 0 }: { data: MetricData[], totalVisitors?: number }) {
+  let chartData = data.slice(0, 6).map((item, i) => ({
     name: getChannelLabel(item.x),
     value: item.y,
     color: channelConfig[item.x]?.color || COLORS[i % COLORS.length],
   }));
+
+  // Logic to add Direct traffic if missing
+  const currentTotal = chartData.reduce((sum, item) => sum + item.value, 0);
+  if (totalVisitors > currentTotal) {
+    const diff = totalVisitors - currentTotal;
+    // If diff is significant (e.g. > 10% of total or just non-zero if list is empty), add Direct
+    // For now, if list is empty and we have visitors, definitely add it.
+    if (chartData.length === 0 && diff > 0) {
+       chartData.push({
+         name: getChannelLabel('direct'),
+         value: diff,
+         color: channelConfig['direct'].color
+       });
+    }
+  }
 
   const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
@@ -342,7 +359,10 @@ export default function AquisicaoPage() {
       </div>
 
       {/* Channels Overview */}
-      <ChannelOverview data={data?.channels || []} />
+      <ChannelOverview 
+        data={data?.channels || []} 
+        totalVisitors={data?.totalVisitors || 0}
+      />
 
       {/* Referrers */}
       <DataTable 
