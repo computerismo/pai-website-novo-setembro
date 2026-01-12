@@ -1,6 +1,6 @@
 'use client';
 
-import { Filter, TrendingUp } from 'lucide-react';
+import { Filter, TrendingUp, ArrowDown } from 'lucide-react';
 
 interface FunnelStage {
   label: string;
@@ -35,7 +35,7 @@ export function ConversionFunnel({ stages }: ConversionFunnelProps) {
         </div>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-3">
         {stages.map((stage, index) => {
           const percentage = total > 0 ? (stage.count / total) * 100 : 0;
           const conversionFromPrev = index > 0 && stages[index - 1].count > 0
@@ -44,17 +44,27 @@ export function ConversionFunnel({ stages }: ConversionFunnelProps) {
           const gradient = gradientColors[stage.color] || 'from-slate-400 to-slate-500';
 
           return (
-            <div key={stage.label} className="relative group">
-              {/* Conversion arrow */}
-              {index > 0 && conversionFromPrev && (
-                <div className="absolute -top-3.5 left-32 text-xs text-slate-400 flex items-center gap-1 opacity-60">
-                  <span className="text-[10px]">↓</span>
-                  <span className="font-medium">{conversionFromPrev}%</span>
+            <div key={stage.label}>
+              {/* Conversion indicator between stages */}
+              {index > 0 && (
+                <div className="flex items-center gap-2 ml-32 mb-2">
+                  <div className="flex items-center gap-1 text-xs">
+                    <ArrowDown className="w-3 h-3 text-slate-400" />
+                    <span className={`font-bold px-2 py-0.5 rounded-full ${
+                      Number(conversionFromPrev) >= 50 
+                        ? 'bg-emerald-100 text-emerald-700' 
+                        : Number(conversionFromPrev) >= 20 
+                        ? 'bg-amber-100 text-amber-700'
+                        : 'bg-red-100 text-red-700'
+                    }`}>
+                      {conversionFromPrev}% converteram
+                    </span>
+                  </div>
                 </div>
               )}
 
               {/* Bar */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 group">
                 <div className="w-28 text-sm font-medium text-slate-600 text-right shrink-0">
                   {stage.label}
                 </div>
@@ -77,7 +87,7 @@ export function ConversionFunnel({ stages }: ConversionFunnelProps) {
                     </span>
                   )}
                 </div>
-                <div className="w-14 text-sm font-medium text-slate-500 shrink-0">
+                <div className="w-14 text-sm font-bold text-slate-600 shrink-0">
                   {percentage.toFixed(0)}%
                 </div>
               </div>

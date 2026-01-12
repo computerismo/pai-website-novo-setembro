@@ -194,7 +194,7 @@ export default async function DashboardPage() {
                 <Link 
                   key={lead.id} 
                   href="/admin/leads"
-                  className="block p-4 bg-slate-50/80 hover:bg-white border border-slate-100 hover:border-slate-200 rounded-xl transition-all duration-200 group hover:shadow-md"
+                  className="block p-4 bg-white hover:bg-blue-50/50 border-2 border-slate-200 hover:border-blue-300 rounded-xl transition-all duration-200 group hover:shadow-lg shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
