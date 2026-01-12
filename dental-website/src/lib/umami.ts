@@ -148,7 +148,7 @@ class UmamiClient {
   async getMetrics(
     startAt: number, 
     endAt: number, 
-    type: 'path' | 'referrer' | 'browser' | 'os' | 'device' | 'country' | 'city',
+    type: 'path' | 'entry' | 'exit' | 'referrer' | 'channel' | 'query' | 'browser' | 'os' | 'device' | 'country' | 'city' | 'language' | 'screen' | 'event' | 'title',
     limit: number = 10
   ): Promise<UmamiMetric[]> {
     return this.request(`/api/websites/${this.websiteId}/metrics`, {

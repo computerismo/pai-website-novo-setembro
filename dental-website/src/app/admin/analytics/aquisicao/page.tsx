@@ -1,0 +1,357 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { 
+  Globe, 
+  Link as LinkIcon,
+  Search,
+  Share2,
+  RefreshCw,
+  ArrowRight,
+  ExternalLink,
+  TrendingUp
+} from 'lucide-react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from 'recharts';
+import Link from 'next/link';
+
+const PERIODS = [
+  { value: '24h', label: 'Últimas 24h' },
+  { value: '7d', label: 'Últimos 7 dias' },
+  { value: '30d', label: 'Últimos 30 dias' },
+  { value: '90d', label: 'Últimos 90 dias' },
+];
+
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
+
+interface MetricData {
+  x: string;
+  y: number;
+}
+
+interface AcquisitionData {
+  referrers: MetricData[];
+  channels: MetricData[];
+  queries: MetricData[];
+  period: string;
+}
+
+// Channel icons and colors
+const channelConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
+  direct: { icon: Globe, color: '#3b82f6', label: 'Tráfego Direto' },
+  organic: { icon: Search, color: '#10b981', label: 'Busca Orgânica' },
+  referral: { icon: LinkIcon, color: '#f59e0b', label: 'Referência' },
+  social: { icon: Share2, color: '#ec4899', label: 'Redes Sociais' },
+  paid: { icon: TrendingUp, color: '#ef4444', label: 'Anúncios Pagos' },
+  email: { icon: Globe, color: '#8b5cf6', label: 'Email Marketing' },
+};
+
+function getChannelLabel(channel: string): string {
+  return channelConfig[channel]?.label || channel;
+}
+
+// Data table with progress bars
+function DataTable({ 
+  title, 
+  subtitle,
+  data, 
+  icon: Icon,
+  iconColor = 'blue',
+  formatLabel = (x: string) => x
+}: { 
+  title: string; 
+  subtitle?: string;
+  data: MetricData[]; 
+  icon: React.ElementType;
+  iconColor?: string;
+  formatLabel?: (x: string) => string;
+}) {
+  const colorMap: Record<string, string> = {
+    blue: 'bg-blue-100 text-blue-600',
+    green: 'bg-emerald-100 text-emerald-600',
+    orange: 'bg-orange-100 text-orange-600',
+    purple: 'bg-purple-100 text-purple-600',
+  };
+
+  const barColorMap: Record<string, string> = {
+    blue: 'from-blue-500 to-indigo-500',
+    green: 'from-emerald-500 to-teal-500',
+    orange: 'from-orange-500 to-amber-500',
+    purple: 'from-purple-500 to-pink-500',
+  };
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+      <div className="flex items-center gap-3 mb-6">
+        <div className={`p-2.5 rounded-xl ${colorMap[iconColor]}`}>
+          <Icon className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+          {subtitle && <p className="text-sm text-slate-500">{subtitle}</p>}
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        {data.slice(0, 15).map((item, i) => {
+          const maxValue = data[0]?.y || 1;
+          const percentage = (item.y / maxValue) * 100;
+          const formattedLabel = formatLabel(item.x);
+          
+          return (
+            <div key={i}>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <span className="text-sm text-slate-700 truncate" title={item.x}>
+                    {formattedLabel || '(direto)'}
+                  </span>
+                  {item.x && item.x.startsWith('http') && (
+                    <a 
+                      href={item.x} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-slate-400 hover:text-blue-500 shrink-0"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+                <span className="text-sm font-semibold text-slate-900 ml-2 shrink-0">
+                  {item.y.toLocaleString('pt-BR')}
+                </span>
+              </div>
+              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full bg-gradient-to-r ${barColorMap[iconColor]} rounded-full transition-all duration-500`}
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+        {data.length === 0 && (
+          <p className="text-sm text-slate-400 text-center py-12">Nenhum dado disponível</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Channel overview card
+function ChannelOverview({ data }: { data: MetricData[] }) {
+  const chartData = data.slice(0, 6).map((item, i) => ({
+    name: getChannelLabel(item.x),
+    value: item.y,
+    color: channelConfig[item.x]?.color || COLORS[i % COLORS.length],
+  }));
+
+  const total = chartData.reduce((sum, item) => sum + item.value, 0);
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500">
+          <TrendingUp className="w-5 h-5 text-white" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Canais de Aquisição</h3>
+          <p className="text-sm text-slate-500">Como os visitantes encontram seu site</p>
+        </div>
+      </div>
+      
+      {chartData.length > 0 ? (
+        <div className="flex flex-col lg:flex-row items-center gap-8">
+          <div className="w-64 h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={3}
+                  dataKey="value"
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value: any) => [
+                    `${Number(value).toLocaleString('pt-BR')} (${((Number(value) / total) * 100).toFixed(1)}%)`,
+                    'Visitantes'
+                  ]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          
+          <div className="flex-1 grid grid-cols-2 gap-4">
+            {chartData.map((item, i) => {
+              const percentage = ((item.value / total) * 100).toFixed(1);
+              const config = Object.entries(channelConfig).find(([key]) => 
+                getChannelLabel(key) === item.name
+              );
+              const Icon = config?.[1]?.icon || Globe;
+              
+              return (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
+                  <div 
+                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${item.color}20` }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: item.color }} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">{item.name}</p>
+                    <p className="text-xs text-slate-500">
+                      {item.value.toLocaleString('pt-BR')} ({percentage}%)
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <p className="text-sm text-slate-400 text-center py-12">Nenhum dado disponível</p>
+      )}
+    </div>
+  );
+}
+
+export default function AquisicaoPage() {
+  const [data, setData] = useState<AcquisitionData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [period, setPeriod] = useState('7d');
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/analytics/aquisicao?period=${period}`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Falha ao carregar dados');
+      }
+      const result = await res.json();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [period]);
+
+  if (loading && !data) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Aquisição</h1>
+          <p className="text-slate-500 mt-1">De onde vêm seus visitantes</p>
+        </div>
+        <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center">
+          <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
+          <p className="text-slate-500 mt-4">Carregando dados...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Aquisição</h1>
+          <p className="text-slate-500 mt-1">De onde vêm seus visitantes</p>
+        </div>
+        <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center border-2 border-dashed border-red-200">
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Erro ao carregar dados</h2>
+          <p className="text-slate-500 text-center max-w-md mb-4">{error}</p>
+          <button
+            onClick={fetchData}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
+            <Link href="/admin/analytics" className="hover:text-blue-600">Análise de Tráfego</Link>
+            <ArrowRight className="w-3 h-3" />
+            <span className="text-slate-900 font-medium">Aquisição</span>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Fontes de Tráfego</h1>
+          <p className="text-slate-500 mt-1">Descubra de onde vêm seus visitantes</p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {PERIODS.map((p) => (
+              <option key={p.value} value={p.value}>{p.label}</option>
+            ))}
+          </select>
+          <button
+            onClick={fetchData}
+            disabled={loading}
+            className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-5 h-5 text-slate-600 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Channels Overview */}
+      <ChannelOverview data={data?.channels || []} />
+
+      {/* Referrers */}
+      <DataTable 
+        title="Sites de Referência" 
+        subtitle="Sites que enviam tráfego para você"
+        data={data?.referrers || []}
+        icon={LinkIcon}
+        iconColor="orange"
+      />
+
+      {/* UTM Queries */}
+      {data?.queries && data.queries.length > 0 && (
+        <DataTable 
+          title="Parâmetros de Campanha" 
+          subtitle="UTM tracking e queries personalizadas"
+          data={data.queries}
+          icon={Search}
+          iconColor="purple"
+        />
+      )}
+    </div>
+  );
+}

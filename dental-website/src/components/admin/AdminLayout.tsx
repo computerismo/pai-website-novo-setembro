@@ -94,6 +94,64 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
             </p>
             <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />
             <NavItem href="/admin/analytics" icon={BarChart3} label="Análise de Tráfego" />
+            {/* Analytics Submenus */}
+            <div className="ml-6 mt-1 space-y-1">
+              <Link
+                href="/admin/analytics"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/analytics'
+                    ? 'text-blue-400 bg-blue-500/10'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
+                Visão Geral
+              </Link>
+              <Link
+                href="/admin/analytics/comportamento"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/analytics/comportamento'
+                    ? 'text-blue-400 bg-blue-500/10'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
+                Comportamento
+              </Link>
+              <Link
+                href="/admin/analytics/audiencia"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/analytics/audiencia'
+                    ? 'text-blue-400 bg-blue-500/10'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
+                Audiência
+              </Link>
+              <Link
+                href="/admin/analytics/aquisicao"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/analytics/aquisicao'
+                    ? 'text-blue-400 bg-blue-500/10'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
+                Aquisição
+              </Link>
+              <Link
+                href="/admin/analytics/tempo-real"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/analytics/tempo-real'
+                    ? 'text-blue-400 bg-blue-500/10'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
+                Tempo Real
+              </Link>
+            </div>
             
             <div className="py-3">
               <div className="border-t border-white/5 mx-2"></div>
