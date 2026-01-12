@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Monitor, 
   Smartphone, 
@@ -242,6 +242,113 @@ function BarChartCard({
   );
 }
 
+// Country flags mapping
+const countryFlags: Record<string, string> = {
+  BR: '🇧🇷', US: '🇺🇸', PT: '🇵🇹', AR: '🇦🇷', MX: '🇲🇽',
+  ES: '🇪🇸', CO: '🇨🇴', CL: '🇨🇱', PE: '🇵🇪', UY: '🇺🇾',
+  GB: '🇬🇧', DE: '🇩🇪', FR: '🇫🇷', IT: '🇮🇹', CA: '🇨🇦',
+  JP: '🇯🇵', CN: '🇨🇳', IN: '🇮🇳', AU: '🇦🇺', RU: '🇷🇺',
+  NL: '🇳🇱', BE: '🇧🇪', CH: '🇨🇭', AT: '🇦🇹', SE: '🇸🇪',
+  NO: '🇳🇴', DK: '🇩🇰', FI: '🇫🇮', PL: '🇵🇱', IE: '🇮🇪',
+};
+
+function getFlag(code: string): string {
+  return countryFlags[code] || '🌍';
+}
+
+// Premium Countries Card component
+function CountriesCard({ 
+  data 
+}: { 
+  data: MetricData[]; 
+}) {
+  const total = data.reduce((sum, item) => sum + item.y, 0);
+  const maxValue = Math.max(...data.map(d => d.y), 1);
+
+  // Color gradient based on rank
+  const getProgressColor = (index: number) => {
+    const colors = [
+      'from-blue-500 to-indigo-600',
+      'from-emerald-500 to-teal-600',
+      'from-orange-500 to-amber-600',
+      'from-purple-500 to-pink-600',
+      'from-cyan-500 to-blue-600',
+    ];
+    return colors[index % colors.length];
+  };
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
+            <Globe className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Países</h3>
+            <p className="text-sm text-slate-500">Distribuição geográfica</p>
+          </div>
+        </div>
+        {total > 0 && (
+          <div className="text-right">
+            <p className="text-2xl font-bold text-slate-900">{total.toLocaleString('pt-BR')}</p>
+            <p className="text-xs text-slate-500">visitantes totais</p>
+          </div>
+        )}
+      </div>
+      
+      {data.length > 0 ? (
+        <div className="space-y-4">
+          {data.slice(0, 8).map((item, i) => {
+            const percentage = (item.y / total) * 100;
+            const widthPercentage = (item.y / maxValue) * 100;
+            
+            return (
+              <div key={i} className="group">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{getFlag(item.x)}</span>
+                    <div>
+                      <span className="text-sm font-medium text-slate-900">
+                        {getCountryName(item.x)}
+                      </span>
+                      <span className="text-xs text-slate-400 ml-2">
+                        {item.x}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-bold text-slate-900">
+                      {item.y.toLocaleString('pt-BR')}
+                    </span>
+                    <span className="text-xs text-slate-400 ml-1">
+                      ({percentage.toFixed(1)}%)
+                    </span>
+                  </div>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full bg-gradient-to-r ${getProgressColor(i)} rounded-full transition-all duration-500 group-hover:opacity-80`}
+                    style={{ width: `${widthPercentage}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+          
+          {data.length > 8 && (
+            <p className="text-xs text-slate-400 text-center pt-2">
+              +{data.length - 8} outros países
+            </p>
+          )}
+        </div>
+      ) : (
+        <p className="text-sm text-slate-400 text-center py-12">Nenhum dado disponível</p>
+      )}
+    </div>
+  );
+}
+
 export default function AudienciaPage() {
   const [data, setData] = useState<AudienceData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -368,12 +475,8 @@ export default function AudienciaPage() {
 
       {/* Countries and Cities */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BarChartCard 
-          title="Países" 
-          subtitle="Distribuição geográfica"
+        <CountriesCard 
           data={data?.countries || []}
-          icon={Globe}
-          formatLabel={getCountryName}
         />
         <BarChartCard 
           title="Cidades" 
