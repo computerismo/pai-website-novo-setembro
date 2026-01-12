@@ -75,7 +75,18 @@ export function LeadsChart({ data }: LeadsChartProps) {
                 </div>
 
                 {/* Bar */}
-                <div className="w-full flex justify-center mb-3 flex-1 items-end">
+                <div className="w-full flex justify-center mb-3 flex-1 items-end relative">
+                  {/* Number badge - always visible */}
+                  <span className={`absolute -top-6 left-1/2 -translate-x-1/2 text-sm font-bold px-2 py-0.5 rounded-lg ${
+                    isToday 
+                      ? 'text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-lg shadow-blue-500/30' 
+                      : item.count > 0 
+                        ? 'text-slate-700 bg-white shadow-sm border border-slate-200' 
+                        : 'text-slate-400 bg-slate-100'
+                  }`}>
+                    {item.count}
+                  </span>
+                  
                   <div
                     className={`w-full max-w-14 rounded-xl transition-all duration-500 relative overflow-hidden ${
                       isToday 
@@ -89,14 +100,6 @@ export function LeadsChart({ data }: LeadsChartProps) {
                   >
                     {/* Shine effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                    
-                    {item.count > 0 && (
-                      <span className={`absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold ${
-                        isToday ? 'text-blue-600' : 'text-slate-600'
-                      }`}>
-                        {item.count}
-                      </span>
-                    )}
                   </div>
                 </div>
 

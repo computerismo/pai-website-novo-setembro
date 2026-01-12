@@ -231,59 +231,7 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
-
-      {/* Recent Posts */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-        <div className="p-6 border-b border-slate-100">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900 tracking-tight">
-              Posts Recentes
-            </h2>
-            <Link
-              href="/admin/posts"
-              className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors px-3 py-1 rounded-lg hover:bg-blue-50"
-            >
-              Ver todos
-            </Link>
-          </div>
-        </div>
-        <div className="divide-y divide-slate-100">
-          {recentPosts.length === 0 ? (
-            <div className="p-8 text-center text-slate-500">
-              Nenhum post encontrado
-            </div>
-          ) : (
-            recentPosts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/admin/posts/${post.id}`}
-                className="block p-4 hover:bg-slate-50/50 transition-colors group"
-              >
-                <h3 className="font-semibold text-slate-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
-                  {post.title}
-                </h3>
-                <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
-                  <span
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
-                      post.status === "published"
-                        ? "bg-gradient-to-r from-emerald-400 to-green-500 text-white"
-                        : "bg-gradient-to-r from-amber-400 to-orange-500 text-white"
-                    }`}
-                  >
-                    {post.status === "published" ? "Publicado" : "Rascunho"}
-                  </span>
-
-                  <span className="text-slate-400">
-                    • {format(new Date(post.createdAt), "dd MMM yyyy", {
-                      locale: ptBR,
-                    })}
-                  </span>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
-      </div>
     </div>
   );
 }
+

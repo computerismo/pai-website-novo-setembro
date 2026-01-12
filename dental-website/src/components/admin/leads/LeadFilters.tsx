@@ -121,17 +121,17 @@ export function LeadFilters({
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-6">
       {/* Main filter bar */}
       <div className="p-4 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         {/* Search */}
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-72">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Buscar por nome, email, telefone..."
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 hover:bg-white transition-colors"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -140,16 +140,16 @@ export function LeadFilters({
           {/* Toggle advanced filters */}
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className={`flex items-center gap-2 px-3 py-2.5 text-sm rounded-lg border transition-colors ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl border transition-all duration-200 ${
               showAdvanced || hasActiveFilters
-                ? 'bg-blue-50 border-blue-200 text-blue-700' 
-                : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-transparent shadow-lg shadow-blue-500/20' 
+                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:border-slate-300'
             }`}
           >
             <Filter className="w-4 h-4" />
             <span className="hidden sm:inline">Filtros</span>
             {hasActiveFilters && (
-              <span className="bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+              <span className={`text-xs px-1.5 py-0.5 rounded-full min-w-[18px] text-center ${showAdvanced || hasActiveFilters ? 'bg-white/20 text-white' : 'bg-blue-600 text-white'}`}>
                 {[status, treatment, utmSource, dateFrom].filter(Boolean).length}
               </span>
             )}
@@ -159,34 +159,32 @@ export function LeadFilters({
 
         {/* View toggle & Export */}
         <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-          <div className="flex bg-gray-100 p-1 rounded-lg">
+          <div className="flex bg-slate-100 p-1 rounded-xl">
             <button
               onClick={() => onViewChange('list')}
-              className={`px-4 py-2 rounded-md transition-all text-sm font-medium ${
-                viewMode === 'list' ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:text-gray-700'
+              className={`px-4 py-2 rounded-lg transition-all text-sm font-medium ${
+                viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               Lista
             </button>
             <button
               onClick={() => onViewChange('board')}
-              className={`px-4 py-2 rounded-md transition-all text-sm font-medium ${
-                viewMode === 'board' ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:text-gray-700'
+              className={`px-4 py-2 rounded-lg transition-all text-sm font-medium ${
+                viewMode === 'board' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               Kanban
             </button>
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
+          <button
             onClick={handleExport}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors shadow-sm"
           >
             <Download className="w-4 h-4" />
             <span className="hidden sm:inline">Exportar</span>
-          </Button>
+          </button>
         </div>
       </div>
 

@@ -112,6 +112,27 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               Comercial
             </p>
             <NavItem href="/admin/leads" icon={Users} label="Gerenciador de Leads" />
+            {/* Submenus for quick view access */}
+            <div className="ml-6 mt-1 space-y-1">
+              <Link
+                href="/admin/leads?view=list"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/leads' || pathname?.includes('view=list')
+                    ? 'text-blue-400'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
+                Lista
+              </Link>
+              <Link
+                href="/admin/leads?view=kanban"
+                className="flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 text-slate-500 hover:text-slate-300 hover:bg-white/5"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
+                Kanban
+              </Link>
+            </div>
           </nav>
 
           {/* User info & logout */}
