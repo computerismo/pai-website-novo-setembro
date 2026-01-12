@@ -600,15 +600,23 @@ export default function ComportamentoPage() {
     fetchData();
   }, [period]);
 
-  // Calculate insights
-  const totalViews = data?.topPagesExpanded?.reduce((sum, p) => sum + p.pageviews, 0) || 0;
-  const totalVisitors = data?.topPagesExpanded?.reduce((sum, p) => sum + p.visitors, 0) || 0;
-  const totalBounces = data?.topPagesExpanded?.reduce((sum, p) => sum + p.bounces, 0) || 0;
-  const totalTime = data?.topPagesExpanded?.reduce((sum, p) => sum + p.totaltime, 0) || 0;
+  // Filter out admin pages from analytics
+  const isPublicPage = (path: string) => !path.startsWith('/admin') && !path.startsWith('/login');
   
-  const avgBounceRate = totalVisitors > 0 ? (totalBounces / totalVisitors) * 100 : 0;
-  const avgTimeOnSite = totalVisitors > 0 ? totalTime / totalVisitors : 0;
-  const pagesPerVisit = totalVisitors > 0 ? totalViews / totalVisitors : 0;
+  const publicPagesExpanded = data?.topPagesExpanded?.filter(p => isPublicPage(p.name)) || [];
+  const publicEntryPages = data?.entryPages?.filter(p => isPublicPage(p.x)) || [];
+  const publicExitPages = data?.exitPages?.filter(p => isPublicPage(p.x)) || [];
+
+  // Calculate insights from PUBLIC pages only
+  const totalViews = publicPagesExpanded.reduce((sum, p) => sum + (p.pageviews || 0), 0);
+  const totalVisitors = publicPagesExpanded.reduce((sum, p) => sum + (p.visitors || 0), 0);
+  const totalBounces = publicPagesExpanded.reduce((sum, p) => sum + (p.bounces || 0), 0);
+  const totalTime = publicPagesExpanded.reduce((sum, p) => sum + (p.totaltime || 0), 0);
+  
+  // Safe calculations with guards against NaN/Infinity
+  const avgBounceRate = totalVisitors > 0 ? Math.min((totalBounces / totalVisitors) * 100, 100) : 0;
+  const avgTimeOnSite = totalVisitors > 0 ? Math.min(totalTime / totalVisitors, 86400) : 0; // Max 24h
+  const pagesPerVisit = totalVisitors > 0 ? Math.min(totalViews / totalVisitors, 100) : 0; // Max 100 pages
 
   // Generate automatic insights
   const generateInsights = () => {
@@ -769,14 +777,14 @@ export default function ComportamentoPage() {
 
       {/* Pages Performance Table */}
       <PagesTable 
-        data={data?.topPagesExpanded || []} 
-        exitPages={data?.exitPages || []}
+        data={publicPagesExpanded} 
+        exitPages={publicExitPages}
       />
 
       {/* Entry/Exit Flow */}
       <EntryExitFlow 
-        entryPages={data?.entryPages || []} 
-        exitPages={data?.exitPages || []}
+        entryPages={publicEntryPages} 
+        exitPages={publicExitPages}
       />
 
       {/* Heatmap and Events */}
