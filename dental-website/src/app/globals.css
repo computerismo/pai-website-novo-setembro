@@ -76,7 +76,6 @@
     letter-spacing: -0.02em !important;
   }
 
-
   @media (min-width: 768px) {
     .blog-content h2,
     .blog-content h2 * {
@@ -209,5 +208,19 @@
   /* Horizontal rules */
   .blog-content hr {
     @apply border-0 h-px bg-gray-200 my-12;
+  }
+
+  /* Custom Sidebar Scrollbar */
+  .sidebar-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #475569; /* slate-600 */
+    border-radius: 20px;
   }
 }

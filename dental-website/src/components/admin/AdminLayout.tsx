@@ -148,7 +148,7 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto sidebar-scrollbar">
             <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Visão Geral
             </p>
