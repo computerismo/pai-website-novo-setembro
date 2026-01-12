@@ -25,10 +25,10 @@ import { updateLeadStatus } from '@/app/actions/leads';
 type Lead = any;
 
 const COLUMNS = {
-  new: { label: 'Novos', gradient: 'from-blue-500 to-indigo-600', bg: 'bg-blue-50/50', border: 'border-blue-200/50' },
-  contacted: { label: 'Contactados', gradient: 'from-amber-400 to-orange-500', bg: 'bg-amber-50/50', border: 'border-amber-200/50' },
-  qualified: { label: 'Qualificados', gradient: 'from-cyan-400 to-teal-500', bg: 'bg-cyan-50/50', border: 'border-cyan-200/50' },
-  converted: { label: 'Convertidos', gradient: 'from-emerald-400 to-green-600', bg: 'bg-emerald-50/50', border: 'border-emerald-200/50' },
+  new: { label: 'Novos', gradient: 'from-blue-500 to-indigo-600', bg: 'bg-blue-100/80', border: 'border-blue-300/60', empty: 'bg-blue-50' },
+  contacted: { label: 'Contactados', gradient: 'from-amber-400 to-orange-500', bg: 'bg-amber-100/80', border: 'border-amber-300/60', empty: 'bg-amber-50' },
+  qualified: { label: 'Qualificados', gradient: 'from-purple-400 to-violet-500', bg: 'bg-purple-100/80', border: 'border-purple-300/60', empty: 'bg-purple-50' },
+  converted: { label: 'Convertidos', gradient: 'from-emerald-400 to-green-600', bg: 'bg-emerald-100/80', border: 'border-emerald-300/60', empty: 'bg-emerald-50' },
 };
 
 function SortableLead({ lead, onClick }: { lead: Lead, onClick: () => void }) {
@@ -96,8 +96,8 @@ function Column({ id, title, leads, onLeadClick, config }: { id: string, title: 
       <SortableContext items={leads.map(l => l.id)} strategy={verticalListSortingStrategy}>
         <div className="flex-1 overflow-y-auto min-h-[400px] max-h-[600px] space-y-0">
             {leads.length === 0 ? (
-              <div className="h-32 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-xl">
-                <p className="text-sm text-slate-400">Arraste leads aqui</p>
+              <div className={`h-32 flex items-center justify-center border-2 border-dashed rounded-xl ${config.border} ${config.empty}`}>
+                <p className="text-sm text-slate-400 font-medium">Arraste leads aqui</p>
               </div>
             ) : (
               leads.map(lead => (

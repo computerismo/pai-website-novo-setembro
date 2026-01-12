@@ -10,7 +10,6 @@ import {
   LogOut,
   Menu,
   X,
-  Sparkles,
 } from "lucide-react";
 import { useState } from "react";
 import { NotificationBell } from "./NotificationBell";
@@ -71,13 +70,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex flex-col h-full">
           {/* Logo Area */}
           <div className="flex items-center justify-between h-20 px-6 border-b border-white/5">
-            <Link href="/admin/dashboard" className="flex items-center gap-3 group">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-shadow">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+            <Link href="/admin/dashboard" className="flex items-center group">
               <div>
-                <span className="text-lg font-bold text-white tracking-tight">OESP</span>
-                <span className="text-lg font-light text-blue-400">Dental</span>
+                <span className="text-xl font-bold text-white tracking-tight">OESP</span>
+                <span className="text-xl font-light text-blue-400">Dental</span>
               </div>
             </Link>
             <button

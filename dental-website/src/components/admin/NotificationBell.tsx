@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Bell, RefreshCw, X, Clock, ChevronRight, Sparkles } from 'lucide-react';
+import { Bell, RefreshCw, X, Clock, ChevronRight } from 'lucide-react';
 import { getNewLeadsCount } from '@/app/actions/get-new-leads-count';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -104,16 +104,11 @@ export function NotificationBell() {
         <div className="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-200/60 z-50 overflow-hidden">
           {/* Header */}
           <div className="px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-slate-900">Novos Leads</h3>
-                {newCount > 0 && (
-                  <p className="text-xs text-slate-500">{newCount} aguardando atenção</p>
-                )}
-              </div>
+            <div>
+              <h3 className="font-semibold text-slate-900">Novos Leads</h3>
+              {newCount > 0 && (
+                <p className="text-xs text-slate-500">{newCount} aguardando atenção</p>
+              )}
             </div>
             <div className="flex items-center gap-1">
               <button

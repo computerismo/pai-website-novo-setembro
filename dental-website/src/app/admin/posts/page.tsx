@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Search, Edit, Trash2, Eye, FileText } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Eye, FileText, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import LoadingSpinner from "@/components/admin/LoadingSpinner";
@@ -129,91 +129,99 @@ export default function PostsPage() {
             <p className="text-sm text-slate-400 mt-1">Crie seu primeiro post clicando em "Novo Post"</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50/80 border-b border-slate-100">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Título
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Visualizações
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Data
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredPosts.map((post) => (
-                  <tr key={post.id} className="hover:bg-slate-50/50 transition-colors group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div>
-                          <div className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
-                            {post.title}
-                          </div>
-                          <div className="text-sm text-slate-400">
+          <div className="divide-y divide-slate-100">
+            {filteredPosts.map((post) => (
+              <div 
+                key={post.id} 
+                className="p-4 hover:bg-slate-50/80 transition-all duration-200 group"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  {/* Post Info - Clickable to view post */}
+                  <Link 
+                    href={`/blog/${post.slug}`}
+                    target="_blank"
+                    className="flex-1 min-w-0 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Thumbnail/Icon */}
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                        <FileText className="w-5 h-5 text-white" />
+                      </div>
+                      
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
+                          {post.title}
+                        </h3>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xs text-slate-400 truncate max-w-[200px]">
                             /{post.slug}
-                          </div>
+                          </span>
+                          <span className="text-slate-300">•</span>
+                          <span className="text-xs text-slate-400">
+                            {format(new Date(post.createdAt), "dd/MM/yyyy", { locale: ptBR })}
+                          </span>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-lg ${
-                          post.status === "published"
-                            ? "bg-gradient-to-r from-emerald-400 to-green-500 text-white"
-                            : post.status === "scheduled"
-                            ? "bg-gradient-to-r from-blue-400 to-indigo-500 text-white"
-                            : "bg-gradient-to-r from-amber-400 to-orange-500 text-white"
-                        }`}
-                      >
-                        {post.status === "published"
-                          ? "Publicado"
-                          : post.status === "scheduled"
-                          ? "Agendado"
-                          : "Rascunho"}
-                      </span>
-                    </td>
+                    </div>
+                  </Link>
 
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                      <div className="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg w-fit">
-                        <Eye className="w-4 h-4 text-slate-400" />
-                        <span className="font-medium">{post.views}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                      {format(new Date(post.createdAt), "dd/MM/yyyy", {
-                        locale: ptBR,
-                      })}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end gap-1">
-                        <Link
-                          href={`/admin/posts/${post.id}`}
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(post.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                  {/* Status & Stats */}
+                  <div className="flex items-center gap-4 flex-shrink-0">
+                    {/* Views */}
+                    <div className="hidden sm:flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-lg">
+                      <Eye className="w-4 h-4 text-slate-400" />
+                      <span className="text-sm font-semibold text-slate-600">{post.views}</span>
+                    </div>
+                    
+                    {/* Status Badge */}
+                    <span
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg shadow-sm ${
+                        post.status === "published"
+                          ? "bg-gradient-to-r from-emerald-400 to-green-500 text-white"
+                          : post.status === "scheduled"
+                          ? "bg-gradient-to-r from-blue-400 to-indigo-500 text-white"
+                          : "bg-gradient-to-r from-amber-400 to-orange-500 text-white"
+                      }`}
+                    >
+                      {post.status === "published"
+                        ? "Publicado"
+                        : post.status === "scheduled"
+                        ? "Agendado"
+                        : "Rascunho"}
+                    </span>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Link
+                        href={`/blog/${post.slug}`}
+                        target="_blank"
+                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        title="Ver post"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        href={`/admin/posts/${post.id}`}
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Editar"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Link>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(post.id);
+                        }}
+                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Excluir"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
