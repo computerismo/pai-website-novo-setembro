@@ -11,6 +11,7 @@ import {
   Monitor,
   Smartphone,
   Tablet,
+  Laptop,
   ArrowUpRight,
   RefreshCw,
   ExternalLink,
@@ -80,6 +81,7 @@ const PERIODS = [
 // Device icons
 const deviceIcons: Record<string, React.ReactNode> = {
   desktop: <Monitor className="w-4 h-4" />,
+  laptop: <Laptop className="w-4 h-4" />,
   mobile: <Smartphone className="w-4 h-4" />,
   tablet: <Tablet className="w-4 h-4" />,
 };
@@ -507,8 +509,17 @@ export default function AnalyticsPage() {
                       style={{ backgroundColor: device.color }}
                     />
                     <span className="text-sm text-slate-600 capitalize flex items-center gap-1">
-                      {deviceIcons[device.name.toLowerCase()] || null}
-                      {device.name}
+                      {/* Use Monitor icon for both to be consistent with 'Computador' label */}
+                      {(device.name.toLowerCase() === 'laptop' || device.name.toLowerCase() === 'desktop') 
+                        ? <Monitor className="w-4 h-4" /> 
+                        : (deviceIcons[device.name.toLowerCase()] || <Monitor className="w-4 h-4" />)
+                      }
+                      {(() => {
+                        const name = device.name.toLowerCase();
+                        if (name === 'desktop' || name === 'laptop') return 'Computador';
+                        if (name === 'mobile') return 'Móvel';
+                        return device.name;
+                      })()}
                     </span>
                     <span className="text-sm font-medium text-slate-900">
                       {device.value}

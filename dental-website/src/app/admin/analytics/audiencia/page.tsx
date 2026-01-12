@@ -5,6 +5,7 @@ import {
   Monitor, 
   Smartphone, 
   Tablet,
+  Laptop,
   Globe,
   MapPin,
   Chrome,
@@ -455,7 +456,12 @@ export default function AudienciaPage() {
           subtitle="Desktop vs Mobile vs Tablet"
           data={data?.devices || []}
           icon={Monitor}
-          formatLabel={(x) => x.charAt(0).toUpperCase() + x.slice(1)}
+          formatLabel={(x) => {
+            const name = x.toLowerCase();
+            if (name === 'desktop' || name === 'laptop') return 'Computador';
+            if (name === 'mobile') return 'Móvel';
+            return x.charAt(0).toUpperCase() + x.slice(1);
+          }}
         />
         <PieChartCard 
           title="Navegadores" 
@@ -495,6 +501,7 @@ export default function AudienciaPage() {
           subtitle="Principais cidades"
           data={data?.cities || []}
           icon={MapPin}
+          formatLabel={(x) => x || 'Desconhecido'}
         />
       </div>
 
