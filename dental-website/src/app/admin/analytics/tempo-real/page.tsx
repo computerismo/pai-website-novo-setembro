@@ -11,14 +11,41 @@ import {
   RefreshCw,
   ArrowRight,
   Zap,
-  Radio
+  Radio,
+  Monitor,
+  Smartphone
 } from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis
+} from 'recharts';
 import Link from 'next/link';
+
+interface RealtimeEvent {
+  __type: string;
+  sessionId: string;
+  eventName: string;
+  createdAt: string;
+  browser: string;
+  os: string;
+  device: string;
+  country: string;
+  urlPath: string;
+  referrerDomain: string;
+}
 
 interface RealtimeData {
   countries: Record<string, number>;
   urls: Record<string, number>;
   referrers: Record<string, number>;
+  events: RealtimeEvent[];
+  series: {
+    views: { x: string; y: number }[];
+    visitors: { x: string; y: number }[];
+  };
   totals: {
     views: number;
     visitors: number;
@@ -247,6 +274,127 @@ function RealtimeReferrers({ referrers }: { referrers: Record<string, number> })
   );
 }
 
+// Mini Chart for last 30 min
+function MiniChart({ series }: { series: { views: { x: string; y: number }[]; visitors: { x: string; y: number }[] } }) {
+  if (!series?.views?.length) return null;
+
+  const chartData = series.views.map((v, i) => ({
+    time: new Date(v.x).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    views: v.y,
+    visitors: series.visitors[i]?.y || 0,
+  }));
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-600">
+          <Activity className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Tráfego ao Vivo</h3>
+          <p className="text-sm text-slate-500">Últimos 30 minutos</p>
+        </div>
+      </div>
+      
+      <div className="h-[120px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={chartData}>
+            <defs>
+              <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="time" hide />
+            <Tooltip 
+              contentStyle={{
+                backgroundColor: '#1e293b',
+                border: 'none',
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '12px',
+              }}
+            />
+            <Area 
+              type="monotone" 
+              dataKey="views" 
+              stroke="#6366f1" 
+              strokeWidth={2}
+              fill="url(#colorViews)" 
+              name="Views"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+      
+      <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-100">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-indigo-500" />
+          <span className="text-xs text-slate-500">Visualizações</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Activity Feed
+function ActivityFeed({ events }: { events: RealtimeEvent[] }) {
+  if (!events?.length) return null;
+
+  const recentEvents = events.slice(0, 8);
+  
+  const getDeviceIcon = (device: string) => {
+    if (device === 'mobile') return <Smartphone className="w-4 h-4" />;
+    return <Monitor className="w-4 h-4" />;
+  };
+
+  const countryFlags: Record<string, string> = {
+    BR: '🇧🇷', US: '🇺🇸', PT: '🇵🇹', AR: '🇦🇷', MX: '🇲🇽',
+    ES: '🇪🇸', CO: '🇨🇴', CL: '🇨🇱', DE: '🇩🇪', FR: '🇫🇷',
+  };
+
+  const formatTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  };
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2.5 rounded-xl bg-amber-100 text-amber-600">
+          <Zap className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Atividade Recente</h3>
+          <p className="text-sm text-slate-500">Últimas interações em tempo real</p>
+        </div>
+      </div>
+      
+      <div className="space-y-2 max-h-[300px] overflow-y-auto">
+        {recentEvents.map((event, i) => (
+          <div 
+            key={i} 
+            className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors animate-pulse-once"
+          >
+            <span className="text-lg">{countryFlags[event.country] || '🌍'}</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-slate-700 truncate" title={event.urlPath}>
+                {event.urlPath === '/' ? 'Página Inicial' : event.urlPath}
+              </p>
+              <div className="flex items-center gap-2 text-xs text-slate-400">
+                <span>{getDeviceIcon(event.device)}</span>
+                <span>{event.browser}</span>
+                <span>•</span>
+                <span>{formatTime(event.createdAt)}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function TempoRealPage() {
   const [data, setData] = useState<RealtimeData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -273,8 +421,8 @@ export default function TempoRealPage() {
 
   useEffect(() => {
     fetchData();
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchData, 30000);
+    // Auto-refresh every 15 seconds
+    const interval = setInterval(fetchData, 15000);
     return () => clearInterval(interval);
   }, [fetchData]);
 
@@ -376,6 +524,12 @@ export default function TempoRealPage() {
           icon={Globe}
           color="orange"
         />
+      </div>
+
+      {/* Mini Chart and Activity Feed */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <MiniChart series={data?.series || { views: [], visitors: [] }} />
+        <ActivityFeed events={data?.events || []} />
       </div>
 
       {/* Active Pages and Countries */}

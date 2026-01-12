@@ -10,7 +10,9 @@ import {
   TrendingUp,
   RefreshCw,
   ArrowRight,
-  ExternalLink
+  ExternalLink,
+  Calendar,
+  Activity
 } from 'lucide-react';
 import {
   BarChart,
@@ -20,7 +22,9 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell
+  Cell,
+  AreaChart,
+  Area
 } from 'recharts';
 import Link from 'next/link';
 
@@ -39,11 +43,28 @@ interface MetricData {
   y: number;
 }
 
+interface ExpandedMetricData {
+  name: string;
+  pageviews: number;
+  visitors: number;
+  bounces: number;
+  totaltime: number;
+}
+
+interface EventSeries {
+  x: string;
+  t: string;
+  y: number;
+}
+
 interface BehaviorData {
   topPages: MetricData[];
+  topPagesExpanded: ExpandedMetricData[];
   entryPages: MetricData[];
   exitPages: MetricData[];
   events: MetricData[];
+  eventsSeries: EventSeries[];
+  sessionsWeekly: number[][];
   period: string;
 }
 
@@ -118,6 +139,146 @@ function DataTable({
         {data.length === 0 && (
           <p className="text-sm text-slate-400 text-center py-8">Nenhum dado disponível</p>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Heatmap component for sessions by day/hour
+const DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const HOURS = Array.from({ length: 24 }, (_, i) => i);
+
+function SessionsHeatmap({ data }: { data: number[][] }) {
+  if (!data || data.length === 0) return null;
+  
+  const maxValue = Math.max(...data.flat().filter(v => v > 0), 1);
+  
+  const getColor = (value: number) => {
+    if (value === 0) return 'bg-slate-100';
+    const intensity = value / maxValue;
+    if (intensity < 0.25) return 'bg-blue-100';
+    if (intensity < 0.5) return 'bg-blue-300';
+    if (intensity < 0.75) return 'bg-blue-500';
+    return 'bg-blue-700';
+  };
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-600">
+          <Calendar className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Atividade por Dia/Hora</h3>
+          <p className="text-sm text-slate-500">Quando os visitantes acessam seu site</p>
+        </div>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <div className="min-w-[600px]">
+          {/* Hours header */}
+          <div className="flex gap-1 mb-1 pl-12">
+            {HOURS.filter((_, i) => i % 3 === 0).map(h => (
+              <div key={h} className="w-8 text-xs text-slate-400 text-center">
+                {h}h
+              </div>
+            ))}
+          </div>
+          
+          {/* Grid */}
+          {data.map((row, dayIndex) => (
+            <div key={dayIndex} className="flex gap-1 items-center mb-1">
+              <div className="w-10 text-xs text-slate-500 font-medium">
+                {DAYS[dayIndex]}
+              </div>
+              {row.map((value, hourIndex) => (
+                <div
+                  key={hourIndex}
+                  className={`w-3 h-3 rounded-sm ${getColor(value)} transition-colors hover:ring-2 hover:ring-blue-400`}
+                  title={`${DAYS[dayIndex]} ${hourIndex}h: ${value} sessões`}
+                />
+              ))}
+            </div>
+          ))}
+          
+          {/* Legend */}
+          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-100">
+            <span className="text-xs text-slate-500">Menos</span>
+            <div className="flex gap-1">
+              <div className="w-3 h-3 rounded-sm bg-slate-100" />
+              <div className="w-3 h-3 rounded-sm bg-blue-100" />
+              <div className="w-3 h-3 rounded-sm bg-blue-300" />
+              <div className="w-3 h-3 rounded-sm bg-blue-500" />
+              <div className="w-3 h-3 rounded-sm bg-blue-700" />
+            </div>
+            <span className="text-xs text-slate-500">Mais</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Events over time chart
+function EventsChart({ data, period }: { data: EventSeries[]; period: string }) {
+  if (!data || data.length === 0) return null;
+
+  // Aggregate events by timestamp
+  const aggregated = data.reduce((acc, item) => {
+    const key = item.t;
+    if (!acc[key]) acc[key] = { date: key, count: 0 };
+    acc[key].count += item.y;
+    return acc;
+  }, {} as Record<string, { date: string; count: number }>);
+
+  const chartData = Object.values(aggregated).map(item => ({
+    date: period === '24h' 
+      ? new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      : new Date(item.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+    Eventos: item.count,
+  }));
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2.5 rounded-xl bg-purple-100 text-purple-600">
+          <Activity className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Eventos ao Longo do Tempo</h3>
+          <p className="text-sm text-slate-500">Interações rastreadas no período</p>
+        </div>
+      </div>
+      
+      <div className="h-[200px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={chartData}>
+            <defs>
+              <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis dataKey="date" stroke="#94a3b8" fontSize={11} />
+            <YAxis stroke="#94a3b8" fontSize={11} />
+            <Tooltip 
+              contentStyle={{
+                backgroundColor: '#1e293b',
+                border: 'none',
+                borderRadius: '8px',
+                color: '#fff',
+              }}
+            />
+            <Area 
+              type="monotone" 
+              dataKey="Eventos" 
+              stroke="#8b5cf6" 
+              strokeWidth={2}
+              fill="url(#colorEvents)" 
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
@@ -289,6 +450,12 @@ export default function ComportamentoPage() {
           iconColor="orange"
           formatLabel={formatPagePath}
         />
+      </div>
+
+      {/* Heatmap and Events Chart */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <SessionsHeatmap data={data?.sessionsWeekly || []} />
+        <EventsChart data={data?.eventsSeries || []} period={period} />
       </div>
 
       {/* Events */}
