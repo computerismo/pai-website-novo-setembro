@@ -154,12 +154,12 @@ export default async function DashboardPage() {
       {/* Metrics Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Leads Chart - takes 2 cols */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 h-full">
           <LeadsChart data={chartData} />
         </div>
         
         {/* Attention Card */}
-        <div>
+        <div className="h-full">
           <AttentionCard count={staleLeadsCount} leads={staleLeads} />
         </div>
       </div>
@@ -184,24 +184,42 @@ export default async function DashboardPage() {
               </Link>
             </div>
           </div>
-          <div className="divide-y divide-slate-100">
+          <div className="p-4 space-y-3">
             {recentLeads.length === 0 ? (
-              <div className="p-8 text-center text-slate-500">
+              <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-xl">
                 Nenhum lead encontrado
               </div>
             ) : (
               recentLeads.map((lead) => (
-                <div key={lead.id} className="p-4 hover:bg-slate-50/50 transition-colors group">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{lead.name}</h3>
-                      <p className="text-sm text-slate-500 mt-0.5">{lead.email}</p>
-                      <p className="text-sm text-slate-400 mt-1">
-                        {lead.treatment}
-                      </p>
+                <Link 
+                  key={lead.id} 
+                  href="/admin/leads"
+                  className="block p-4 bg-slate-50/80 hover:bg-white border border-slate-100 hover:border-slate-200 rounded-xl transition-all duration-200 group hover:shadow-md"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold uppercase flex-shrink-0">
+                          {lead.name.charAt(0)}
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors truncate">{lead.name}</h3>
+                          <p className="text-xs text-slate-500 truncate">{lead.email}</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex items-center gap-2 flex-wrap">
+                        <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-100">
+                          {lead.treatment}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {format(new Date(lead.createdAt), "dd/MM 'às' HH:mm", {
+                            locale: ptBR,
+                          })}
+                        </span>
+                      </div>
                     </div>
                     <span
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex-shrink-0 shadow-sm ${
                         lead.status === "new"
                           ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
                           : lead.status === "contacted"
@@ -220,12 +238,7 @@ export default async function DashboardPage() {
                         : "Convertido"}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-2">
-                    {format(new Date(lead.createdAt), "dd/MM/yyyy 'às' HH:mm", {
-                      locale: ptBR,
-                    })}
-                  </p>
-                </div>
+                </Link>
               ))
             )}
           </div>

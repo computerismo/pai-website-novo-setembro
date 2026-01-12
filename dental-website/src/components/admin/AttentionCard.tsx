@@ -30,7 +30,7 @@ export function AttentionCard({ count, leads }: AttentionCardProps) {
   }
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-red-500 via-rose-500 to-orange-500 rounded-2xl p-6 shadow-lg shadow-red-500/25">
+    <div className="relative overflow-hidden bg-gradient-to-br from-red-500 via-rose-500 to-orange-500 rounded-2xl p-6 shadow-lg shadow-red-500/25 h-full flex flex-col">
       {/* Animated background pulse */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
       <div className="absolute top-4 right-4 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse" />

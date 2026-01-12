@@ -22,7 +22,7 @@ export function LeadsChart({ data }: LeadsChartProps) {
   const avgLeads = data.length > 0 ? (totalLeads / data.length).toFixed(1) : 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
@@ -75,9 +75,9 @@ export function LeadsChart({ data }: LeadsChartProps) {
                 </div>
 
                 {/* Bar */}
-                <div className="w-full flex justify-center mb-3 flex-1 items-end relative">
+                <div className="w-full flex justify-center mb-3 flex-1 items-end relative pt-8">
                   {/* Number badge - always visible */}
-                  <span className={`absolute -top-6 left-1/2 -translate-x-1/2 text-sm font-bold px-2 py-0.5 rounded-lg ${
+                  <span className={`absolute -top-2 left-1/2 -translate-x-1/2 text-sm font-bold px-2 py-0.5 rounded-lg ${
                     isToday 
                       ? 'text-white bg-gradient-to-r from-blue-500 to-indigo-500 shadow-lg shadow-blue-500/30' 
                       : item.count > 0 

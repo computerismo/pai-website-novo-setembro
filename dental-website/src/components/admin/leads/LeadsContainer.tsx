@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { LeadCard } from './LeadCard';
 import { KanbanBoard } from './KanbanBoard';
 import { LeadFilters } from './LeadFilters';
@@ -14,9 +15,23 @@ interface LeadsContainerProps {
 }
 
 export function LeadsContainer({ leads, treatments = [], utmSources = [] }: LeadsContainerProps) {
-  const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
+  const searchParams = useSearchParams();
+  const viewParam = searchParams.get('view');
+  
+  const [viewMode, setViewMode] = useState<'list' | 'board'>(
+    viewParam === 'kanban' ? 'board' : 'list'
+  );
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // Sync view mode with URL param
+  useEffect(() => {
+    if (viewParam === 'kanban') {
+      setViewMode('board');
+    } else if (viewParam === 'list') {
+      setViewMode('list');
+    }
+  }, [viewParam]);
 
   const selectedLead = leads.find(l => l.id === selectedLeadId) || null;
 
