@@ -12,6 +12,7 @@ import {
   X,
   BarChart3,
   ChevronDown,
+  Settings,
 } from "lucide-react";
 import { useState, Suspense } from "react";
 import { NotificationBell } from "./NotificationBell";
@@ -258,6 +259,15 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 Kanban
               </Link>
             </CollapsibleNavItem>
+
+            <div className="py-3">
+              <div className="border-t border-white/5 mx-2"></div>
+            </div>
+
+            <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Gestão
+            </p>
+            <NavItem href="/admin/users" icon={Settings} label="Gestão de Usuários" />
           </nav>
 
           {/* User info & logout */}
