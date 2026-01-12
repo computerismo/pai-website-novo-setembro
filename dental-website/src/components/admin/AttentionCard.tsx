@@ -35,7 +35,7 @@ export function AttentionCard({ count, leads }: AttentionCardProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
       <div className="absolute top-4 right-4 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse" />
       
-      <div className="relative">
+      <div className="relative flex-1 flex flex-col p-1">
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div className="flex items-center gap-4">
@@ -76,7 +76,7 @@ export function AttentionCard({ count, leads }: AttentionCardProps) {
 
         <Link
           href="/admin/leads?status=new"
-          className="flex items-center justify-center gap-2 w-full py-3 bg-white text-red-600 text-sm font-bold rounded-xl hover:bg-red-50 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+          className="mt-auto flex items-center justify-center gap-2 w-full py-3 bg-white text-red-600 text-sm font-bold rounded-xl hover:bg-red-50 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
         >
           Ver todos os leads novos
           <ChevronRight className="w-4 h-4" />

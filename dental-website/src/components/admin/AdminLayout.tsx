@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   BarChart3,
+  ChevronDown,
 } from "lucide-react";
 import { useState, Suspense } from "react";
 import { NotificationBell } from "./NotificationBell";
@@ -54,6 +55,63 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
     );
   };
 
+  const CollapsibleNavItem = ({ 
+    icon: Icon, 
+    label, 
+    children, 
+    basePath 
+  }: { 
+    icon: any; 
+    label: string; 
+    children: React.ReactNode;
+    basePath: string;
+  }) => {
+    // Check if any child route is active to set initial state and highlight parent
+    const isChildActive = pathname?.startsWith(basePath);
+    const [isOpen, setIsOpen] = useState(isChildActive);
+    
+    // Auto-open if navigated to a child (optional, but good UX)
+    // We update only if we want forced expansion on navigation. 
+    // For now, allow manual toggle, but initialize correctly.
+    
+    return (
+      <div className="space-y-1">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`w-full group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 ${
+            isChildActive
+              ? "text-white" // Keep parent highlight subtle or distinct? Let's keep it clean
+              : "text-slate-400 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <div className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
+            isChildActive 
+              ? "bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/30" 
+              : "bg-slate-700/50 group-hover:bg-slate-600/50"
+          }`}>
+            <Icon className={`w-4 h-4 ${isChildActive ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
+          </div>
+          <span className="flex-1 text-left">{label}</span>
+          <ChevronDown 
+            className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180 text-white' : 'text-slate-500'}`} 
+          />
+        </button>
+        
+        <div 
+          className={`grid transition-all duration-200 ease-in-out ${
+            isOpen ? 'grid-rows-[1fr] opacity-100 mb-2' : 'grid-rows-[0fr] opacity-0'
+          }`}
+        >
+          <div className="overflow-hidden">
+             <div className="ml-6 mt-1 space-y-1 border-l border-white/10 pl-2">
+               {children}
+             </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-blue-50/30">
       {/* Mobile sidebar backdrop */}
@@ -93,65 +151,62 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
               Menu Principal
             </p>
             <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />
-            <NavItem href="/admin/analytics" icon={BarChart3} label="Análise de Tráfego" />
-            {/* Analytics Submenus */}
-            <div className="ml-6 mt-1 space-y-1">
+            <CollapsibleNavItem 
+              icon={BarChart3} 
+              label="Análise de Tráfego" 
+              basePath="/admin/analytics"
+            >
               <Link
                 href="/admin/analytics"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics'
-                    ? 'text-blue-400 bg-blue-500/10'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
                     : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
                 Visão Geral
               </Link>
               <Link
                 href="/admin/analytics/comportamento"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics/comportamento'
-                    ? 'text-blue-400 bg-blue-500/10'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
                     : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
                 Comportamento
               </Link>
               <Link
                 href="/admin/analytics/audiencia"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics/audiencia'
-                    ? 'text-blue-400 bg-blue-500/10'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
                     : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
                 Audiência
               </Link>
               <Link
                 href="/admin/analytics/aquisicao"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics/aquisicao'
-                    ? 'text-blue-400 bg-blue-500/10'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
                     : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
                 Aquisição
               </Link>
               <Link
                 href="/admin/analytics/tempo-real"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics/tempo-real'
-                    ? 'text-blue-400 bg-blue-500/10'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
                     : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
                 Tempo Real
               </Link>
-            </div>
+            </CollapsibleNavItem>
             
             <div className="py-3">
               <div className="border-t border-white/5 mx-2"></div>
@@ -169,32 +224,32 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
             <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Comercial
             </p>
-            <NavItem href="/admin/leads" icon={Users} label="Gerenciador de Leads" />
-            {/* Submenus for quick view access */}
-            <div className="ml-6 mt-1 space-y-1">
+            <CollapsibleNavItem 
+              icon={Users} 
+              label="Gerenciador de Leads"
+              basePath="/admin/leads"
+            >
               <Link
                 href="/admin/leads?view=list"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/leads' && (!viewParam || viewParam === 'list')
-                    ? 'text-blue-400 bg-blue-500/10'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
                     : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
                 Lista
               </Link>
               <Link
                 href="/admin/leads?view=kanban"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/leads' && viewParam === 'kanban'
-                    ? 'text-blue-400 bg-blue-500/10'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
                     : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
                 Kanban
               </Link>
-            </div>
+            </CollapsibleNavItem>
           </nav>
 
           {/* User info & logout */}

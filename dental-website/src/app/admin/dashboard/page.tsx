@@ -5,7 +5,7 @@ import StatsCard from "@/components/admin/StatsCard";
 import { LeadsChart } from "@/components/admin/LeadsChart";
 import { ConversionFunnel } from "@/components/admin/ConversionFunnel";
 import { AttentionCard } from "@/components/admin/AttentionCard";
-import { FileText, Users, Eye, TrendingUp } from "lucide-react";
+import { FileText, Users, Eye, TrendingUp, Layers } from "lucide-react";
 import Link from "next/link";
 import { format, subDays, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -23,9 +23,11 @@ export default async function DashboardPage() {
   // Calculate date 24 hours ago for stale leads
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
+  // Static pages count (Home, Sobre, Contato, Blog, Placa, Botox, Tratamento)
+  const STATIC_PAGES_COUNT = 7;
+
   // Get all data in parallel
   const [
-    totalPosts,
     publishedPosts,
     totalLeads,
     totalViews,
@@ -41,7 +43,6 @@ export default async function DashboardPage() {
     // Leads per day for last 7 days
     leadsLast7Days,
   ] = await Promise.all([
-    prisma.post.count(),
     prisma.post.count({ where: { status: "published" } }),
     prisma.lead.count(),
     prisma.post.aggregate({ _sum: { views: true } }),
@@ -126,9 +127,9 @@ export default async function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Total de Posts"
-          value={totalPosts}
-          icon={FileText}
+          title="Total de Páginas"
+          value={STATIC_PAGES_COUNT + publishedPosts}
+          icon={Layers}
           color="blue"
         />
         <StatsCard

@@ -463,16 +463,22 @@ export default function ComportamentoPage() {
 
   const processedData = filterData(data);
 
-  // Derived Global Metrics
-  // NOW using true global stats from API to match Overview page
-  const avgTimeGlobal = processedData?.stats && processedData.stats.visits > 0 
-    ? processedData.stats.totaltime / processedData.stats.visits 
+  // Calculate totals from filtered pages to exclude Admin data cleanly
+  // This replaces the global 'stats' object which includes all traffic
+  const publicStats = {
+    visits: processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.visits, 0) || 0,
+    bounces: processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.bounces, 0) || 0,
+    totaltime: processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.totaltime, 0) || 0,
+  };
+
+  // Derived Global Metrics (Public Only)
+  const avgTimeGlobal = publicStats.visits > 0 
+    ? publicStats.totaltime / publicStats.visits 
     : 0;
   
   // Avg Bounce = Total Bounces / Total Sessions
-  // Using global stats to be consistent with Overview
-  const avgBounceRate = processedData?.stats && processedData.stats.visits > 0 
-    ? Math.min(100, (processedData.stats.bounces / processedData.stats.visits) * 100) 
+  const avgBounceRate = publicStats.visits > 0 
+    ? Math.min(100, (publicStats.bounces / publicStats.visits) * 100) 
     : 0;
 
   // Most Active Page

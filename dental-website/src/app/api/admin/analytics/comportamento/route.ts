@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     // Fetch behavior-related data including expanded metrics
     const [topPages, topPagesExpanded, entryPages, exitPages, events, eventsSeries, pageviews, sessionsWeekly, stats] = await Promise.all([
       umamiClient.getMetrics(startAt, endAt, 'path', 20),
-      umamiClient.getExpandedMetrics(startAt, endAt, 'path', 10),
+      umamiClient.getExpandedMetrics(startAt, endAt, 'path', 100), // Fetch more pages to allow client-side aggregation excluding admin
       umamiClient.getMetrics(startAt, endAt, 'entry', 15),
       umamiClient.getMetrics(startAt, endAt, 'exit', 15),
       umamiClient.getMetrics(startAt, endAt, 'event', 20),
