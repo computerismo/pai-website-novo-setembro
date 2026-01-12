@@ -13,7 +13,8 @@ import {
   Zap,
   Radio,
   Monitor,
-  Smartphone
+  Smartphone,
+  Tablet,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -33,12 +34,14 @@ interface RealtimeEvent {
   os: string;
   device: string;
   country: string;
+  city?: string;
   urlPath: string;
   referrerDomain: string;
 }
 
 interface RealtimeData {
   countries: Record<string, number>;
+  cities?: Record<string, number>;
   urls: Record<string, number>;
   referrers: Record<string, number>;
   events: RealtimeEvent[];
@@ -76,8 +79,27 @@ const countryNames: Record<string, string> = {
 };
 
 function getCountryName(code: string): string {
+  if (!code) return 'Desconhecido';
   return countryNames[code] || `🌍 ${code}`;
 }
+
+// Device Normalization Helper
+function normalizeDevice(device: string): string {
+  if (!device) return 'Desconhecido';
+  const d = device.toLowerCase();
+  if (['desktop', 'laptop'].includes(d)) return 'Computador';
+  if (d === 'mobile') return 'Móvel';
+  if (d === 'tablet') return 'Tablet';
+  return device;
+}
+
+function getDeviceIcon(device: string) {
+  const normalized = normalizeDevice(device);
+  if (normalized === 'Móvel') return <Smartphone className="w-4 h-4" />;
+  if (normalized === 'Tablet') return <Tablet className="w-4 h-4" />;
+  return <Monitor className="w-4 h-4" />; // Computador / Default
+}
+
 
 // Format page path
 function formatPagePath(path: string): string {
@@ -198,13 +220,50 @@ function ActivePagesList({ urls }: { urls: Record<string, number> }) {
   );
 }
 
-// Visitors by country
-function VisitorsByCountry({ countries }: { countries: Record<string, number> }) {
-  const sortedCountries = Object.entries(countries)
-    .sort(([, a], [, b]) => b - a)
+// Visitors by Location (City + Country)
+function VisitorsByLocation({ events }: { events: RealtimeEvent[] }) {
+  // Aggregate distinct sessions by location
+  // Note: 'events' here are basically recent pageviews/pings.
+  // We want to count distinct sessions per location.
+  const locationCounts: Record<string, { count: number; country: string; city: string }> = {};
+
+  if (events) {
+    events.forEach(e => {
+        // Create a unique key for the session to avoid double counting per location if user browses multiple pages?
+        // Actually, normally 'active visitors' counts unique sessions.
+        // But here we are iterating events. Let's group by SessionID first?
+        // No, simplest for "Active Now" list is just group active sessions.
+        // Assuming 'events' represents the stream, we can group by location directly for a heatmap feel,
+        // OR better: deduplicate by session first.
+    });
+
+    // 1. Deduplicate sessions
+    const uniqueSessions = new Map<string, RealtimeEvent>();
+    events.forEach(e => {
+      // Keep the most recent event for location
+      if (!uniqueSessions.has(e.sessionId)) {
+        uniqueSessions.set(e.sessionId, e);
+      }
+    });
+
+    // 2. Count locations
+    uniqueSessions.forEach(e => {
+      const city = e.city || 'Desconhecido';
+      const country = e.country || 'Unknown';
+      const key = `${city}-${country}`;
+      
+      if (!locationCounts[key]) {
+        locationCounts[key] = { count: 0, country, city };
+      }
+      locationCounts[key].count++;
+    });
+  }
+
+  const sortedLocations = Object.values(locationCounts)
+    .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
-  const total = sortedCountries.reduce((sum, [, count]) => sum + count, 0);
+  const total = sortedLocations.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
@@ -213,34 +272,41 @@ function VisitorsByCountry({ countries }: { countries: Record<string, number> })
           <Globe className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Visitantes por País</h3>
-          <p className="text-sm text-slate-500">Últimos 30 minutos</p>
+          <h3 className="text-lg font-semibold text-slate-900">Visitantes por Local</h3>
+          <p className="text-sm text-slate-500">Cidade e País (Sessões Únicas)</p>
         </div>
       </div>
       
       <div className="space-y-4">
-        {sortedCountries.map(([code, count], i) => {
-          const percentage = total > 0 ? ((count / total) * 100).toFixed(0) : '0';
+        {sortedLocations.map((loc, i) => {
+          const percentage = total > 0 ? ((loc.count / total) * 100).toFixed(0) : '0';
+          const countryFlag = countryNames[loc.country]?.split(' ')[0] || '🌍';
+          
           return (
             <div key={i} className="flex items-center justify-between group">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl rounded shadow-sm">{getCountryName(code).split(' ')[0]}</span>
-                <span className="text-sm font-medium text-slate-700">
-                  {getCountryName(code).split(' ').slice(1).join(' ')}
-                </span>
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="text-2xl rounded shadow-sm shrink-0">{countryFlag}</span>
+                <div className="truncate">
+                  <p className="text-sm font-bold text-slate-800 truncate">
+                    {loc.city !== 'Desconhecido' ? loc.city : 'Cidade Desconhecida'}
+                  </p>
+                  <p className="text-xs text-slate-500 truncate">
+                     {countryNames[loc.country]?.split(' ').slice(1).join(' ') || loc.country}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="w-16 sm:w-24 h-2 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
                   <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${percentage}%` }} />
                 </div>
-                <div className="text-right min-w-[3rem]">
-                  <span className="text-sm font-bold text-slate-900">{count}</span>
+                <div className="text-right min-w-[2rem]">
+                  <span className="text-sm font-bold text-slate-900">{loc.count}</span>
                 </div>
               </div>
             </div>
           );
         })}
-        {sortedCountries.length === 0 && (
+        {sortedLocations.length === 0 && (
           <p className="text-sm text-slate-400 text-center py-8">Nenhum visitante no momento</p>
         )}
       </div>
@@ -254,8 +320,6 @@ function RealtimeReferrers({ referrers }: { referrers: Record<string, number> })
     .sort(([, a], [, b]) => b - a)
     .slice(0, 8);
     
-  const total = sortedReferrers.reduce((sum, [, c]) => sum + c, 0);
-
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center gap-3 mb-6">
@@ -354,11 +418,6 @@ function ActivityFeed({ events }: { events: RealtimeEvent[] }) {
   // Filter admin events
   const publicEvents = events.filter(e => isPublicPage(e.urlPath)).slice(0, 8);
 
-  const getDeviceIcon = (device: string) => {
-    if (device === 'mobile') return <Smartphone className="w-4 h-4" />;
-    return <Monitor className="w-4 h-4" />;
-  };
-
   const countryFlags: Record<string, string> = {
     BR: '🇧🇷', US: '🇺🇸', PT: '🇵🇹', AR: '🇦🇷', MX: '🇲🇽',
     ES: '🇪🇸', CO: '🇨🇴', CL: '🇨🇱', DE: '🇩🇪', FR: '🇫🇷',
@@ -394,7 +453,7 @@ function ActivityFeed({ events }: { events: RealtimeEvent[] }) {
               </p>
               <div className="flex items-center gap-2 text-xs text-slate-500">
                 <span className="flex items-center gap-1 bg-white px-1.5 py-0.5 rounded border border-slate-200">
-                    {getDeviceIcon(event.device)} {event.device}
+                    {getDeviceIcon(event.device)} {normalizeDevice(event.device)}
                 </span>
                 <span>{event.browser}</span>
                 <span className="text-slate-300">•</span>
@@ -404,7 +463,7 @@ function ActivityFeed({ events }: { events: RealtimeEvent[] }) {
           </div>
         ))}
         {publicEvents.length === 0 && (
-             <p className="text-sm text-slate-400 text-center py-8">Nenhuma atividade recente</p>
+          <p className="text-sm text-slate-400 text-center py-8">Nenhuma atividade recente</p>
         )}
       </div>
     </div>
@@ -428,7 +487,6 @@ export default function TempoRealPage() {
       setLastUpdate(new Date());
       setError(null);
     } catch (err) {
-      // Slient error in realtime usually better, or unobtrusive
       console.error(err);
     } finally {
       setLoading(false);
@@ -443,9 +501,6 @@ export default function TempoRealPage() {
 
   // Calculations excluding admin
   const activeVisitors = data?.activeVisitors || 0; 
-  // Note: activeVisitors from API is a hard count, hard to filter client side without raw session data.
-  // We accepted "Admin visits in total count" earlier as unavoidable without deep changes, 
-  // but we hid them from the lists.
 
   if (loading && !data) {
     return (
@@ -519,7 +574,7 @@ export default function TempoRealPage() {
       {/* Lists */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ActivePagesList urls={data?.urls || {}} />
-        <VisitorsByCountry countries={data?.countries || {}} />
+        <VisitorsByLocation events={data?.events || []} />
       </div>
 
       <RealtimeReferrers referrers={data?.referrers || {}} />

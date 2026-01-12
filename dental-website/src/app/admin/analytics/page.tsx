@@ -414,14 +414,22 @@ export default function AnalyticsPage() {
           </div>
           <div className="space-y-3">
             {data?.topPages
-              ?.filter(page => !page.x.startsWith('/admin') && !page.x.startsWith('/login'))
-              .slice(0, 7)
+              ?.filter(page => {
+                 const x = page.x;
+                 const validRoutes = [
+                   '/', '/sobre', '/contato', '/blog', '/tratamento-bruxismo',
+                   '/placa-miorrelaxante', '/botox-bruxismo', '/login'
+                 ];
+                 const isValid = validRoutes.includes(x) || x.startsWith('/blog/') || x.startsWith('/admin'); // Admin filtered next
+                 return !x.startsWith('/admin') && !x.startsWith('/login') && isValid;
+              })
+              .slice(0, 5) // Reduced to 5 to fit better with card style
               .map((page, i) => (
-              <div key={i} className="flex items-center justify-between group">
-                <span className="text-sm text-slate-600 truncate flex-1" title={page.x}>
+              <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 hover:border-blue-200 transition-colors group">
+                <span className="text-sm font-medium text-slate-700 truncate max-w-[70%]" title={page.x}>
                   {page.x === '/' ? 'Página Inicial' : page.x}
                 </span>
-                <span className="text-sm font-medium text-slate-900 ml-2">
+                <span className="px-2 py-1 bg-white rounded-md text-xs font-bold text-blue-600 shadow-sm border border-slate-100 group-hover:border-blue-100">
                   {page.y.toLocaleString('pt-BR')}
                 </span>
               </div>
@@ -446,7 +454,7 @@ export default function AnalyticsPage() {
                 displayChannels = [{ x: 'Direct', y: data?.stats?.visitors || 0 }];
               }
 
-              return displayChannels.slice(0, 7).map((channel, i) => {
+              return displayChannels.slice(0, 5).map((channel, i) => { // Reduced to 5
                 const channelNames: Record<string, string> = {
                   'Direct': 'Direto',
                   'Organic': 'Orgânico',
@@ -456,11 +464,11 @@ export default function AnalyticsPage() {
                   'Paid': 'Pago',
                 };
                 return (
-                  <div key={i} className="flex items-center justify-between">
-                    <span className="text-sm text-slate-600 truncate flex-1">
+                  <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 hover:border-emerald-200 transition-colors group">
+                    <span className="text-sm font-medium text-slate-700 capitalize truncate flex-1">
                       {channelNames[channel.x] || channel.x}
                     </span>
-                    <span className="text-sm font-medium text-slate-900 ml-2">
+                    <span className="px-2 py-1 bg-white rounded-md text-xs font-bold text-emerald-600 shadow-sm border border-slate-100 group-hover:border-emerald-100">
                       {channel.y.toLocaleString('pt-BR')}
                     </span>
                   </div>

@@ -43,12 +43,15 @@ interface UmamiRealtimeEvent {
   os: string;
   device: string;
   country: string;
+  city?: string; // Added city
   urlPath: string;
   referrerDomain: string;
 }
 
 interface UmamiRealtime {
   countries: Record<string, number>;
+  regions?: Record<string, number>;
+  cities?: Record<string, number>; // Added cities
   urls: Record<string, number>;
   referrers: Record<string, number>;
   events: UmamiRealtimeEvent[];

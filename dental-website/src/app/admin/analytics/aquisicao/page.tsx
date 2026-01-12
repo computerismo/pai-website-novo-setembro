@@ -374,15 +374,32 @@ export default function AquisicaoPage() {
       />
 
       {/* UTM Queries */}
-      {data?.queries && data.queries.length > 0 && (
-        <DataTable 
-          title="Parâmetros de Campanha" 
-          subtitle="UTM tracking e queries personalizadas"
-          data={data.queries}
-          icon={Search}
-          iconColor="purple"
-        />
-      )}
+      {(() => {
+        // Filter for valid marketing parameters only to avoid internal app state (like view=kanban)
+        const validPrefixes = [
+          'utm_source=', 'utm_medium=', 'utm_campaign=', 'utm_term=', 'utm_content=',
+          'ref=', 'gclid=', 'fbclid=', 'ttclid=', 'irclid=', 'dclid=', 'wbraid=', 'gbraid='
+        ];
+        
+        const filteredQueries = (data?.queries || []).filter(q => {
+           if (q.x === '(direto)') return true;
+           // Check if it starts with any valid parameter prefix
+           // Umami usually returns "key=value" for query metrics
+           return validPrefixes.some(prefix => q.x.startsWith(prefix));
+        });
+
+        if (filteredQueries.length === 0) return null;
+
+        return (
+          <DataTable 
+            title="Parâmetros de Campanha" 
+            subtitle="Rastreamento UTM e campanhas de marketing"
+            data={filteredQueries}
+            icon={Search}
+            iconColor="purple"
+          />
+        );
+      })()}
     </div>
   );
 }

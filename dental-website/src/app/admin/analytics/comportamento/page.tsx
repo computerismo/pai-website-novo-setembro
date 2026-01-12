@@ -8,10 +8,13 @@ import {
   Zap,
   Target,
   AlertTriangle,
-  ArrowUpRight,
   Clock,
+  Filter,
+  TrendingUp,
+  Timer,
   MousePointerClick,
-  Filter
+  ArrowDownRight,
+  ArrowUpRight
 } from 'lucide-react';
 import {
   BarChart,
@@ -27,10 +30,8 @@ import {
   ReferenceLine,
   AreaChart,
   Area,
-  ComposedChart,
-  Line
+  Tooltip,
 } from 'recharts';
-import Link from 'next/link';
 
 // === Types ===
 interface MetricData {
@@ -59,6 +60,7 @@ interface BehaviorData {
   exitPages: MetricData[];
   events: MetricData[];
   eventsSeries: EventSeries[];
+  pageviews: MetricData[]; // Format: { x: date, y: views }
   sessionsWeekly: number[][];
   period: string;
 }
@@ -84,8 +86,7 @@ const COLORS = {
 // === Helpers ===
 function formatPagePath(path: string): string {
   if (path === '/') return 'Início';
-  if (path === '/admin/dashboard') return 'Admin';
-  if (path === '/login') return 'Login';
+  if (!path) return 'Desconhecido';
   // Strip slashes for cleaner look
   return path.replace(/^\//, '').replace(/\/$/, '') || 'Início';
 }
@@ -102,10 +103,42 @@ const isPublicPage = (path: string) => {
   return !path.startsWith('/admin') && !path.startsWith('/login');
 };
 
-// === View Components ===
+// === Components ===
 
-// 1. Journey View (Jornada)
-function JourneyView({ 
+// 1. Overview Metric Card
+function InsightCard({ 
+  title, 
+  value, 
+  subtext, 
+  icon: Icon,
+  colorClass = "text-blue-600",
+  bgClass = "bg-blue-50",
+  trend
+}: { 
+  title: string; 
+  value: string; 
+  subtext?: string; 
+  icon: React.ElementType;
+  colorClass?: string;
+  bgClass?: string;
+  trend?: 'up' | 'down' | 'neutral';
+}) {
+  return (
+    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-start justify-between">
+      <div>
+        <p className="text-sm font-semibold text-slate-500 mb-1">{title}</p>
+        <h3 className="text-2xl font-bold text-slate-900">{value}</h3>
+        {subtext && <p className="text-xs text-slate-400 mt-1">{subtext}</p>}
+      </div>
+      <div className={`p-3 rounded-xl ${bgClass}`}>
+        <Icon className={`w-5 h-5 ${colorClass}`} />
+      </div>
+    </div>
+  );
+}
+
+// 2. Navigation Flow Card
+function FlowCard({ 
   entryPages, 
   exitPages,
   topPages 
@@ -116,116 +149,228 @@ function JourneyView({
 }) {
   const topEntries = entryPages.slice(0, 5);
   const topExits = exitPages.slice(0, 5);
-
-  // Find "Revolving Doors" (High bounce rate entries)
-  const revolvingDoors = topPages
-    .filter(p => p.visitors > 5 && (p.bounces / p.visitors) > 0.7)
-    .sort((a, b) => b.visitors - a.visitors)
-    .slice(0, 3);
+  const totalVisitors = topPages.reduce((acc, curr) => acc + curr.visitors, 0);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-          <Map className="w-5 h-5 text-blue-500" />
-          Fluxo de Navegação
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {/* Connector Lines (Desktop only) */}
-          <div className="hidden md:block absolute top-1/2 left-1/4 w-1/2 h-0.5 bg-gradient-to-r from-emerald-200 via-blue-200 to-orange-200 -z-10" />
+    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm col-span-1 lg:col-span-3">
+      <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+        <Map className="w-5 h-5 text-blue-500" />
+        Fluxo de Navegação
+      </h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+        {/* Connector Lines (Desktop only) */}
+        <div className="hidden md:block absolute top-[60px] left-[20%] w-[60%] h-0.5 bg-gradient-to-r from-emerald-200 via-blue-200 to-orange-200 -z-0" />
 
-          {/* Entry */}
-          <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
-            <h4 className="font-semibold text-emerald-800 mb-3 flex items-center justify-between">
-              <span>Portas de Entrada</span>
-              <span className="text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full">Início</span>
+        {/* Entry */}
+        <div className="bg-white border-2 border-emerald-50 rounded-xl p-4 z-10 hover:border-emerald-100 transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="font-bold text-emerald-900 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Entrada
             </h4>
-            <div className="space-y-2">
-              {topEntries.map((p, i) => (
-                <div key={i} className="flex justify-between items-center text-sm">
-                  <span className="truncate max-w-[120px] text-emerald-900" title={p.x}>{formatPagePath(p.x)}</span>
-                  <span className="font-bold text-emerald-700">{p.y}</span>
-                </div>
-              ))}
-            </div>
+            <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Top 5</span>
           </div>
-
-          {/* Core Content */}
-          <div className="bg-blue-50 rounded-lg p-4 border border-blue-100 z-10">
-            <h4 className="font-semibold text-blue-800 mb-3 flex items-center justify-between">
-              <span>Conteúdo Principal</span>
-              <span className="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">Meio</span>
-            </h4>
-            <div className="text-center py-4">
-              <p className="text-3xl font-bold text-blue-600 mb-1">
-                {topPages.reduce((acc, curr) => acc + curr.visitors, 0).toLocaleString()}
-              </p>
-              <p className="text-xs text-blue-800 uppercase tracking-wide">Visitantes Totais</p>
-              <p className="text-xs text-blue-600 mt-2">Navegando por {topPages.length} páginas</p>
-            </div>
+          <div className="space-y-3">
+            {topEntries.length > 0 ? topEntries.map((p, i) => (
+              <div key={i} className="flex justify-between items-center text-sm group">
+                <span className="truncate max-w-[150px] text-slate-600 font-medium group-hover:text-emerald-700 transition-colors" title={p.x}>
+                  {formatPagePath(p.x)}
+                </span>
+                <span className="font-bold text-slate-900">{p.y}</span>
+              </div>
+            )) : (
+               <p className="text-sm text-slate-400 py-2">Sem dados de entrada</p>
+            )}
           </div>
+        </div>
 
-          {/* Exit */}
-          <div className="bg-orange-50 rounded-lg p-4 border border-orange-100">
-            <h4 className="font-semibold text-orange-800 mb-3 flex items-center justify-between">
-              <span>Pontos de Saída</span>
-              <span className="text-xs bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full">Fim</span>
+        {/* Core */}
+        <div className="bg-white border-2 border-blue-50 rounded-xl p-4 z-10 hover:border-blue-100 transition-colors text-center flex flex-col justify-center min-h-[160px]">
+          <h4 className="font-bold text-blue-900 mb-2">Engajamento Central</h4>
+          <p className="text-4xl font-bold text-blue-600 mb-1">
+            {totalVisitors.toLocaleString()}
+          </p>
+          <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Visitantes nos Principais Conteúdos</p>
+        </div>
+
+        {/* Exit */}
+        <div className="bg-white border-2 border-orange-50 rounded-xl p-4 z-10 hover:border-orange-100 transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="font-bold text-orange-900 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-orange-500" />
+              Saída
             </h4>
-            <div className="space-y-2">
-              {topExits.map((p, i) => (
-                <div key={i} className="flex justify-between items-center text-sm">
-                  <span className="truncate max-w-[120px] text-orange-900" title={p.x}>{formatPagePath(p.x)}</span>
-                  <span className="font-bold text-orange-700">{p.y}</span>
-                </div>
-              ))}
-            </div>
+            <span className="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-full">Top 5</span>
+          </div>
+          <div className="space-y-3">
+            {topExits.length > 0 ? topExits.map((p, i) => (
+              <div key={i} className="flex justify-between items-center text-sm group">
+                <span className="truncate max-w-[150px] text-slate-600 font-medium group-hover:text-orange-700 transition-colors" title={p.x}>
+                  {formatPagePath(p.x)}
+                </span>
+                <span className="font-bold text-slate-900">{p.y}</span>
+              </div>
+             )) : (
+              <p className="text-sm text-slate-400 py-2">Sem dados de saída</p>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Revolving Doors Alert */}
-      {revolvingDoors.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-4">
-          <div className="p-2 bg-red-100 rounded-lg shrink-0">
-            <Filter className="w-5 h-5 text-red-600" />
-          </div>
-          <div>
-            <h4 className="font-bold text-red-900">Páginas "Porta Giratória"</h4>
-            <p className="text-sm text-red-700 mt-1 mb-2">
-              Estas páginas têm alto tráfego de entrada mas &gt;70% de taxa de rejeição. Visitantes entram e saem imediatamente.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {revolvingDoors.map(p => (
-                <span key={p.name} className="px-2 py-1 bg-white border border-red-100 rounded text-xs font-medium text-red-600">
-                  {formatPagePath(p.name)} ({(p.bounces/p.visitors*100).toFixed(0)}% rejeição)
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
-// 2. Engagement View (Engajamento)
-function EngagementView({ 
-  pages,
-  heatmap 
-}: { 
-  pages: ExpandedMetricData[];
-  heatmap: number[][]; // 7 days x 24 hours
-}) {
-  // Scatter Data: Views vs Time
-  const scatterData = pages.map(p => ({
-    x: p.pageviews, // Views
-    y: Math.min(p.visitors > 0 ? p.totaltime / p.visitors : 0, 300), // Avg time (capped at 5m for viz)
-    z: p.bounces / p.visitors, // Bounce rate (for color/size context if needed)
-    name: formatPagePath(p.name),
-    fullPath: p.name
-  })).filter(p => p.x > 5); // Filter noise
+// 3. Page Performance Lists (Sticky vs Slippery)
+function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] }) {
+  // Sticky: High Time on Page (> 10s), Low Bounce (< 70%), sorted by Time
+  const stickyPages = [...pages]
+    .filter(p => p.visitors > 2 && (p.totaltime/p.visitors) > 10)
+    .sort((a, b) => (b.totaltime/b.visitors) - (a.totaltime/a.visitors))
+    .slice(0, 5);
 
+  // Slippery: High Bounce (> 50%), sorted by Bounce Rate (desc)
+  const slipperyPages = [...pages]
+    .filter(p => p.visitors > 2 && (p.bounces/p.visitors) > 0.5)
+    .sort((a, b) => (b.bounces/b.visitors) - (a.bounces/a.visitors))
+    .slice(0, 5);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Sticky Pages */}
+      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+        <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-emerald-500" />
+          Páginas "Cola" (Alto Engajamento)
+        </h3>
+        <div className="overflow-hidden">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-slate-500 uppercase bg-slate-50">
+              <tr>
+                <th className="px-3 py-2 rounded-l-lg">Página</th>
+                <th className="px-3 py-2 text-right rounded-r-lg">Tempo Médio</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {stickyPages.length > 0 ? stickyPages.map((p, i) => (
+                <tr key={i} className="group hover:bg-slate-50 transition-colors">
+                  <td className="px-3 py-3 font-medium text-slate-700 truncate max-w-[180px]" title={p.name}>
+                    {formatPagePath(p.name)}
+                  </td>
+                  <td className="px-3 py-3 text-right text-emerald-600 font-bold">
+                    {formatTime(p.totaltime/p.visitors)}
+                  </td>
+                </tr>
+              )) : (
+                <tr><td colSpan={2} className="px-3 py-6 text-center text-slate-400">Nenhuma página de alto engajamento ainda.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Slippery Pages */}
+      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+        <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <ArrowDownRight className="w-5 h-5 text-orange-500" />
+          Páginas "Escorregadias" (Alta Rejeição)
+        </h3>
+        <div className="overflow-hidden">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-slate-500 uppercase bg-slate-50">
+              <tr>
+                <th className="px-3 py-2 rounded-l-lg">Página</th>
+                <th className="px-3 py-2 text-right rounded-r-lg">Rejeição</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {slipperyPages.length > 0 ? slipperyPages.map((p, i) => (
+                <tr key={i} className="group hover:bg-slate-50 transition-colors">
+                  <td className="px-3 py-3 font-medium text-slate-700 truncate max-w-[180px]" title={p.name}>
+                    {formatPagePath(p.name)}
+                  </td>
+                  <td className="px-3 py-3 text-right text-orange-600 font-bold">
+                    {((p.bounces/p.visitors)*100).toFixed(0)}%
+                  </td>
+                </tr>
+              )) : (
+                 <tr><td colSpan={2} className="px-3 py-6 text-center text-slate-400">Nenhuma página com alta rejeição.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 4. Traffic Trend (Chart)
+function TrafficTrendCard({ data }: { data: MetricData[] }) {
+  if (!data || data.length === 0) return null;
+
+  return (
+    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-blue-500" />
+          Tendência de Tráfego
+        </h3>
+        <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full">
+          <div className="w-2 h-2 rounded-full bg-blue-500" />
+          <span className="text-xs font-medium text-blue-700">Visualizações</span>
+        </div>
+      </div>
+      
+      <div className="h-[250px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+            <XAxis 
+              dataKey="x" 
+              fontSize={10} 
+              stroke="#94a3b8" 
+              tickFormatter={(val) => {
+                const d = new Date(val);
+                return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+              }}
+              tickMargin={10}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis 
+              fontSize={10} 
+              stroke="#94a3b8" 
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(val) => `${val}`}
+            />
+            <Tooltip 
+              contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+              labelFormatter={(label) => new Date(label).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })}
+            />
+            <Area 
+              type="monotone" 
+              dataKey="y" 
+              stroke="#3b82f6" 
+              strokeWidth={3} 
+              fill="url(#colorViews)" 
+              name="Visualizações"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+// 5. Heatmap Card
+function HeatmapCard({ heatmap }: { heatmap: number[][] }) {
   // Find Peak Time
   let peakVal = 0;
   let peakDay = 0;
@@ -236,154 +381,34 @@ function EngagementView({
   const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Scatter Plot - Quality of Variance */}
-        <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm">
-          <div className="mb-4">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Zap className="w-5 h-5 text-purple-500" />
-              Qualidade do Conteúdo
-            </h3>
-            <p className="text-xs text-slate-500">Visualizações vs. Tempo Médio (Páginas com &gt;5 views)</p>
-          </div>
-          
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.grid} />
-                <XAxis type="number" dataKey="x" name="Views" stroke={COLORS.neutral} fontSize={10} tickFormatter={(v) => `${v}`} />
-                <YAxis type="number" dataKey="y" name="Tempo (s)" stroke={COLORS.neutral} fontSize={10} tickFormatter={(v) => `${v}s`} />
-                <ReferenceLine y={60} stroke={COLORS.success} strokeDasharray="3 3" label={{ value: 'Engajado (>60s)', position: 'insideTopRight', fill: COLORS.success, fontSize: 10 }} />
-                <Scatter name="Páginas" data={scatterData} fill={COLORS.accent}>
-                  {scatterData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.y > 60 ? COLORS.success : entry.y < 10 ? COLORS.danger : COLORS.accent} />
-                  ))}
-                </Scatter>
-              </ScatterChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="flex justify-between text-xs text-slate-500 mt-2 px-2">
-            <span>Pouco tempo, Baixo interesse</span>
-            <span>Muito tempo, Alto engajamento</span>
-          </div>
-        </div>
+    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col h-full">
+       <div className="mb-6">
+        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <Clock className="w-5 h-5 text-purple-500" />
+          Melhor Horário
+        </h3>
+        <p className="text-xs text-slate-500">Pico de atividade dos usuários</p>
+      </div>
 
-        {/* Heatmap Insights */}
-        <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm flex flex-col">
-          <div className="mb-4">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-500" />
-              Melhor Horário
-            </h3>
-            <p className="text-xs text-slate-500">Quando seus usuários estão mais ativos</p>
-          </div>
-
-          <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-50 rounded-lg border border-slate-100 mb-4">
-            <p className="text-sm text-slate-500 uppercase tracking-widest font-semibold mb-2">Pico de Acesso</p>
-            <p className="text-4xl font-bold text-blue-600 mb-1">{days[peakDay]}</p>
-            <p className="text-2xl font-medium text-slate-700">{peakHour}:00 - {peakHour+1}:00</p>
-          </div>
-
-          <div className="space-y-2">
-            <h4 className="font-semibold text-sm text-slate-800">Dica de Ação:</h4>
-            <div className="flex gap-2 items-start text-sm text-slate-600 bg-blue-50 p-3 rounded-lg">
-              <Zap className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-              <p>Agende seus novos posts ou campanhas para <strong>{days[peakDay]}s</strong> pouco antes das <strong>{peakHour}h</strong> para maximizar o alcance inicial.</p>
-            </div>
-          </div>
-        </div>
+       <div className="flex-1 flex flex-col items-center justify-center p-6 bg-purple-50 rounded-xl border border-purple-100 mb-4">
+        <p className="text-sm text-purple-600 uppercase tracking-widest font-bold mb-2">Momento de Ouro</p>
+        <p className="text-4xl font-extrabold text-slate-900 mb-1">{days[peakDay]}</p>
+        <p className="text-2xl font-medium text-slate-600">{peakHour}:00 - {peakHour+1}:00</p>
+      </div>
+      
+      <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-sm text-slate-600">
+        <p>A maioria dos seus usuários acessa neste horário. Ótimo momento para lançar novidades.</p>
       </div>
     </div>
   );
 }
 
-// 3. Conversion View (Conversão)
-function ConversionView({ 
-  eventSeries,
-  events 
-}: { 
-  eventSeries: EventSeries[];
-  events: MetricData[];
-}) {
-  // Process series data (assuming granularity matches)
-  const chartData = eventSeries.reduce((acc, curr) => {
-    const existing = acc.find(a => a.x === curr.t);
-    if (existing) {
-      existing.y += curr.y;
-    } else {
-      acc.push({ x: curr.t, y: curr.y });
-    }
-    return acc;
-  }, [] as { x: string; y: number }[]).sort((a,b) => new Date(a.x).getTime() - new Date(b.x).getTime());
-
-  const totalEvents = events.reduce((sum, e) => sum + e.y, 0);
-
-  return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <Target className="w-5 h-5 text-red-500" />
-            Funil de Eventos
-          </h3>
-          <span className="text-2xl font-bold text-slate-900">{totalEvents} <span className="text-sm font-normal text-slate-500">interações totais</span></span>
-        </div>
-
-        {/* Timeline */}
-        <div className="h-[250px] mb-8">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.2}/>
-                  <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.grid} vertical={false} />
-              <XAxis 
-                dataKey="x" 
-                stroke={COLORS.neutral} 
-                fontSize={10} 
-                tickFormatter={(val) => new Date(val).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
-              />
-              <YAxis stroke={COLORS.neutral} fontSize={10} />
-              <Area type="monotone" dataKey="y" stroke={COLORS.primary} strokeWidth={3} fill="url(#colorEvents)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Top Events List */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {events.slice(0, 6).map((e, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 hover:border-blue-200 transition-colors bg-slate-50">
-              <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center font-bold text-xs text-slate-600 shadow-sm">
-                {i + 1}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-900 truncate" title={e.x}>{e.x}</p>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${(e.y / events[0].y) * 100}%` }} />
-                  </div>
-                  <span className="text-xs font-bold text-blue-700">{e.y}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// === Main Page Component ===
+// === Main Page ===
 export default function ComportamentoPage() {
   const [data, setData] = useState<BehaviorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [period, setPeriod] = useState('7d');
-  const [view, setView] = useState<'journey' | 'engagement' | 'conversion'>('journey');
 
   const fetchData = async () => {
     setLoading(true);
@@ -404,17 +429,12 @@ export default function ComportamentoPage() {
     fetchData();
   }, [period]);
 
-  // --- Filter Data (The "Save the Day" fix) ---
-  // Exclude admin, login, and dashboard pages from ALL analytics
+  // Filter out admin pages
   const filterData = (result: BehaviorData | null) => {
     if (!result) return null;
-
     const filteredTopPages = result.topPagesExpanded.filter(p => isPublicPage(p.name));
     const filteredEntry = result.entryPages.filter(p => isPublicPage(p.x));
     const filteredExit = result.exitPages.filter(p => isPublicPage(p.x));
-    
-    // Note: Events and Sessions usually don't have paths attached directly in this payload format 
-    // unless granular, but topPages is the main culprit for "admin views".
     
     return {
       ...result,
@@ -425,6 +445,18 @@ export default function ComportamentoPage() {
   };
 
   const processedData = filterData(data);
+
+  // Derived Global Metrics
+  const totalVisits = processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.visitors, 0) || 0;
+  const totalTime = processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.totaltime, 0) || 0;
+  const avgTimeGlobal = totalVisits > 0 ? totalTime / totalVisits : 0;
+  
+  // Avg Bounce
+  const totalBounces = processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.bounces, 0) || 0;
+  const avgBounceRate = totalVisits > 0 ? (totalBounces / totalVisits) * 100 : 0;
+
+  // Most Active Page
+  const topPage = processedData?.topPagesExpanded[0];
 
   if (loading && !processedData) {
     return (
@@ -450,21 +482,21 @@ export default function ComportamentoPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header & Controls */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Comportamento</h1>
-          <p className="text-slate-500">Entenda a jornada e o engajamento real.</p>
+          <p className="text-slate-500">Análise de jornada e engajamento</p>
         </div>
         
-        <div className="flex items-center gap-3 bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
+        <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
           {PERIODS.map((p) => (
             <button
               key={p.value}
               onClick={() => setPeriod(p.value)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
                 period === p.value 
-                  ? 'bg-slate-900 text-white shadow-sm' 
+                  ? 'bg-slate-800 text-white shadow-sm' 
                   : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
@@ -474,71 +506,55 @@ export default function ComportamentoPage() {
         </div>
       </div>
 
-      {/* View Switcher Tabs */}
-      <div className="grid grid-cols-3 gap-2 p-1 bg-slate-100 rounded-xl">
-        <button
-          onClick={() => setView('journey')}
-          className={`flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold transition-all ${
-            view === 'journey' 
-              ? 'bg-white text-blue-600 shadow-sm' 
-              : 'text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          <Map className="w-4 h-4" />
-          <span className="hidden sm:inline">Jornada</span>
-        </button>
-        <button
-          onClick={() => setView('engagement')}
-          className={`flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold transition-all ${
-            view === 'engagement' 
-              ? 'bg-white text-purple-600 shadow-sm' 
-              : 'text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          <Zap className="w-4 h-4" />
-          <span className="hidden sm:inline">Engajamento</span>
-        </button>
-        <button
-          onClick={() => setView('conversion')}
-          className={`flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold transition-all ${
-            view === 'conversion' 
-              ? 'bg-white text-emerald-600 shadow-sm' 
-              : 'text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          <Target className="w-4 h-4" />
-          <span className="hidden sm:inline">Conversão</span>
-        </button>
-      </div>
+      {processedData && (
+        <>
+          {/* 1. Global Metrics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <InsightCard 
+              title="Tempo Médio Global" 
+              value={formatTime(avgTimeGlobal)} 
+              subtext="Média em todas as páginas" 
+              icon={Timer}
+              colorClass="text-blue-600"
+              bgClass="bg-blue-50"
+            />
+            <InsightCard 
+              title="Taxa de Rejeição Média" 
+              value={`${avgBounceRate.toFixed(1)}%`} 
+              subtext="Visitantes que saíram direto" 
+              icon={ArrowUpRight}
+              colorClass="text-orange-600"
+              bgClass="bg-orange-50"
+            />
+             <InsightCard 
+              title="Página Mais Popular" 
+              value={topPage ? formatPagePath(topPage.name) : '-'} 
+              subtext={`${topPage?.visitors || 0} visitantes únicos`} 
+              icon={Zap}
+              colorClass="text-purple-600"
+              bgClass="bg-purple-50"
+            />
+          </div>
 
-      {/* Views Content */}
-      <div className="min-h-[500px]">
-        {processedData && (
-          <>
-            {view === 'journey' && (
-              <JourneyView 
-                entryPages={processedData.entryPages}
-                exitPages={processedData.exitPages}
-                topPages={processedData.topPagesExpanded}
-              />
-            )}
-            
-            {view === 'engagement' && (
-              <EngagementView 
-                pages={processedData.topPagesExpanded}
-                heatmap={processedData.sessionsWeekly}
-              />
-            )}
+          {/* 2. Flow & Heatmap Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <FlowCard 
+              entryPages={processedData.entryPages}
+              exitPages={processedData.exitPages}
+              topPages={processedData.topPagesExpanded}
+            />
+            <div className="col-span-1 lg:col-span-1 h-full">
+               <HeatmapCard heatmap={processedData.sessionsWeekly} />
+            </div>
+          </div>
 
-            {view === 'conversion' && (
-              <ConversionView 
-                eventSeries={processedData.eventsSeries}
-                events={processedData.events}
-              />
-            )}
-          </>
-        )}
-      </div>
+          {/* 3. Detailed Performance Lists */}
+          <PagePerformanceLists pages={processedData.topPagesExpanded} />
+
+          {/* 4. Traffic Trend (Replaces Empty Events) */}
+          <TrafficTrendCard data={processedData.pageviews} />
+        </>
+      )}
     </div>
   );
 }
