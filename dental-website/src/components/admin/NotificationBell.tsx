@@ -139,16 +139,27 @@ export function NotificationBell() {
                 <p className="text-xs text-slate-400 mt-1">Nenhum lead aguardando</p>
               </div>
             ) : (
-              recentLeads.map((lead) => (
+              recentLeads.map((lead, index) => {
+                // Rotate through colors for variety
+                const avatarColors = [
+                  'from-blue-500 to-indigo-600 shadow-blue-500/20',
+                  'from-rose-500 to-pink-600 shadow-rose-500/20',
+                  'from-amber-500 to-orange-600 shadow-amber-500/20',
+                  'from-emerald-500 to-teal-600 shadow-emerald-500/20',
+                  'from-purple-500 to-violet-600 shadow-purple-500/20',
+                ];
+                const colorIndex = lead.name.charCodeAt(0) % avatarColors.length;
+                
+                return (
                 <Link
                   key={lead.id}
                   href={`/admin/leads?q=${encodeURIComponent(lead.email)}`}
-                  className="block p-3 bg-white hover:bg-blue-50/50 border border-slate-100 hover:border-blue-200 rounded-xl transition-all duration-200 group"
+                  className="block p-3 bg-white hover:bg-slate-50 border border-slate-100 hover:border-slate-200 rounded-xl transition-all duration-200 group"
                   onClick={() => setIsOpen(false)}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 text-white font-bold text-sm">
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${avatarColors[colorIndex]} flex items-center justify-center flex-shrink-0 shadow-lg text-white font-bold text-sm`}>
                         {lead.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
@@ -175,7 +186,8 @@ export function NotificationBell() {
                     </div>
                   </div>
                 </Link>
-              ))
+                );
+              })
             )}
           </div>
 

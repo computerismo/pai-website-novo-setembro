@@ -124,14 +124,15 @@ export function LeadCard({ lead, onSelect, isSelected = false, onToggleSelect }:
               disabled={isPending}
               value={lead.status}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold appearance-none cursor-pointer focus:ring-2 focus:ring-offset-2 focus:outline-none shadow-lg text-white ${
+              className={`px-4 py-2 rounded-xl text-sm font-bold cursor-pointer focus:ring-2 focus:ring-offset-2 focus:outline-none shadow-lg text-white ${
                 statusConfig[lead.status as keyof typeof statusConfig]?.gradient || 'bg-slate-400'
               }`}
+              style={{ colorScheme: 'light' }}
             >
-              <option value="new">Novo</option>
-              <option value="contacted">Contactado</option>
-              <option value="qualified">Qualificado</option>
-              <option value="converted">Convertido</option>
+              <option value="new" className="text-slate-900 bg-white">Novo</option>
+              <option value="contacted" className="text-slate-900 bg-white">Contactado</option>
+              <option value="qualified" className="text-slate-900 bg-white">Qualificado</option>
+              <option value="converted" className="text-slate-900 bg-white">Convertido</option>
             </select>
             {isPending && <Loader2 className="w-4 h-4 animate-spin text-slate-400" />}
           </div>
