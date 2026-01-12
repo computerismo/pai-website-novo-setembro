@@ -54,6 +54,14 @@ interface EventSeries {
   y: number;
 }
 
+interface UmamiStats {
+  pageviews: number;
+  visitors: number;
+  visits: number;
+  bounces: number;
+  totaltime: number;
+}
+
 interface BehaviorData {
   topPages: MetricData[];
   topPagesExpanded: ExpandedMetricData[];
@@ -63,6 +71,7 @@ interface BehaviorData {
   eventsSeries: EventSeries[];
   pageviews: MetricData[]; // Format: { x: date, y: views }
   sessionsWeekly: number[][];
+  stats: UmamiStats;
   period: string;
 }
 
@@ -455,18 +464,16 @@ export default function ComportamentoPage() {
   const processedData = filterData(data);
 
   // Derived Global Metrics
-  // We use 'visits' (sessions) for denominators in Time/Bounce calcs to be accurate.
-  // 'visitors' is unique visitors, which would inflate the rates if used.
-  const totalSessions = processedData?.topPagesExpanded.reduce((acc, curr) => acc + (curr.visits || curr.visitors), 0) || 0;
-  const totalTime = processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.totaltime, 0) || 0;
-  
-  // Avg Time = Total Time / Total Sessions
-  const avgTimeGlobal = totalSessions > 0 ? totalTime / totalSessions : 0;
+  // NOW using true global stats from API to match Overview page
+  const avgTimeGlobal = processedData?.stats && processedData.stats.visits > 0 
+    ? processedData.stats.totaltime / processedData.stats.visits 
+    : 0;
   
   // Avg Bounce = Total Bounces / Total Sessions
-  const totalBounces = processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.bounces, 0) || 0;
-  // Ensure we don't divide by zero and cap at 100% just in case of data anomalies
-  const avgBounceRate = totalSessions > 0 ? Math.min(100, (totalBounces / totalSessions) * 100) : 0;
+  // Using global stats to be consistent with Overview
+  const avgBounceRate = processedData?.stats && processedData.stats.visits > 0 
+    ? Math.min(100, (processedData.stats.bounces / processedData.stats.visits) * 100) 
+    : 0;
 
   // Most Active Page
   const topPage = processedData?.topPagesExpanded[0];
