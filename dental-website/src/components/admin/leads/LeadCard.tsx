@@ -46,11 +46,11 @@ export function LeadCard({ lead, onSelect, isSelected = false, onToggleSelect }:
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const statusColors = {
-    new: 'bg-blue-100 text-blue-800 border-blue-200',
-    contacted: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    qualified: 'bg-cyan-100 text-cyan-800 border-cyan-200',
-    converted: 'bg-green-100 text-green-800 border-green-200',
+  const statusGradients = {
+    new: 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white',
+    contacted: 'bg-gradient-to-r from-amber-400 to-orange-500 text-white',
+    qualified: 'bg-gradient-to-r from-cyan-400 to-teal-500 text-white',
+    converted: 'bg-gradient-to-r from-emerald-400 to-green-600 text-white',
   };
 
   const handleStatusChange = (newStatus: string) => {
@@ -73,7 +73,7 @@ export function LeadCard({ lead, onSelect, isSelected = false, onToggleSelect }:
   };
 
   return (
-    <div className={`p-6 bg-white border-b hover:bg-gray-50 transition-colors group relative ${isSelected ? 'bg-blue-50 ring-2 ring-blue-200 ring-inset' : ''}`}>
+    <div className={`p-5 bg-white hover:bg-slate-50/50 transition-all duration-200 group relative border-b border-slate-100 ${isSelected ? 'bg-blue-50/50 ring-2 ring-blue-300 ring-inset' : ''}`}>
       <div className="flex flex-col gap-4">
         {/* Top Row: Checkbox, Name and Status */}
         <div className="flex items-start justify-between gap-4">
@@ -117,8 +117,8 @@ export function LeadCard({ lead, onSelect, isSelected = false, onToggleSelect }:
               disabled={isPending}
               value={lead.status}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border appearance-none cursor-pointer focus:ring-2 focus:ring-offset-1 focus:outline-none ${
-                statusColors[lead.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold appearance-none cursor-pointer focus:ring-2 focus:ring-offset-1 focus:outline-none shadow-sm ${
+                statusGradients[lead.status as keyof typeof statusGradients] || 'bg-slate-200 text-slate-700'
               }`}
             >
               <option value="new">Novo</option>
@@ -126,7 +126,7 @@ export function LeadCard({ lead, onSelect, isSelected = false, onToggleSelect }:
               <option value="qualified">Qualificado</option>
               <option value="converted">Convertido</option>
             </select>
-            {isPending && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+            {isPending && <Loader2 className="w-4 h-4 animate-spin text-slate-400" />}
           </div>
         </div>
 

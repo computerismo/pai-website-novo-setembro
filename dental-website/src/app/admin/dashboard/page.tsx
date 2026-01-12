@@ -114,12 +114,12 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">
-          Bem-vindo de volta, {session.user?.name || "Admin"}!
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+        <p className="text-slate-500 mt-1">
+          Bem-vindo de volta, <span className="font-medium text-slate-700">{session.user?.name || "Admin"}</span>!
         </p>
       </div>
 
@@ -165,58 +165,62 @@ export default async function DashboardPage() {
       </div>
 
       {/* Funnel + Recent Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Conversion Funnel */}
         <ConversionFunnel stages={funnelStages} />
 
         {/* Recent Leads */}
-        <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-          <div className="p-6 border-b border-neutral-100">
+        <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+          <div className="p-6 border-b border-slate-100">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900 tracking-tight">
+              <h2 className="text-lg font-semibold text-slate-900 tracking-tight">
                 Leads Recentes
               </h2>
               <Link
                 href="/admin/leads"
-                className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors px-3 py-1 rounded-lg hover:bg-blue-50"
               >
                 Ver todos
               </Link>
             </div>
           </div>
-          <div className="divide-y divide-neutral-100">
+          <div className="divide-y divide-slate-100">
             {recentLeads.length === 0 ? (
-              <div className="p-6 text-center text-gray-500">
+              <div className="p-8 text-center text-slate-500">
                 Nenhum lead encontrado
               </div>
             ) : (
               recentLeads.map((lead) => (
-                <div key={lead.id} className="p-4 hover:bg-neutral-50 transition-colors">
+                <div key={lead.id} className="p-4 hover:bg-slate-50/50 transition-colors group">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">{lead.name}</h3>
-                      <p className="text-sm text-gray-500 mt-0.5">{lead.email}</p>
-                      <p className="text-sm text-gray-400 mt-1">
+                      <h3 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{lead.name}</h3>
+                      <p className="text-sm text-slate-500 mt-0.5">{lead.email}</p>
+                      <p className="text-sm text-slate-400 mt-1">
                         {lead.treatment}
                       </p>
                     </div>
                     <span
-                      className={`px-2 py-0.5 rounded text-xs font-medium border ${
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
                         lead.status === "new"
-                          ? "bg-blue-50 text-blue-700 border-blue-200"
+                          ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
                           : lead.status === "contacted"
-                          ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                          : "bg-green-50 text-green-700 border-green-200"
+                          ? "bg-gradient-to-r from-amber-400 to-orange-500 text-white"
+                          : lead.status === "qualified"
+                          ? "bg-gradient-to-r from-cyan-400 to-teal-500 text-white"
+                          : "bg-gradient-to-r from-emerald-400 to-green-500 text-white"
                       }`}
                     >
                       {lead.status === "new"
                         ? "Novo"
                         : lead.status === "contacted"
                         ? "Contactado"
-                        : lead.status}
+                        : lead.status === "qualified"
+                        ? "Qualificado"
+                        : "Convertido"}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs text-slate-400 mt-2">
                     {format(new Date(lead.createdAt), "dd/MM/yyyy 'às' HH:mm", {
                       locale: ptBR,
                     })}
@@ -229,23 +233,23 @@ export default async function DashboardPage() {
       </div>
 
       {/* Recent Posts */}
-      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-        <div className="p-6 border-b border-neutral-100">
+      <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+        <div className="p-6 border-b border-slate-100">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 tracking-tight">
+            <h2 className="text-lg font-semibold text-slate-900 tracking-tight">
               Posts Recentes
             </h2>
             <Link
               href="/admin/posts"
-              className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors px-3 py-1 rounded-lg hover:bg-blue-50"
             >
               Ver todos
             </Link>
           </div>
         </div>
-        <div className="divide-y divide-neutral-100">
+        <div className="divide-y divide-slate-100">
           {recentPosts.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">
+            <div className="p-8 text-center text-slate-500">
               Nenhum post encontrado
             </div>
           ) : (
@@ -253,23 +257,23 @@ export default async function DashboardPage() {
               <Link
                 key={post.id}
                 href={`/admin/posts/${post.id}`}
-                className="block p-4 hover:bg-neutral-50 transition-colors group"
+                className="block p-4 hover:bg-slate-50/50 transition-colors group"
               >
-                <h3 className="font-medium text-gray-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                <h3 className="font-semibold text-slate-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
                   {post.title}
                 </h3>
-                <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
                   <span
-                    className={`px-2 py-0.5 rounded text-xs font-medium border ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
                       post.status === "published"
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-yellow-50 text-yellow-700 border-yellow-200"
+                        ? "bg-gradient-to-r from-emerald-400 to-green-500 text-white"
+                        : "bg-gradient-to-r from-amber-400 to-orange-500 text-white"
                     }`}
                   >
                     {post.status === "published" ? "Publicado" : "Rascunho"}
                   </span>
 
-                  <span className="text-gray-400">
+                  <span className="text-slate-400">
                     • {format(new Date(post.createdAt), "dd MMM yyyy", {
                       locale: ptBR,
                     })}

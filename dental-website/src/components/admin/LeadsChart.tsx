@@ -1,8 +1,9 @@
 'use client';
 
 import { useMemo } from 'react';
-import { format, subDays } from 'date-fns';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { TrendingUp, BarChart3 } from 'lucide-react';
 
 interface LeadsChartProps {
   data: { date: string; count: number }[];
@@ -21,42 +22,78 @@ export function LeadsChart({ data }: LeadsChartProps) {
   const avgLeads = data.length > 0 ? (totalLeads / data.length).toFixed(1) : 0;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm hover:shadow-lg transition-shadow duration-300">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-8">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Leads nos Últimos 7 Dias</h3>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Total: <span className="font-medium text-gray-700">{totalLeads}</span> · 
-            Média: <span className="font-medium text-gray-700">{avgLeads}/dia</span>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25">
+              <BarChart3 className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900">Leads nos Últimos 7 Dias</h3>
+          </div>
+          <p className="text-sm text-slate-500">
+            Acompanhe o desempenho da geração de leads
           </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <p className="text-2xl font-bold text-slate-900">{totalLeads}</p>
+            <p className="text-xs text-slate-500">total</p>
+          </div>
+          <div className="text-right px-4 border-l border-slate-200">
+            <p className="text-2xl font-bold text-blue-600">{avgLeads}</p>
+            <p className="text-xs text-slate-500">média/dia</p>
+          </div>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="relative h-48">
-        <div className="absolute inset-0 flex items-end justify-between gap-2">
+      <div className="relative h-52">
+        {/* Background grid */}
+        <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="border-t border-slate-100 border-dashed" />
+          ))}
+        </div>
+
+        <div className="absolute inset-0 flex items-end justify-between gap-3 px-2">
           {chartData.map((item, index) => {
             const height = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
             const dateLabel = format(new Date(item.date), 'EEE', { locale: ptBR });
             const dayLabel = format(new Date(item.date), 'dd/MM');
+            const isToday = index === chartData.length - 1;
             
             return (
-              <div key={item.date} className="flex-1 flex flex-col items-center group">
+              <div key={item.date} className="flex-1 flex flex-col items-center group cursor-pointer">
                 {/* Tooltip */}
-                <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                  <div className="bg-gray-900 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
-                    {item.count} lead{item.count !== 1 ? 's' : ''} em {dayLabel}
+                <div className="absolute bottom-full mb-3 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-10 transform group-hover:-translate-y-1">
+                  <div className="bg-slate-900 text-white text-xs px-3 py-2 rounded-xl shadow-xl whitespace-nowrap">
+                    <p className="font-semibold">{item.count} lead{item.count !== 1 ? 's' : ''}</p>
+                    <p className="text-slate-400 text-[10px]">{dayLabel}</p>
                   </div>
                 </div>
 
                 {/* Bar */}
-                <div className="w-full flex justify-center mb-2">
+                <div className="w-full flex justify-center mb-3 flex-1 items-end">
                   <div
-                    className="w-full max-w-12 rounded-t-lg transition-all duration-300 bg-gradient-to-t from-blue-600 to-blue-400 group-hover:from-blue-700 group-hover:to-blue-500 relative"
-                    style={{ height: `${Math.max(height, 4)}%` }}
+                    className={`w-full max-w-14 rounded-xl transition-all duration-500 relative overflow-hidden ${
+                      isToday 
+                        ? 'bg-gradient-to-t from-blue-600 via-blue-500 to-indigo-400 shadow-lg shadow-blue-500/30' 
+                        : 'bg-gradient-to-t from-slate-300 to-slate-200 group-hover:from-blue-500 group-hover:to-blue-400'
+                    }`}
+                    style={{ 
+                      height: `${Math.max(height, 8)}%`,
+                      minHeight: item.count > 0 ? '24px' : '8px'
+                    }}
                   >
+                    {/* Shine effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                    
                     {item.count > 0 && (
-                      <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-xs font-bold text-gray-700">
+                      <span className={`absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold ${
+                        isToday ? 'text-blue-600' : 'text-slate-600'
+                      }`}>
                         {item.count}
                       </span>
                     )}
@@ -64,7 +101,9 @@ export function LeadsChart({ data }: LeadsChartProps) {
                 </div>
 
                 {/* Label */}
-                <span className="text-xs text-gray-500 capitalize">{dateLabel}</span>
+                <span className={`text-xs font-medium capitalize ${
+                  isToday ? 'text-blue-600' : 'text-slate-400'
+                }`}>{dateLabel}</span>
               </div>
             );
           })}
