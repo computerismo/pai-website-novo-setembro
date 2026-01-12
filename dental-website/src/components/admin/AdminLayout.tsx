@@ -13,6 +13,7 @@ import {
   BarChart3,
   ChevronDown,
   Settings,
+  Search,
 } from "lucide-react";
 import { useState, Suspense } from "react";
 import { NotificationBell } from "./NotificationBell";
@@ -216,6 +217,7 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 Tempo Real
               </Link>
             </CollapsibleNavItem>
+            <NavItem href="/admin/seo" icon={Search} label="Análise de SEO" />
             
             <div className="py-3">
               <div className="border-t border-white/5 mx-2"></div>
