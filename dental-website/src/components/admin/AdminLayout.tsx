@@ -2,7 +2,7 @@
 
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
@@ -10,6 +10,7 @@ import {
   LogOut,
   Menu,
   X,
+  BarChart3,
 } from "lucide-react";
 import { useState } from "react";
 import { NotificationBell } from "./NotificationBell";
@@ -20,6 +21,8 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const viewParam = searchParams.get('view');
   const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -90,6 +93,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               Menu Principal
             </p>
             <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />
+            <NavItem href="/admin/analytics" icon={BarChart3} label="Análise de Tráfego" />
             
             <div className="py-3">
               <div className="border-t border-white/5 mx-2"></div>
@@ -113,8 +117,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Link
                 href="/admin/leads?view=list"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
-                  pathname === '/admin/leads' || pathname?.includes('view=list')
-                    ? 'text-blue-400'
+                  pathname === '/admin/leads' && (!viewParam || viewParam === 'list')
+                    ? 'text-blue-400 bg-blue-500/10'
                     : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
                 }`}
               >
@@ -123,7 +127,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </Link>
               <Link
                 href="/admin/leads?view=kanban"
-                className="flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 text-slate-500 hover:text-slate-300 hover:bg-white/5"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/leads' && viewParam === 'kanban'
+                    ? 'text-blue-400 bg-blue-500/10'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-current mr-3" />
                 Kanban

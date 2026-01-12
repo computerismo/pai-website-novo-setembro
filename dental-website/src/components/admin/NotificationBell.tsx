@@ -139,18 +139,7 @@ export function NotificationBell() {
                 <p className="text-xs text-slate-400 mt-1">Nenhum lead aguardando</p>
               </div>
             ) : (
-              recentLeads.map((lead, index) => {
-                // Rotate through colors for variety
-                const avatarColors = [
-                  'from-blue-500 to-indigo-600 shadow-blue-500/20',
-                  'from-rose-500 to-pink-600 shadow-rose-500/20',
-                  'from-amber-500 to-orange-600 shadow-amber-500/20',
-                  'from-emerald-500 to-teal-600 shadow-emerald-500/20',
-                  'from-purple-500 to-violet-600 shadow-purple-500/20',
-                ];
-                const colorIndex = lead.name.charCodeAt(0) % avatarColors.length;
-                
-                return (
+              recentLeads.map((lead) => (
                 <Link
                   key={lead.id}
                   href={`/admin/leads?q=${encodeURIComponent(lead.email)}`}
@@ -159,7 +148,7 @@ export function NotificationBell() {
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${avatarColors[colorIndex]} flex items-center justify-center flex-shrink-0 shadow-lg text-white font-bold text-sm`}>
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20 text-white font-bold text-sm">
                         {lead.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
@@ -186,8 +175,7 @@ export function NotificationBell() {
                     </div>
                   </div>
                 </Link>
-                );
-              })
+              ))
             )}
           </div>
 
@@ -207,7 +195,7 @@ export function NotificationBell() {
               )}
               <Link
                 href="/admin/leads"
-                className="flex items-center gap-1 text-xs font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 px-3 py-1.5 rounded-lg shadow-sm transition-all"
+                className="flex items-center gap-1 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 px-3 py-1.5 rounded-lg shadow-lg shadow-amber-500/20 transition-all"
                 onClick={() => setIsOpen(false)}
               >
                 Ver todos

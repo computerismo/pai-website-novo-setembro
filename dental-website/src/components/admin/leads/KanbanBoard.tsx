@@ -47,30 +47,69 @@ function SortableLead({ lead, onClick }: { lead: Lead, onClick: () => void }) {
     opacity: isDragging ? 0.5 : 1,
   };
 
+  // Map UTM source to readable label
+  const getSourceLabel = (source: string | null) => {
+    if (!source) return null;
+    const sourceMap: Record<string, string> = {
+      'contact_page': 'Contato',
+      'contact-page': 'Contato',
+      'homepage': 'Home',
+      'botox-bruxismo': 'Botox',
+      'placa-miorrelaxante': 'Placa',
+      'tratamento-bruxismo': 'Bruxismo',
+      'google': 'Google',
+      'facebook': 'Facebook',
+      'instagram': 'Instagram',
+      'direct': 'Direto',
+    };
+    return sourceMap[source] || source;
+  };
+
+  const sourceLabel = getSourceLabel(lead.utmSource);
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="mb-3">
        <div 
          className="cursor-grab active:cursor-grabbing"
          onClick={onClick}
        >
-         <div className="bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group">
-            <div className="flex justify-between items-start mb-2">
-                <h4 className="font-semibold text-slate-900 truncate flex-1 group-hover:text-blue-600 transition-colors">{lead.name}</h4>
-                <div className="text-[10px] text-blue-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity bg-blue-50 px-2 py-0.5 rounded-full">
-                    VER
-                </div>
+         <div className="bg-gradient-to-br from-white to-slate-50 p-4 rounded-xl border-2 border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-blue-300/60 transition-all duration-200 group">
+            {/* Header with avatar and name */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/20 flex-shrink-0">
+                {lead.name.charAt(0).toUpperCase()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">{lead.name}</h4>
+                <p className="text-xs text-slate-400 truncate">{lead.email}</p>
+              </div>
+              <div className="text-[10px] text-blue-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity bg-blue-100 px-2 py-1 rounded-lg flex-shrink-0">
+                VER
+              </div>
             </div>
-            <p className="text-xs text-slate-500 mb-3 truncate">{lead.email}</p>
-            <div className="flex justify-between items-center text-xs">
-                 <span className="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg font-medium truncate max-w-[120px]">{lead.treatment}</span>
-                 <span className="text-slate-400">{new Date(lead.createdAt).toLocaleDateString('pt-BR')}</span>
+            
+            {/* Info row */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-semibold truncate max-w-[100px]">
+                {lead.treatment}
+              </span>
+              {sourceLabel && (
+                <span className="bg-purple-50 text-purple-600 px-2.5 py-1 rounded-lg text-xs font-semibold border border-purple-200">
+                  {sourceLabel}
+                </span>
+              )}
+              <span className="text-xs text-slate-400 ml-auto flex-shrink-0">
+                {new Date(lead.createdAt).toLocaleDateString('pt-BR')}
+              </span>
             </div>
+            
+            {/* Assigned user */}
             {lead.assignedTo && (
-              <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-[10px] text-white font-bold">
+              <div className="mt-3 pt-3 border-t border-slate-200 flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-[10px] text-white font-bold shadow-sm">
                   {lead.assignedTo.name?.charAt(0) || 'A'}
                 </div>
-                <span className="text-xs text-slate-500 truncate">{lead.assignedTo.name || lead.assignedTo.email}</span>
+                <span className="text-xs text-slate-500 font-medium truncate">{lead.assignedTo.name || lead.assignedTo.email}</span>
               </div>
             )}
          </div>
