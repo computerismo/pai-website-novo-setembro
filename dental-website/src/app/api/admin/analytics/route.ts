@@ -40,11 +40,12 @@ export async function GET(request: Request) {
 
   try {
     // Fetch all data in parallel for performance
-    const [stats, pageviews, topPages, referrers, devices, browsers, countries, activeVisitors] = await Promise.all([
+    const [stats, pageviews, topPages, referrers, channels, devices, browsers, countries, activeVisitors] = await Promise.all([
       umamiClient.getStatsWithComparison(startAt, endAt),
       umamiClient.getPageviews(startAt, endAt, unit),
       umamiClient.getMetrics(startAt, endAt, 'path', 10),
       umamiClient.getMetrics(startAt, endAt, 'referrer', 10),
+      umamiClient.getMetrics(startAt, endAt, 'channel', 10),
       umamiClient.getMetrics(startAt, endAt, 'device', 5),
       umamiClient.getMetrics(startAt, endAt, 'browser', 5),
       umamiClient.getMetrics(startAt, endAt, 'country', 10),
@@ -56,6 +57,7 @@ export async function GET(request: Request) {
       pageviews,
       topPages,
       referrers,
+      channels,
       devices,
       browsers,
       countries,

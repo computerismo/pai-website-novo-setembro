@@ -58,6 +58,7 @@ interface AnalyticsData {
   };
   topPages: MetricData[];
   referrers: MetricData[];
+  channels: MetricData[];
   devices: MetricData[];
   browsers: MetricData[];
   countries: MetricData[];
@@ -426,24 +427,34 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        {/* Referrers */}
+        {/* Traffic Channels */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
           <div className="flex items-center gap-2 mb-4">
             <Globe className="w-5 h-5 text-green-500" />
             <h3 className="font-semibold text-slate-900">Fontes de Tráfego</h3>
           </div>
           <div className="space-y-3">
-            {data?.referrers?.slice(0, 7).map((ref, i) => (
-              <div key={i} className="flex items-center justify-between">
-                <span className="text-sm text-slate-600 truncate flex-1" title={ref.x}>
-                  {ref.x || 'Direto'}
-                </span>
-                <span className="text-sm font-medium text-slate-900 ml-2">
-                  {ref.y.toLocaleString('pt-BR')}
-                </span>
-              </div>
-            ))}
-            {(!data?.referrers || data.referrers.length === 0) && (
+            {data?.channels?.slice(0, 7).map((channel, i) => {
+              const channelNames: Record<string, string> = {
+                'Direct': 'Direto',
+                'Organic': 'Orgânico',
+                'Referral': 'Referência',
+                'Social': 'Redes Sociais',
+                'Email': 'Email',
+                'Paid': 'Pago',
+              };
+              return (
+                <div key={i} className="flex items-center justify-between">
+                  <span className="text-sm text-slate-600 truncate flex-1">
+                    {channelNames[channel.x] || channel.x}
+                  </span>
+                  <span className="text-sm font-medium text-slate-900 ml-2">
+                    {channel.y.toLocaleString('pt-BR')}
+                  </span>
+                </div>
+              );
+            })}
+            {(!data?.channels || data.channels.length === 0) && (
               <p className="text-sm text-slate-400 text-center py-4">Nenhum dado disponível</p>
             )}
           </div>
