@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Crimson_Pro } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '@/lib/constants/site';
+import UmamiAnalytics from '@/components/UmamiAnalytics';
 
 const inter = Inter({ subsets: ['latin'] });
 const crimsonPro = Crimson_Pro({
@@ -51,7 +52,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.className} ${crimsonPro.variable}`} suppressHydrationWarning>{children}</body>
+      <body className={`${inter.className} ${crimsonPro.variable}`} suppressHydrationWarning>
+        <UmamiAnalytics />
+        {children}
+      </body>
     </html>
   );
 }

@@ -58,6 +58,7 @@
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.63.0",
     "reading-time": "^1.5.0",
+    "recharts": "^3.6.0",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
