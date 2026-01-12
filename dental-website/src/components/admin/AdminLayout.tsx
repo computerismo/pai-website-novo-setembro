@@ -148,9 +148,17 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
             <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Menu Principal
+              Visão Geral
             </p>
             <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />
+            
+            <div className="py-3">
+              <div className="border-t border-white/5 mx-2"></div>
+            </div>
+            
+            <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Análise Web
+            </p>
             <CollapsibleNavItem 
               icon={BarChart3} 
               label="Análise de Tráfego" 
