@@ -149,9 +149,16 @@ function LiveIndicator() {
   );
 }
 
+// Filter helper
+function isPublicPage(path: string | undefined): boolean {
+  if (!path) return false;
+  return !path.startsWith('/admin') && !path.startsWith('/login');
+}
+
 // Active pages list
 function ActivePagesList({ urls }: { urls: Record<string, number> }) {
   const sortedUrls = Object.entries(urls)
+    .filter(([url]) => isPublicPage(url)) // Filter admin pages
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10);
 
@@ -163,7 +170,7 @@ function ActivePagesList({ urls }: { urls: Record<string, number> }) {
         </div>
         <div>
           <h3 className="text-lg font-semibold text-slate-900">Páginas Ativas</h3>
-          <p className="text-sm text-slate-500">Sendo visualizadas agora</p>
+          <p className="text-sm text-slate-500">Sendo visualizadas agora (público)</p>
         </div>
       </div>
       
@@ -174,17 +181,17 @@ function ActivePagesList({ urls }: { urls: Record<string, number> }) {
               <div className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
                 {count}
               </div>
-              <span className="text-sm text-slate-700" title={url}>
+              <span className="text-sm text-slate-700 font-medium" title={url}>
                 {formatPagePath(url)}
               </span>
             </div>
-            <div className="flex items-center gap-1 text-emerald-500">
+            <div className="flex items-center gap-1 text-emerald-500 animate-pulse">
               <Activity className="w-4 h-4" />
             </div>
           </div>
         ))}
         {sortedUrls.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-8">Nenhuma página ativa no momento</p>
+          <p className="text-sm text-slate-400 text-center py-8">Nenhuma página pública ativa</p>
         )}
       </div>
     </div>
@@ -211,20 +218,24 @@ function VisitorsByCountry({ countries }: { countries: Record<string, number> })
         </div>
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-4">
         {sortedCountries.map(([code, count], i) => {
-          const percentage = ((count / total) * 100).toFixed(0);
+          const percentage = total > 0 ? ((count / total) * 100).toFixed(0) : '0';
           return (
-            <div key={i} className="flex items-center justify-between">
+            <div key={i} className="flex items-center justify-between group">
               <div className="flex items-center gap-3">
-                <span className="text-lg">{getCountryName(code).split(' ')[0]}</span>
-                <span className="text-sm text-slate-700">
+                <span className="text-2xl rounded shadow-sm">{getCountryName(code).split(' ')[0]}</span>
+                <span className="text-sm font-medium text-slate-700">
                   {getCountryName(code).split(' ').slice(1).join(' ')}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-slate-900">{count}</span>
-                <span className="text-xs text-slate-400">({percentage}%)</span>
+              <div className="flex items-center gap-3">
+                <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${percentage}%` }} />
+                </div>
+                <div className="text-right min-w-[3rem]">
+                  <span className="text-sm font-bold text-slate-900">{count}</span>
+                </div>
               </div>
             </div>
           );
@@ -242,6 +253,8 @@ function RealtimeReferrers({ referrers }: { referrers: Record<string, number> })
   const sortedReferrers = Object.entries(referrers)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 8);
+    
+  const total = sortedReferrers.reduce((sum, [, c]) => sum + c, 0);
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
@@ -255,19 +268,21 @@ function RealtimeReferrers({ referrers }: { referrers: Record<string, number> })
         </div>
       </div>
       
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {sortedReferrers.map(([referrer, count], i) => (
-          <div key={i} className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 transition-colors">
-            <span className="text-sm text-slate-700 truncate" title={referrer}>
+          <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="text-sm font-medium text-slate-700 truncate max-w-[70%]" title={referrer}>
               {referrer || 'Tráfego Direto'}
             </span>
-            <span className="text-sm font-semibold text-slate-900 ml-2 shrink-0">
+            <span className="px-2 py-1 bg-white rounded-md text-xs font-bold text-purple-600 shadow-sm border border-slate-100">
               {count}
             </span>
           </div>
         ))}
         {sortedReferrers.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-8">Nenhuma fonte ativa</p>
+          <div className="col-span-full">
+            <p className="text-sm text-slate-400 text-center py-8">Nenhuma fonte ativa</p>
+          </div>
         )}
       </div>
     </div>
@@ -283,16 +298,26 @@ function MiniChart({ series }: { series: { views: { x: string; y: number }[]; vi
     views: v.y,
     visitors: series.visitors[i]?.y || 0,
   }));
+  
+  const totalViews = chartData.reduce((acc, curr) => acc + curr.views, 0);
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-600">
-          <Activity className="w-5 h-5" />
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-600">
+            <Activity className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Tráfego (30min)</h3>
+            <p className="text-sm text-slate-500">{totalViews} visualizações recentes</p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold text-slate-900">Tráfego ao Vivo</h3>
-          <p className="text-sm text-slate-500">Últimos 30 minutos</p>
+        <div className="flex gap-2">
+            <span className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg">
+                <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                Views
+            </span>
         </div>
       </div>
       
@@ -306,32 +331,17 @@ function MiniChart({ series }: { series: { views: { x: string; y: number }[]; vi
               </linearGradient>
             </defs>
             <XAxis dataKey="time" hide />
-            <Tooltip 
-              contentStyle={{
-                backgroundColor: '#1e293b',
-                border: 'none',
-                borderRadius: '8px',
-                color: '#fff',
-                fontSize: '12px',
-              }}
-            />
+            {/* No Tooltip as requested */}
             <Area 
               type="monotone" 
               dataKey="views" 
               stroke="#6366f1" 
               strokeWidth={2}
               fill="url(#colorViews)" 
-              name="Views"
+              isAnimationActive={false}
             />
           </AreaChart>
         </ResponsiveContainer>
-      </div>
-      
-      <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-100">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-indigo-500" />
-          <span className="text-xs text-slate-500">Visualizações</span>
-        </div>
       </div>
     </div>
   );
@@ -339,10 +349,11 @@ function MiniChart({ series }: { series: { views: { x: string; y: number }[]; vi
 
 // Activity Feed
 function ActivityFeed({ events }: { events: RealtimeEvent[] }) {
-  if (!events?.length) return null;
-
-  const recentEvents = events.slice(0, 8);
+  if (!events) return null;
   
+  // Filter admin events
+  const publicEvents = events.filter(e => isPublicPage(e.urlPath)).slice(0, 8);
+
   const getDeviceIcon = (device: string) => {
     if (device === 'mobile') return <Smartphone className="w-4 h-4" />;
     return <Monitor className="w-4 h-4" />;
@@ -353,7 +364,7 @@ function ActivityFeed({ events }: { events: RealtimeEvent[] }) {
     ES: '🇪🇸', CO: '🇨🇴', CL: '🇨🇱', DE: '🇩🇪', FR: '🇫🇷',
   };
 
-  const formatTime = (dateStr: string) => {
+  const formatTimeKey = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
@@ -366,30 +377,35 @@ function ActivityFeed({ events }: { events: RealtimeEvent[] }) {
         </div>
         <div>
           <h3 className="text-lg font-semibold text-slate-900">Atividade Recente</h3>
-          <p className="text-sm text-slate-500">Últimas interações em tempo real</p>
+          <p className="text-sm text-slate-500">Últimas interações (Público)</p>
         </div>
       </div>
       
-      <div className="space-y-2 max-h-[300px] overflow-y-auto">
-        {recentEvents.map((event, i) => (
+      <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+        {publicEvents.map((event, i) => (
           <div 
             key={i} 
-            className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors animate-pulse-once"
+            className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100/50"
           >
-            <span className="text-lg">{countryFlags[event.country] || '🌍'}</span>
+            <span className="text-xl filter drop-shadow-sm">{countryFlags[event.country] || '🌍'}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-slate-700 truncate" title={event.urlPath}>
-                {event.urlPath === '/' ? 'Página Inicial' : event.urlPath}
+              <p className="text-sm font-medium text-slate-900 truncate" title={event.urlPath}>
+                {formatPagePath(event.urlPath)}
               </p>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span>{getDeviceIcon(event.device)}</span>
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <span className="flex items-center gap-1 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                    {getDeviceIcon(event.device)} {event.device}
+                </span>
                 <span>{event.browser}</span>
-                <span>•</span>
-                <span>{formatTime(event.createdAt)}</span>
+                <span className="text-slate-300">•</span>
+                <span className="font-mono text-slate-400">{formatTimeKey(event.createdAt)}</span>
               </div>
             </div>
           </div>
         ))}
+        {publicEvents.length === 0 && (
+             <p className="text-sm text-slate-400 text-center py-8">Nenhuma atividade recente</p>
+        )}
       </div>
     </div>
   );
@@ -405,15 +421,15 @@ export default function TempoRealPage() {
     try {
       const res = await fetch('/api/admin/analytics/tempo-real');
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Falha ao carregar dados');
+        throw new Error('Falha de conexão');
       }
       const result = await res.json();
       setData(result);
       setLastUpdate(new Date());
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      // Slient error in realtime usually better, or unobtrusive
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -421,44 +437,21 @@ export default function TempoRealPage() {
 
   useEffect(() => {
     fetchData();
-    // Auto-refresh every 15 seconds
-    const interval = setInterval(fetchData, 15000);
+    const interval = setInterval(fetchData, 10000); // 10s refresh
     return () => clearInterval(interval);
   }, [fetchData]);
 
+  // Calculations excluding admin
+  const activeVisitors = data?.activeVisitors || 0; 
+  // Note: activeVisitors from API is a hard count, hard to filter client side without raw session data.
+  // We accepted "Admin visits in total count" earlier as unavoidable without deep changes, 
+  // but we hid them from the lists.
+
   if (loading && !data) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Tempo Real</h1>
-          <p className="text-slate-500 mt-1">Monitoramento em tempo real</p>
-        </div>
-        <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center">
-          <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
-          <p className="text-slate-500 mt-4">Conectando ao monitoramento...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Tempo Real</h1>
-          <p className="text-slate-500 mt-1">Monitoramento em tempo real</p>
-        </div>
-        <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center border-2 border-dashed border-red-200">
-          <h2 className="text-xl font-bold text-slate-900 mb-2">Erro de conexão</h2>
-          <p className="text-slate-500 text-center max-w-md mb-4">{error}</p>
-          <button
-            onClick={fetchData}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Reconectar
-          </button>
-        </div>
+      <div className="min-h-[400px] flex flex-col items-center justify-center">
+        <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mb-4" />
+        <p className="text-slate-500">Conectando ao satélite...</p>
       </div>
     );
   }
@@ -468,46 +461,37 @@ export default function TempoRealPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
-            <Link href="/admin/analytics" className="hover:text-blue-600">Análise de Tráfego</Link>
+           <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
+            <Link href="/admin/analytics" className="hover:text-blue-600 transition-colors">Análise</Link>
             <ArrowRight className="w-3 h-3" />
             <span className="text-slate-900 font-medium">Tempo Real</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Monitoramento em Tempo Real</h1>
-          <p className="text-slate-500 mt-1">Veja quem está no seu site agora</p>
+          <h1 className="text-2xl font-bold text-slate-900">Monitoramento ao Vivo</h1>
+          <p className="text-slate-500">O que está acontecendo agora no seu site</p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 bg-white p-2 rounded-xl shadow-sm border border-slate-100">
           <LiveIndicator />
-          
+          <div className="h-4 w-px bg-slate-200 mx-2" />
           {lastUpdate && (
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Clock className="w-4 h-4" />
-              <span>Atualizado {lastUpdate.toLocaleTimeString('pt-BR')}</span>
-            </div>
+            <span className="text-xs text-slate-500 font-mono">
+              Last: {lastUpdate.toLocaleTimeString('pt-BR')}
+            </span>
           )}
-          
-          <button
-            onClick={fetchData}
-            disabled={loading}
-            className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
-          >
-            <RefreshCw className={`w-5 h-5 text-slate-600 ${loading ? 'animate-spin' : ''}`} />
-          </button>
         </div>
       </div>
 
       {/* Main Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <RealtimeStatCard
-          title="Visitantes Ativos"
-          value={data?.activeVisitors || 0}
+          title="Visitantes Agora"
+          value={activeVisitors}
           icon={Users}
           color="green"
-          pulse={true}
+          pulse={activeVisitors > 0}
         />
         <RealtimeStatCard
-          title="Visualizações (30min)"
+          title="Views (30min)"
           value={data?.totals?.views || 0}
           icon={Eye}
           color="blue"
@@ -519,26 +503,25 @@ export default function TempoRealPage() {
           color="purple"
         />
         <RealtimeStatCard
-          title="Países Ativos"
+          title="Países"
           value={data?.totals?.countries || 0}
           icon={Globe}
           color="orange"
         />
       </div>
 
-      {/* Mini Chart and Activity Feed */}
+      {/* Charts & Feed */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <MiniChart series={data?.series || { views: [], visitors: [] }} />
         <ActivityFeed events={data?.events || []} />
       </div>
 
-      {/* Active Pages and Countries */}
+      {/* Lists */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ActivePagesList urls={data?.urls || {}} />
         <VisitorsByCountry countries={data?.countries || {}} />
       </div>
 
-      {/* Referrers */}
       <RealtimeReferrers referrers={data?.referrers || {}} />
     </div>
   );

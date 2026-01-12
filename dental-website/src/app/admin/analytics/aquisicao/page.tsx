@@ -171,7 +171,7 @@ function ChannelOverview({ data }: { data: MetricData[] }) {
       
       {chartData.length > 0 ? (
         <div className="flex flex-col lg:flex-row items-center gap-8">
-          <div className="w-64 h-64">
+          <div className="w-64 h-64 relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -182,42 +182,53 @@ function ChannelOverview({ data }: { data: MetricData[] }) {
                   outerRadius={90}
                   paddingAngle={3}
                   dataKey="value"
+                  stroke="none"
+                  isAnimationActive={true}
                 >
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip 
-                  formatter={(value: any) => [
-                    `${Number(value).toLocaleString('pt-BR')} (${((Number(value) / total) * 100).toFixed(1)}%)`,
-                    'Visitantes'
-                  ]}
-                />
+                {/* No Tooltip */}
               </PieChart>
             </ResponsiveContainer>
+            <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
+              <span className="text-3xl font-bold text-slate-900">{total.toLocaleString('pt-BR')}</span>
+              <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Visitantes</span>
+            </div>
           </div>
           
-          <div className="flex-1 grid grid-cols-2 gap-4">
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
             {chartData.map((item, i) => {
-              const percentage = ((item.value / total) * 100).toFixed(1);
+              const percentage = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0';
               const config = Object.entries(channelConfig).find(([key]) => 
                 getChannelLabel(key) === item.name
               );
               const Icon = config?.[1]?.icon || Globe;
               
               return (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors">
                   <div 
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: `${item.color}20` }}
+                    className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm"
+                    style={{ backgroundColor: item.color }}
                   >
-                    <Icon className="w-5 h-5" style={{ color: item.color }} />
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">{item.name}</p>
-                    <p className="text-xs text-slate-500">
-                      {item.value.toLocaleString('pt-BR')} ({percentage}%)
-                    </p>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm font-bold text-slate-900">{item.name}</p>
+                      <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-white text-slate-600 border border-slate-100">
+                        {percentage}%
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                       <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width: `${percentage}%`, backgroundColor: item.color }} />
+                       </div>
+                       <p className="text-xs text-slate-500 font-medium">
+                        {item.value.toLocaleString('pt-BR')}
+                      </p>
+                    </div>
                   </div>
                 </div>
               );

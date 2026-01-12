@@ -28,6 +28,16 @@ import {
   CartesianGrid,
 } from 'recharts';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const MapWithNoSSR = dynamic<{ data: MetricData[] }>(() => import('@/components/WorldMap'), { 
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[400px] bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
+      Carregando mapa...
+    </div>
+  )
+});
 
 const PERIODS = [
   { value: '24h', label: 'Últimas 24h' },
@@ -80,7 +90,7 @@ function getCountryName(code: string): string {
   return countryNames[code] || code;
 }
 
-// Pie chart with legend component
+// Static donut chart with side legend
 function PieChartCard({ 
   title, 
   subtitle,
@@ -115,50 +125,50 @@ function PieChartCard({
       </div>
       
       {chartData.length > 0 ? (
-        <div className="flex items-center">
-          <div className="w-48 h-48">
+        <div className="flex items-center gap-6">
+          <div className="w-40 h-40 relative shrink-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={chartData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={50}
+                  innerRadius={45}
                   outerRadius={70}
                   paddingAngle={2}
                   dataKey="value"
+                  stroke="none"
+                  isAnimationActive={true}
                 >
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip 
-                  formatter={(value: any) => [
-                    `${Number(value).toLocaleString('pt-BR')} (${((Number(value) / total) * 100).toFixed(1)}%)`,
-                    'Visitantes'
-                  ]}
-                />
+                {/* No Tooltip */}
               </PieChart>
             </ResponsiveContainer>
+             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <span className="text-xl font-bold text-slate-900">{total.toLocaleString('pt-BR')}</span>
+            </div>
           </div>
-          <div className="flex-1 ml-4 space-y-2">
+          <div className="flex-1 space-y-3 min-w-0">
             {chartData.map((item, i) => (
-              <div key={i} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+              <div key={i} className="flex items-center justify-between group">
+                <div className="flex items-center gap-2 min-w-0">
                   <div 
                     className="w-3 h-3 rounded-full shrink-0" 
                     style={{ backgroundColor: item.color }}
                   />
-                  <span className="text-sm text-slate-600 truncate max-w-[120px]" title={item.name}>
+                  <span className="text-sm font-medium text-slate-700 truncate" title={item.name}>
                     {item.name}
                   </span>
                 </div>
-                <div className="text-right">
-                  <span className="text-sm font-semibold text-slate-900">
+                <div className="text-right pl-2">
+                  <span className="text-sm font-bold text-slate-900 block">
                     {item.value.toLocaleString('pt-BR')}
                   </span>
-                  <span className="text-xs text-slate-400 ml-1">
-                    ({((item.value / total) * 100).toFixed(0)}%)
+                  <span className="text-[10px] text-slate-400 font-medium bg-slate-50 px-1 rounded">
+                    {((item.value / total) * 100).toFixed(0)}%
                   </span>
                 </div>
               </div>
@@ -172,7 +182,7 @@ function PieChartCard({
   );
 }
 
-// Horizontal bar chart card
+// Horizontal bar chart (Custom HTML/CSS implementation to avoid tooltips)
 function BarChartCard({ 
   title, 
   subtitle,
@@ -186,11 +196,8 @@ function BarChartCard({
   icon: React.ElementType;
   formatLabel?: (x: string) => string;
 }) {
-  const chartData = data.slice(0, 10).map((item, i) => ({
-    name: formatLabel(item.x),
-    value: item.y,
-    fill: COLORS[i % COLORS.length],
-  }));
+  const chartData = data.slice(0, 10);
+  const maxValue = Math.max(...chartData.map(d => d.y), 1);
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
@@ -205,35 +212,28 @@ function BarChartCard({
       </div>
       
       {chartData.length > 0 ? (
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={true} vertical={false} />
-              <XAxis type="number" stroke="#94a3b8" fontSize={12} />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
-                stroke="#94a3b8" 
-                fontSize={12} 
-                width={100}
-                tickLine={false}
-              />
-              <Tooltip 
-                contentStyle={{
-                  backgroundColor: '#1e293b',
-                  border: 'none',
-                  borderRadius: '8px',
-                  color: '#fff',
-                }}
-                formatter={(value: any) => [Number(value).toLocaleString('pt-BR'), 'Visitantes']}
-              />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="space-y-4">
+            {chartData.map((item, i) => {
+                 const percentage = (item.y / maxValue) * 100;
+                 return (
+                    <div key={i}>
+                        <div className="flex justify-between text-sm mb-1">
+                            <span className="font-medium text-slate-700 truncate pr-4" title={formatLabel(item.x)}>
+                                {formatLabel(item.x)}
+                            </span>
+                            <span className="font-bold text-slate-900">
+                                {item.y.toLocaleString('pt-BR')}
+                            </span>
+                        </div>
+                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                             <div 
+                                className="h-full bg-emerald-500 rounded-full"
+                                style={{ width: `${percentage}%` }}
+                             />
+                        </div>
+                    </div>
+                 )
+            })}
         </div>
       ) : (
         <p className="text-sm text-slate-400 text-center py-12">Nenhum dado disponível</p>
@@ -475,9 +475,21 @@ export default function AudienciaPage() {
 
       {/* Countries and Cities */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CountriesCard 
-          data={data?.countries || []}
-        />
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col">
+           <div className="flex items-center gap-3 mb-6">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
+              <Globe className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Mapa Global</h3>
+              <p className="text-sm text-slate-500">Distribuição geográfica</p>
+            </div>
+          </div>
+          <div className="flex-1 min-h-[400px]">
+             <MapWithNoSSR data={data?.countries || []} />
+          </div>
+        </div>
+
         <BarChartCard 
           title="Cidades" 
           subtitle="Principais cidades"
