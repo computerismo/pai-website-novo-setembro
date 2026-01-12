@@ -147,9 +147,10 @@ function FlowCard({
   exitPages: MetricData[] | null;
   topPages: ExpandedMetricData[] | null;
 }) {
-  const topEntries = (entryPages || []).slice(0, 5);
-  const topExits = (exitPages || []).slice(0, 5);
-  const totalVisitors = (topPages || []).reduce((acc, curr) => acc + curr.visitors, 0);
+  const topEntries = Array.isArray(entryPages) ? entryPages.slice(0, 5) : [];
+  const topExits = Array.isArray(exitPages) ? exitPages.slice(0, 5) : [];
+  const safeTopPages = Array.isArray(topPages) ? topPages : [];
+  const totalVisitors = safeTopPages.reduce((acc, curr) => acc + curr.visitors, 0);
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm col-span-1 lg:col-span-3">
@@ -157,7 +158,6 @@ function FlowCard({
         <Map className="w-5 h-5 text-blue-500" />
         Fluxo de Navegação
       </h3>
-      // ... (rest of render logic remains same, it uses topEntries safely)
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
         {/* Connector Lines (Desktop only) */}
@@ -224,7 +224,7 @@ function FlowCard({
 
 // 3. Page Performance Lists (Sticky vs Slippery)
 function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] | null }) {
-  if (!pages) return null; // Safe guard
+  if (!Array.isArray(pages)) return null; // Strict check
 
   // Sticky: High Time on Page (> 10s), Low Bounce (< 70%), sorted by Time
   const stickyPages = [...pages]
@@ -309,7 +309,7 @@ function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] | null })
 
 // 4. Traffic Trend (Chart)
 function TrafficTrendCard({ data }: { data: MetricData[] | null }) {
-  if (!data || data.length === 0) return null;
+  if (!Array.isArray(data) || data.length === 0) return null; // Strict array check
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
