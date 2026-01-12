@@ -3,6 +3,8 @@ import { Inter, Crimson_Pro } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '@/lib/constants/site';
 import UmamiAnalytics from '@/components/UmamiAnalytics';
+// 1. Importamos o componente do Google aqui
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const inter = Inter({ subsets: ['latin'] });
 const crimsonPro = Crimson_Pro({
@@ -55,6 +57,8 @@ export default function RootLayout({
       <body className={`${inter.className} ${crimsonPro.variable}`} suppressHydrationWarning>
         <UmamiAnalytics />
         {children}
+        
+        <GoogleAnalytics gaId="G-GS7RKWN2ML" />
       </body>
     </html>
   );
