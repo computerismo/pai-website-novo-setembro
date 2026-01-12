@@ -6,7 +6,13 @@ import { KanbanBoard } from './KanbanBoard';
 import { LeadFilters } from './LeadFilters';
 import { LeadDetailsSidebar } from './LeadDetailsSidebar';
 
-export function LeadsContainer({ leads }: { leads: any[] }) {
+interface LeadsContainerProps {
+  leads: any[];
+  treatments?: string[];
+  utmSources?: string[];
+}
+
+export function LeadsContainer({ leads, treatments = [], utmSources = [] }: LeadsContainerProps) {
   const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
 
@@ -14,7 +20,12 @@ export function LeadsContainer({ leads }: { leads: any[] }) {
 
   return (
     <div className="space-y-6">
-      <LeadFilters viewMode={viewMode} onViewChange={setViewMode} />
+      <LeadFilters 
+        viewMode={viewMode} 
+        onViewChange={setViewMode}
+        treatments={treatments}
+        utmSources={utmSources}
+      />
 
       {viewMode === 'list' ? (
          <div className="bg-white rounded-lg shadow overflow-hidden">

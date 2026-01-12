@@ -7,21 +7,60 @@ export const dynamic = 'force-dynamic';
 export default async function LeadsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string }>;
+  searchParams: Promise<{ 
+    q?: string; 
+    status?: string;
+    treatment?: string;
+    source?: string;
+    from?: string;
+    to?: string;
+  }>;
 }) {
-  const { q, status } = await searchParams;
-  const query = q || "";
+  const params = await searchParams;
+  const { q, status, treatment, source, from, to } = params;
   
+  // Build where clause dynamically
   const where: any = {};
   
-  if (query) {
+  // Text search
+  if (q) {
     where.OR = [
-      { name: { contains: query, mode: 'insensitive' } },
-      { email: { contains: query, mode: 'insensitive' } },
-      { phone: { contains: query, mode: 'insensitive' } },
+      { name: { contains: q, mode: 'insensitive' } },
+      { email: { contains: q, mode: 'insensitive' } },
+      { phone: { contains: q, mode: 'insensitive' } },
     ];
   }
 
+  // Status filter
+  if (status) {
+    where.status = status;
+  }
+
+  // Treatment filter
+  if (treatment) {
+    where.treatment = { contains: treatment, mode: 'insensitive' };
+  }
+
+  // UTM Source filter
+  if (source) {
+    where.utmSource = { contains: source, mode: 'insensitive' };
+  }
+
+  // Date range filter
+  if (from || to) {
+    where.createdAt = {};
+    if (from) {
+      where.createdAt.gte = new Date(from);
+    }
+    if (to) {
+      // Add a day to include the entire "to" date
+      const toDate = new Date(to);
+      toDate.setDate(toDate.getDate() + 1);
+      where.createdAt.lte = toDate;
+    }
+  }
+
+  // Fetch leads with filters
   const leads = await prisma.lead.findMany({
     where,
     orderBy: { createdAt: "desc" },
@@ -39,17 +78,28 @@ export default async function LeadsPage({
     },
   });
 
-  // Calculate stats based on ALL leads, not just filtered ones, or filtered?
-  // Usually stats are global, but filtering might be nice. 
-  // Let's keep stats global for now or simple count of filtered.
-  // Actually, let's fetch global stats separately.
-  
-  const stats = {
-    total: await prisma.lead.count(),
-    new: await prisma.lead.count({ where: { status: 'new' } }),
-    contacted: await prisma.lead.count({ where: { status: 'contacted' } }),
-    converted: await prisma.lead.count({ where: { status: 'converted' } }),
-  };
+  // Fetch unique treatments and UTM sources for filter dropdowns
+  const [allTreatments, allSources, stats] = await Promise.all([
+    prisma.lead.findMany({
+      distinct: ['treatment'],
+      select: { treatment: true },
+    }),
+    prisma.lead.findMany({
+      distinct: ['utmSource'],
+      select: { utmSource: true },
+      where: { utmSource: { not: null } },
+    }),
+    // Stats
+    {
+      total: await prisma.lead.count(),
+      new: await prisma.lead.count({ where: { status: 'new' } }),
+      contacted: await prisma.lead.count({ where: { status: 'contacted' } }),
+      converted: await prisma.lead.count({ where: { status: 'converted' } }),
+    },
+  ]);
+
+  const treatments = allTreatments.map(t => t.treatment).filter(Boolean);
+  const utmSources = allSources.map(s => s.utmSource).filter(Boolean) as string[];
 
   return (
     <div className="space-y-6">
@@ -90,8 +140,11 @@ export default async function LeadsPage({
       </div>
 
       {/* Leads Container (Filters + List/Board) */}
-      <LeadsContainer leads={leads} />
+      <LeadsContainer 
+        leads={leads} 
+        treatments={treatments}
+        utmSources={utmSources}
+      />
     </div>
   );
 }
-

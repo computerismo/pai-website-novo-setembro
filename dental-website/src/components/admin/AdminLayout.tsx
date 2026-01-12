@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { NotificationBell } from "./NotificationBell";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -139,13 +140,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Menu className="w-6 h-6" />
             </button>
             <div className="flex-1" />
-            <Link
-              href="/"
-              target="_blank"
-              className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-2"
-            >
-              Ver Site <span className="text-xs">↗</span>
-            </Link>
+            <div className="flex items-center gap-4">
+              <NotificationBell />
+              <Link
+                href="/"
+                target="_blank"
+                className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-2"
+              >
+                Ver Site <span className="text-xs">↗</span>
+              </Link>
+            </div>
           </div>
         </header>
 
