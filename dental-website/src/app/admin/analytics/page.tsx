@@ -18,8 +18,8 @@ import {
   Activity
 } from 'lucide-react';
 import {
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -351,55 +351,48 @@ export default function AnalyticsPage() {
         
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                </linearGradient>
-                <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <BarChart data={chartData} barGap={2}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
               <XAxis 
                 dataKey="date" 
                 stroke="#94a3b8" 
                 fontSize={12}
                 tickLine={false}
+                axisLine={false}
+                dy={10}
               />
               <YAxis 
                 stroke="#94a3b8" 
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                dx={-10}
               />
               <Tooltip 
+                cursor={{ fill: '#f8fafc' }}
                 contentStyle={{
                   backgroundColor: '#1e293b',
                   border: 'none',
                   borderRadius: '8px',
                   color: '#fff',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                 }}
               />
-              <Area
-                type="monotone"
+              <Bar
                 dataKey="pageviews"
                 name="Visualizações"
-                stroke="#3b82f6"
-                strokeWidth={2}
-                fill="url(#colorPageviews)"
+                fill="#3b82f6"
+                radius={[4, 4, 0, 0]}
+                barSize={20}
               />
-              <Area
-                type="monotone"
+              <Bar
                 dataKey="sessions"
                 name="Sessões"
-                stroke="#10b981"
-                strokeWidth={2}
-                fill="url(#colorSessions)"
+                fill="#10b981"
+                radius={[4, 4, 0, 0]}
+                barSize={20}
               />
-            </AreaChart>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
@@ -425,7 +418,7 @@ export default function AnalyticsPage() {
               })
               .slice(0, 5) // Reduced to 5 to fit better with card style
               .map((page, i) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 hover:border-blue-200 transition-colors group">
+              <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-100 border border-slate-200 hover:border-blue-300 transition-colors group">
                 <span className="text-sm font-medium text-slate-700 truncate max-w-[70%]" title={page.x}>
                   {page.x === '/' ? 'Página Inicial' : page.x}
                 </span>
@@ -464,7 +457,7 @@ export default function AnalyticsPage() {
                   'Paid': 'Pago',
                 };
                 return (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100 hover:border-emerald-200 transition-colors group">
+                  <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-100 border border-slate-200 hover:border-emerald-300 transition-colors group">
                     <span className="text-sm font-medium text-slate-700 capitalize truncate flex-1">
                       {channelNames[channel.x] || channel.x}
                     </span>

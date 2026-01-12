@@ -43,6 +43,7 @@ interface ExpandedMetricData {
   name: string;
   pageviews: number;
   visitors: number;
+  visits: number;
   bounces: number;
   totaltime: number;
 }
@@ -227,15 +228,17 @@ function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] | null })
   if (!Array.isArray(pages)) return null; // Strict check
 
   // Sticky: High Time on Page (> 10s), Low Bounce (< 70%), sorted by Time
+  // Use visits for denominator
   const stickyPages = [...pages]
-    .filter(p => p.visitors > 2 && (p.totaltime/p.visitors) > 10)
-    .sort((a, b) => (b.totaltime/b.visitors) - (a.totaltime/a.visitors))
+    .filter(p => p.visits > 2 && (p.totaltime/p.visits) > 10)
+    .sort((a, b) => (b.totaltime/b.visits) - (a.totaltime/a.visits))
     .slice(0, 5);
 
   // Slippery: High Bounce (> 50%), sorted by Bounce Rate (desc)
+  // Use visits for denominator
   const slipperyPages = [...pages]
-    .filter(p => p.visitors > 2 && (p.bounces/p.visitors) > 0.5)
-    .sort((a, b) => (b.bounces/b.visitors) - (a.bounces/a.visitors))
+    .filter(p => p.visits > 2 && (p.bounces/p.visits) > 0.5)
+    .sort((a, b) => (b.bounces/b.visits) - (a.bounces/a.visits))
     .slice(0, 5);
 
   return (
@@ -261,7 +264,7 @@ function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] | null })
                     {formatPagePath(p.name)}
                   </td>
                   <td className="px-3 py-3 text-right text-emerald-600 font-bold">
-                    {formatTime(p.totaltime/p.visitors)}
+                    {formatTime(p.totaltime/p.visits)}
                   </td>
                 </tr>
               )) : (
@@ -293,7 +296,7 @@ function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] | null })
                     {formatPagePath(p.name)}
                   </td>
                   <td className="px-3 py-3 text-right text-orange-600 font-bold">
-                    {((p.bounces/p.visitors)*100).toFixed(0)}%
+                    {Math.min(100, (p.bounces/p.visits)*100).toFixed(0)}%
                   </td>
                 </tr>
               )) : (
@@ -452,13 +455,18 @@ export default function ComportamentoPage() {
   const processedData = filterData(data);
 
   // Derived Global Metrics
-  const totalVisits = processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.visitors, 0) || 0;
+  // We use 'visits' (sessions) for denominators in Time/Bounce calcs to be accurate.
+  // 'visitors' is unique visitors, which would inflate the rates if used.
+  const totalSessions = processedData?.topPagesExpanded.reduce((acc, curr) => acc + (curr.visits || curr.visitors), 0) || 0;
   const totalTime = processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.totaltime, 0) || 0;
-  const avgTimeGlobal = totalVisits > 0 ? totalTime / totalVisits : 0;
   
-  // Avg Bounce
+  // Avg Time = Total Time / Total Sessions
+  const avgTimeGlobal = totalSessions > 0 ? totalTime / totalSessions : 0;
+  
+  // Avg Bounce = Total Bounces / Total Sessions
   const totalBounces = processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.bounces, 0) || 0;
-  const avgBounceRate = totalVisits > 0 ? (totalBounces / totalVisits) * 100 : 0;
+  // Ensure we don't divide by zero and cap at 100% just in case of data anomalies
+  const avgBounceRate = totalSessions > 0 ? Math.min(100, (totalBounces / totalSessions) * 100) : 0;
 
   // Most Active Page
   const topPage = processedData?.topPagesExpanded[0];

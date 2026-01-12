@@ -14,6 +14,18 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
+// Portuguese Country Names
+const countryNames: Record<string, string> = {
+  BR: 'Brasil', US: 'Estados Unidos', PT: 'Portugal', AR: 'Argentina', MX: 'México',
+  ES: 'Espanha', CO: 'Colômbia', CL: 'Chile', PE: 'Peru', UY: 'Uruguai',
+  GB: 'Reino Unido', DE: 'Alemanha', FR: 'França', IT: 'Itália', CA: 'Canadá',
+  JP: 'Japão', CN: 'China', IN: 'Índia', AU: 'Austrália', RU: 'Rússia',
+  NL: 'Holanda', BE: 'Bélgica', CH: 'Suíça', AT: 'Áustria', SE: 'Suécia',
+  NO: 'Noruega', DK: 'Dinamarca', FI: 'Finlândia', PL: 'Polônia', IE: 'Irlanda',
+  ZA: 'África do Sul', EG: 'Egito', KR: 'Coreia do Sul', TR: 'Turquia',
+  NZ: 'Nova Zelândia',
+};
+
 interface WorldMapProps {
   data: { x: string; y: number }[];
 }
@@ -70,14 +82,13 @@ export default function WorldMap({ data }: WorldMapProps) {
       weight: 1,
       opacity: 1,
       color: 'white',
-      dashArray: '3',
       fillOpacity: 0.7,
     };
   };
 
   const onEachFeature = (feature: any, layer: any) => {
     const code = feature.properties.iso_a2;
-    const name = feature.properties.name;
+    const name = countryNames[code] || feature.properties.name;
     const value = countryData[code] || 0;
     
     layer.bindTooltip(`
@@ -121,7 +132,7 @@ export default function WorldMap({ data }: WorldMapProps) {
       >
         <MapController />
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
         />
         <GeoJSON 
           data={worldGeoJSON as any} 

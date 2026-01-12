@@ -216,17 +216,21 @@ function BarChartCard({
         <div className="space-y-4">
             {chartData.map((item, i) => {
                  const percentage = (item.y / maxValue) * 100;
+                 const label = formatLabel(item.x);
+                 const isUnknown = label === 'Desconhecido' || label === 'Unknown' || !label;
+                 
                  return (
-                    <div key={i}>
-                        <div className="flex justify-between text-sm mb-1">
-                            <span className="font-medium text-slate-700 truncate pr-4" title={formatLabel(item.x)}>
-                                {formatLabel(item.x)}
+                    <div key={i} className="p-3 mb-2 rounded-lg bg-slate-50 border border-slate-100 hover:border-emerald-200 transition-colors">
+                        <div className="flex justify-between text-sm mb-2">
+                            <span className="font-medium text-slate-700 truncate pr-4 flex items-center gap-2" title={label}>
+                                {isUnknown && <span className="text-slate-400 font-bold">?</span>}
+                                {label}
                             </span>
                             <span className="font-bold text-slate-900">
                                 {item.y.toLocaleString('pt-BR')}
                             </span>
                         </div>
-                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-100">
                              <div 
                                 className="h-full bg-emerald-500 rounded-full"
                                 style={{ width: `${percentage}%` }}

@@ -388,8 +388,7 @@ export default function AquisicaoPage() {
            return validPrefixes.some(prefix => q.x.startsWith(prefix));
         });
 
-        if (filteredQueries.length === 0) return null;
-
+        // Always render, if empty DataTable will handle 'No data' state
         return (
           <DataTable 
             title="Parâmetros de Campanha" 
