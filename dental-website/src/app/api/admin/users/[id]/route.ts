@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { apiUpdateUserSchema } from "@/lib/validations/userSchemas";
 import bcrypt from "bcryptjs";
 
+export const dynamic = 'force-dynamic';
+
 interface RouteParams {
   params: Promise<{ id: string }>;
 }

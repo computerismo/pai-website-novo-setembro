@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { apiCreateUserSchema } from "@/lib/validations/userSchemas";
 import bcrypt from "bcryptjs";
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/admin/users - List all users
 export async function GET() {
   try {
