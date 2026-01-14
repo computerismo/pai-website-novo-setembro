@@ -19,7 +19,7 @@ export const createUserSchema = z
     password: passwordValidation,
     confirmPassword: z.string(),
     role: z.enum(userRoles, {
-      errorMap: () => ({ message: "Selecione um papel válido" }),
+      message: "Selecione um papel válido",
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -37,7 +37,7 @@ export const updateUserSchema = z
     password: passwordValidation.optional().or(z.literal("")),
     confirmPassword: z.string().optional().or(z.literal("")),
     role: z.enum(userRoles, {
-      errorMap: () => ({ message: "Selecione um papel válido" }),
+      message: "Selecione um papel válido",
     }),
   })
   .refine(
