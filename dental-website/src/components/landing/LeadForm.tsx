@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { useUTMParams } from '@/lib/hooks/useUTMParams';
-import { trackLead } from '@/lib/analytics/gtag';
+import { trackLead, trackFormView } from '@/lib/analytics/gtag';
 
 const schema = z.object({
   name: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
@@ -29,12 +29,21 @@ interface LeadFormProps {
   campaignId?: string;
   source?: string;
   onSuccess?: () => void;
+  isInModal?: boolean;
 }
 
-export function LeadForm({ campaignId, source, onSuccess }: LeadFormProps) {
+export function LeadForm({ campaignId, source = 'website', onSuccess, isInModal = false }: LeadFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const { utmParams } = useUTMParams();
+
+  // Track form view on static pages (not in modal)
+  // If in modal, parent component already tracked the "Open" event
+  useEffect(() => {
+    if (!isInModal) {
+      trackFormView(source);
+    }
+  }, [isInModal, source]);
 
   const {
     register,

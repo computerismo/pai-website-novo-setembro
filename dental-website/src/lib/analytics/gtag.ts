@@ -34,6 +34,22 @@ export const event = (
   }
 };
 
+// Track when lead form modal is opened
+export const trackFormModalOpen = (source: string) => {
+  event('form_modal_open', {
+    event_category: 'form',
+    event_label: source,
+  });
+};
+
+// Track when lead form is viewed on static pages (not in modal)
+export const trackFormView = (source: string) => {
+  event('form_view', {
+    event_category: 'form',
+    event_label: source,
+  });
+};
+
 // Track lead form submissions
 export const trackLead = (data: {
   treatment: string;

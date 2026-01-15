@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Calendar } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { LeadForm } from '@/components/landing/LeadForm';
+import { trackFormModalOpen } from '@/lib/analytics/gtag';
 
 interface ScheduleModalButtonProps {
   source?: string;
@@ -22,7 +23,10 @@ export function ScheduleModalButton({
       <Button 
         size="xl" 
         className="bg-white text-blue-900 hover:bg-blue-50 font-semibold border-none"
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          setIsOpen(true);
+          trackFormModalOpen(source);
+        }}
       >
         <Calendar className="w-5 h-5 mr-2" />
         {label}
@@ -38,6 +42,7 @@ export function ScheduleModalButton({
         </p>
         <LeadForm 
           source={source}
+          isInModal={true}
           onSuccess={() => setTimeout(() => setIsOpen(false), 3000)}
         />
       </Modal>
