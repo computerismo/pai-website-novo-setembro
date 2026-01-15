@@ -9,6 +9,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '@/components/ui/Modal';
 import { LeadForm } from '@/components/landing/LeadForm';
+import { trackFormModalOpen } from '@/lib/analytics/gtag';
 
 // FAQ Component
 function FAQItem({ question, answer, isOpen, onToggle }: {
@@ -54,7 +55,10 @@ export default function HomePage() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleOpenModal = () => setIsModalOpen(true);
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    trackFormModalOpen('homepage');
+  };
 
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
@@ -432,6 +436,7 @@ export default function HomePage() {
           </p>
           <LeadForm 
             source="homepage"
+            isInModal={true}
             onSuccess={() => setTimeout(() => setIsModalOpen(false), 3000)}
           />
         </Modal>
