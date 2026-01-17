@@ -12,3 +12,9 @@ seo-analytics.md
 technical-specs.md
 homepage_seo.txt
 senior-engineer.txt
+
+# Backend
+backend/venv/
+backend/__pycache__/
+backend/.env
+backend/credentials.json

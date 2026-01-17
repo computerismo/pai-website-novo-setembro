@@ -1,44 +1,38 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  Monitor, 
-  Smartphone, 
+  Globe, 
+  Monitor,
+  Smartphone,
   Tablet,
-  Laptop,
-  Globe,
-  MapPin,
-  Chrome,
-  Monitor as ComputerIcon,
   RefreshCw,
   ArrowRight,
-  Languages,
-  Layout
+  Chrome,
+  Laptop,
+  Users
 } from 'lucide-react';
 import {
   PieChart,
   Pie,
   Cell,
   ResponsiveContainer,
-  Tooltip,
-  Legend,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
+  Tooltip,
 } from 'recharts';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-
-const MapWithNoSSR = dynamic<{ data: MetricData[] }>(() => import('@/components/WorldMap'), { 
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-[400px] bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
-      Carregando mapa...
-    </div>
-  )
-});
+import { 
+  getCountries, 
+  getBrowsers, 
+  getDevices,
+  type CountriesResponse, 
+  type BrowsersResponse,
+  type DevicesResponse
+} from '@/lib/analytics/ga4-api';
 
 const PERIODS = [
   { value: '24h', label: 'Últimas 24h' },
@@ -47,309 +41,308 @@ const PERIODS = [
   { value: '90d', label: 'Últimos 90 dias' },
 ];
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#14b8a6'];
-
-interface MetricData {
-  x: string;
-  y: number;
-}
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
 interface AudienceData {
-  devices: MetricData[];
-  browsers: MetricData[];
-  os: MetricData[];
-  countries: MetricData[];
-  cities: MetricData[];
-  languages: MetricData[];
-  screens: MetricData[];
+  countries: CountriesResponse['countries'];
+  browsers: BrowsersResponse['browsers'];
+  devices: DevicesResponse['devices'];
   period: string;
 }
+
+// Country flags mapping
+const countryFlags: Record<string, string> = {
+  Brazil: '🇧🇷',
+  'United States': '🇺🇸',
+  Portugal: '🇵🇹',
+  Argentina: '🇦🇷',
+  Mexico: '🇲🇽',
+  Spain: '🇪🇸',
+  Colombia: '🇨🇴',
+  Chile: '🇨🇱',
+  Peru: '🇵🇪',
+  Uruguay: '🇺🇾',
+  'United Kingdom': '🇬🇧',
+  Germany: '🇩🇪',
+  France: '🇫🇷',
+  Italy: '🇮🇹',
+  Canada: '🇨🇦',
+  Japan: '🇯🇵',
+  China: '🇨🇳',
+  India: '🇮🇳',
+  Australia: '🇦🇺',
+};
 
 // Device icons
 const deviceIcons: Record<string, React.ReactNode> = {
   desktop: <Monitor className="w-5 h-5" />,
-  laptop: <Monitor className="w-5 h-5" />,
   mobile: <Smartphone className="w-5 h-5" />,
   tablet: <Tablet className="w-5 h-5" />,
 };
 
-// Country names mapping
-const countryNames: Record<string, string> = {
-  BR: 'Brasil',
-  US: 'Estados Unidos',
-  PT: 'Portugal',
-  AR: 'Argentina',
-  MX: 'México',
-  ES: 'Espanha',
-  CO: 'Colômbia',
-  CL: 'Chile',
-  PE: 'Peru',
-  UY: 'Uruguai',
-};
-
-function getCountryName(code: string): string {
-  return countryNames[code] || code;
+function getDeviceLabel(device: string): string {
+  const labels: Record<string, string> = {
+    desktop: 'Computador',
+    mobile: 'Móvel',
+    tablet: 'Tablet',
+  };
+  return labels[device.toLowerCase()] || device;
 }
 
-// Static donut chart with side legend
-function PieChartCard({ 
-  title, 
-  subtitle,
-  data, 
-  icon: Icon,
-  formatLabel = (x: string) => x
-}: { 
-  title: string; 
-  subtitle?: string;
-  data: MetricData[]; 
-  icon: React.ElementType;
-  formatLabel?: (x: string) => string;
-}) {
-  const chartData = data.slice(0, 6).map((item, i) => ({
-    name: formatLabel(item.x),
+// Countries chart
+function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
+  const total = data.reduce((sum, item) => sum + item.y, 0);
+  
+  const chartData = data.slice(0, 8).map((item, i) => ({
+    name: item.x,
     value: item.y,
-    color: COLORS[i % COLORS.length],
+    fill: COLORS[i % COLORS.length],
   }));
-
-  const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2.5 rounded-xl bg-blue-100 text-blue-600">
-          <Icon className="w-5 h-5" />
+          <Globe className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-          {subtitle && <p className="text-sm text-slate-500">{subtitle}</p>}
+          <h3 className="text-lg font-semibold text-slate-900">Países</h3>
+          <p className="text-sm text-slate-500">De onde vêm seus visitantes</p>
         </div>
       </div>
       
-      {chartData.length > 0 ? (
-        <div className="flex items-center gap-6">
-          <div className="w-40 h-40 relative shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={45}
-                  outerRadius={70}
-                  paddingAngle={2}
-                  dataKey="value"
-                  stroke="none"
-                  isAnimationActive={true}
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                {/* No Tooltip */}
-              </PieChart>
-            </ResponsiveContainer>
-             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span className="text-xl font-bold text-slate-900">{total.toLocaleString('pt-BR')}</span>
-            </div>
-          </div>
-          <div className="flex-1 space-y-3 min-w-0">
-            {chartData.map((item, i) => (
-              <div key={i} className="flex items-center justify-between group">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div 
-                    className="w-3 h-3 rounded-full shrink-0" 
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className="text-sm font-medium text-slate-700 truncate" title={item.name}>
-                    {item.name}
-                  </span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Chart */}
+        <div className="h-[200px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                innerRadius={50}
+                outerRadius={80}
+                paddingAngle={2}
+                dataKey="value"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        
+        {/* List */}
+        <div className="space-y-3">
+          {data.slice(0, 6).map((country, i) => {
+            const percentage = total > 0 ? ((country.y / total) * 100).toFixed(1) : '0';
+            return (
+              <div key={i} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{countryFlags[country.x] || '🌍'}</span>
+                  <span className="text-sm font-medium text-slate-700">{country.x}</span>
                 </div>
-                <div className="text-right pl-2">
-                  <span className="text-sm font-bold text-slate-900 block">
-                    {item.value.toLocaleString('pt-BR')}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-medium bg-slate-50 px-1 rounded">
-                    {((item.value / total) * 100).toFixed(0)}%
-                  </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400">{percentage}%</span>
+                  <span className="text-sm font-bold text-slate-900">{country.y}</span>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
+          {data.length === 0 && (
+            <p className="text-sm text-slate-400 text-center py-4">Nenhum dado disponível</p>
+          )}
         </div>
-      ) : (
-        <p className="text-sm text-slate-400 text-center py-12">Nenhum dado disponível</p>
-      )}
+      </div>
     </div>
   );
 }
 
-// Horizontal bar chart (Custom HTML/CSS implementation to avoid tooltips)
-function BarChartCard({ 
-  title, 
-  subtitle,
-  data, 
-  icon: Icon,
-  formatLabel = (x: string) => x
-}: { 
-  title: string; 
-  subtitle?: string;
-  data: MetricData[]; 
-  icon: React.ElementType;
-  formatLabel?: (x: string) => string;
-}) {
-  const chartData = data.slice(0, 10);
-  const maxValue = Math.max(...chartData.map(d => d.y), 1);
+// Browsers chart
+function BrowsersCard({ data }: { data: BrowsersResponse['browsers'] }) {
+  const chartData = data.slice(0, 6).map((item, i) => ({
+    name: item.x,
+    visitors: item.y,
+    fill: COLORS[i % COLORS.length],
+  }));
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2.5 rounded-xl bg-purple-100 text-purple-600">
+          <Chrome className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Navegadores</h3>
+          <p className="text-sm text-slate-500">Navegadores mais usados</p>
+        </div>
+      </div>
+      
+      <div className="h-[200px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+            <XAxis type="number" fontSize={10} stroke="#94a3b8" tickLine={false} axisLine={false} />
+            <YAxis 
+              type="category" 
+              dataKey="name" 
+              fontSize={10} 
+              stroke="#94a3b8" 
+              tickLine={false} 
+              axisLine={false}
+              width={80}
+            />
+            <Tooltip 
+              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+            />
+            <Bar dataKey="visitors" radius={[0, 4, 4, 0]} barSize={20}>
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.fill} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+// Devices chart
+function DevicesCard({ data }: { data: DevicesResponse['devices'] }) {
+  const total = data.reduce((sum, item) => sum + item.y, 0);
+  
+  const chartData = data.map((item, i) => ({
+    name: getDeviceLabel(item.x),
+    value: item.y,
+    color: COLORS[i % COLORS.length],
+    icon: item.x.toLowerCase(),
+  }));
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-600">
-          <Icon className="w-5 h-5" />
+          <Laptop className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-          {subtitle && <p className="text-sm text-slate-500">{subtitle}</p>}
+          <h3 className="text-lg font-semibold text-slate-900">Dispositivos</h3>
+          <p className="text-sm text-slate-500">Como acessam seu site</p>
         </div>
       </div>
       
-      {chartData.length > 0 ? (
-        <div className="space-y-4">
-            {chartData.map((item, i) => {
-                 const percentage = (item.y / maxValue) * 100;
-                 const label = formatLabel(item.x);
-                 const isUnknown = label === 'Desconhecido' || label === 'Unknown' || !label;
-                 
-                 return (
-                    <div key={i} className="p-3 mb-2 rounded-lg bg-slate-50 border border-slate-100 hover:border-emerald-200 transition-colors">
-                        <div className="flex justify-between text-sm mb-2">
-                            <span className="font-medium text-slate-700 truncate pr-4 flex items-center gap-2" title={label}>
-                                {isUnknown && <span className="text-slate-400 font-bold">?</span>}
-                                {label}
-                            </span>
-                            <span className="font-bold text-slate-900">
-                                {item.y.toLocaleString('pt-BR')}
-                            </span>
-                        </div>
-                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-100">
-                             <div 
-                                className="h-full bg-emerald-500 rounded-full"
-                                style={{ width: `${percentage}%` }}
-                             />
-                        </div>
-                    </div>
-                 )
-            })}
+      <div className="flex items-center justify-center gap-8">
+        <div className="w-40 h-40">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                innerRadius={40}
+                outerRadius={60}
+                paddingAngle={3}
+                dataKey="value"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
         </div>
-      ) : (
-        <p className="text-sm text-slate-400 text-center py-12">Nenhum dado disponível</p>
-      )}
-    </div>
-  );
-}
-
-// Country flags mapping
-const countryFlags: Record<string, string> = {
-  BR: '🇧🇷', US: '🇺🇸', PT: '🇵🇹', AR: '🇦🇷', MX: '🇲🇽',
-  ES: '🇪🇸', CO: '🇨🇴', CL: '🇨🇱', PE: '🇵🇪', UY: '🇺🇾',
-  GB: '🇬🇧', DE: '🇩🇪', FR: '🇫🇷', IT: '🇮🇹', CA: '🇨🇦',
-  JP: '🇯🇵', CN: '🇨🇳', IN: '🇮🇳', AU: '🇦🇺', RU: '🇷🇺',
-  NL: '🇳🇱', BE: '🇧🇪', CH: '🇨🇭', AT: '🇦🇹', SE: '🇸🇪',
-  NO: '🇳🇴', DK: '🇩🇰', FI: '🇫🇮', PL: '🇵🇱', IE: '🇮🇪',
-};
-
-function getFlag(code: string): string {
-  return countryFlags[code] || '🌍';
-}
-
-// Premium Countries Card component
-function CountriesCard({ 
-  data 
-}: { 
-  data: MetricData[]; 
-}) {
-  const total = data.reduce((sum, item) => sum + item.y, 0);
-  const maxValue = Math.max(...data.map(d => d.y), 1);
-
-  // Color gradient based on rank
-  const getProgressColor = (index: number) => {
-    const colors = [
-      'from-blue-500 to-indigo-600',
-      'from-emerald-500 to-teal-600',
-      'from-orange-500 to-amber-600',
-      'from-purple-500 to-pink-600',
-      'from-cyan-500 to-blue-600',
-    ];
-    return colors[index % colors.length];
-  };
-
-  return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
-            <Globe className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-slate-900">Países</h3>
-            <p className="text-sm text-slate-500">Distribuição geográfica</p>
-          </div>
-        </div>
-        {total > 0 && (
-          <div className="text-right">
-            <p className="text-2xl font-bold text-slate-900">{total.toLocaleString('pt-BR')}</p>
-            <p className="text-xs text-slate-500">visitantes totais</p>
-          </div>
-        )}
-      </div>
-      
-      {data.length > 0 ? (
+        
         <div className="space-y-4">
-          {data.slice(0, 8).map((item, i) => {
-            const percentage = (item.y / total) * 100;
-            const widthPercentage = (item.y / maxValue) * 100;
-            
+          {chartData.map((device, i) => {
+            const percentage = total > 0 ? ((device.value / total) * 100).toFixed(0) : '0';
             return (
-              <div key={i} className="group">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{getFlag(item.x)}</span>
-                    <div>
-                      <span className="text-sm font-medium text-slate-900">
-                        {getCountryName(item.x)}
-                      </span>
-                      <span className="text-xs text-slate-400 ml-2">
-                        {item.x}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-sm font-bold text-slate-900">
-                      {item.y.toLocaleString('pt-BR')}
-                    </span>
-                    <span className="text-xs text-slate-400 ml-1">
-                      ({percentage.toFixed(1)}%)
-                    </span>
-                  </div>
+              <div key={i} className="flex items-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center text-white"
+                  style={{ backgroundColor: device.color }}
+                >
+                  {deviceIcons[device.icon] || <Monitor className="w-5 h-5" />}
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full bg-gradient-to-r ${getProgressColor(i)} rounded-full transition-all duration-500 group-hover:opacity-80`}
-                    style={{ width: `${widthPercentage}%` }}
-                  />
+                <div>
+                  <p className="text-sm font-bold text-slate-900">{device.name}</p>
+                  <p className="text-xs text-slate-500">{device.value} ({percentage}%)</p>
                 </div>
               </div>
             );
           })}
-          
-          {data.length > 8 && (
-            <p className="text-xs text-slate-400 text-center pt-2">
-              +{data.length - 8} outros países
-            </p>
+          {data.length === 0 && (
+            <p className="text-sm text-slate-400">Nenhum dado disponível</p>
           )}
         </div>
-      ) : (
-        <p className="text-sm text-slate-400 text-center py-12">Nenhum dado disponível</p>
-      )}
+      </div>
+    </div>
+  );
+}
+
+// Summary stats
+function SummaryCard({ 
+  countries, 
+  browsers, 
+  devices 
+}: { 
+  countries: CountriesResponse['countries'];
+  browsers: BrowsersResponse['browsers'];
+  devices: DevicesResponse['devices'];
+}) {
+  const totalVisitors = countries.reduce((sum, c) => sum + c.y, 0);
+  const topCountry = countries[0]?.x || '-';
+  const topBrowser = browsers[0]?.x || '-';
+  const topDevice = devices[0] ? getDeviceLabel(devices[0].x) : '-';
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-blue-100">
+            <Users className="w-4 h-4 text-blue-600" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">Total Visitantes</p>
+            <p className="text-lg font-bold text-slate-900">{totalVisitors.toLocaleString('pt-BR')}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-emerald-100">
+            <Globe className="w-4 h-4 text-emerald-600" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">País Principal</p>
+            <p className="text-lg font-bold text-slate-900">{topCountry}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-purple-100">
+            <Chrome className="w-4 h-4 text-purple-600" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">Navegador Top</p>
+            <p className="text-lg font-bold text-slate-900">{topBrowser}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-orange-100">
+            <Monitor className="w-4 h-4 text-orange-600" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500">Dispositivo Top</p>
+            <p className="text-lg font-bold text-slate-900">{topDevice}</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -364,13 +357,18 @@ export default function AudienciaPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/analytics/audiencia?period=${period}`);
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Falha ao carregar dados');
-      }
-      const result = await res.json();
-      setData(result);
+      const [countriesRes, browsersRes, devicesRes] = await Promise.all([
+        getCountries(period),
+        getBrowsers(period),
+        getDevices(period),
+      ]);
+      
+      setData({
+        countries: countriesRes.countries,
+        browsers: browsersRes.browsers,
+        devices: devicesRes.devices,
+        period,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
@@ -387,7 +385,7 @@ export default function AudienciaPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Audiência</h1>
-          <p className="text-slate-500 mt-1">Quem são os visitantes do seu site</p>
+          <p className="text-slate-500 mt-1">Quem são seus visitantes</p>
         </div>
         <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center">
           <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
@@ -402,7 +400,7 @@ export default function AudienciaPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Audiência</h1>
-          <p className="text-slate-500 mt-1">Quem são os visitantes do seu site</p>
+          <p className="text-slate-500 mt-1">Quem são seus visitantes</p>
         </div>
         <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center border-2 border-dashed border-red-200">
           <h2 className="text-xl font-bold text-slate-900 mb-2">Erro ao carregar dados</h2>
@@ -429,8 +427,8 @@ export default function AudienciaPage() {
             <ArrowRight className="w-3 h-3" />
             <span className="text-slate-900 font-medium">Audiência</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Perfil da Audiência</h1>
-          <p className="text-slate-500 mt-1">Entenda quem são seus visitantes</p>
+          <h1 className="text-2xl font-bold text-slate-900">Audiência</h1>
+          <p className="text-slate-500 mt-1">Quem são seus visitantes</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -453,76 +451,20 @@ export default function AudienciaPage() {
         </div>
       </div>
 
-      {/* Devices and Browsers */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PieChartCard 
-          title="Dispositivos" 
-          subtitle="Desktop vs Mobile vs Tablet"
-          data={data?.devices || []}
-          icon={Monitor}
-          formatLabel={(x) => {
-            const name = x.toLowerCase();
-            if (name === 'desktop' || name === 'laptop') return 'Computador';
-            if (name === 'mobile') return 'Móvel';
-            return x.charAt(0).toUpperCase() + x.slice(1);
-          }}
-        />
-        <PieChartCard 
-          title="Navegadores" 
-          subtitle="Navegadores mais usados"
-          data={data?.browsers || []}
-          icon={Chrome}
-        />
-      </div>
-
-      {/* OS */}
-      <PieChartCard 
-        title="Sistemas Operacionais" 
-        subtitle="Windows, Mac, iOS, Android, etc."
-        data={data?.os || []}
-        icon={ComputerIcon}
+      {/* Summary */}
+      <SummaryCard 
+        countries={data?.countries || []} 
+        browsers={data?.browsers || []} 
+        devices={data?.devices || []} 
       />
 
-      {/* Countries and Cities */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col">
-           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
-              <Globe className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Mapa Global</h3>
-              <p className="text-sm text-slate-500">Distribuição geográfica</p>
-            </div>
-          </div>
-          <div className="flex-1 min-h-[400px]">
-             <MapWithNoSSR data={data?.countries || []} />
-          </div>
-        </div>
+      {/* Countries */}
+      <CountriesCard data={data?.countries || []} />
 
-        <BarChartCard 
-          title="Cidades" 
-          subtitle="Principais cidades"
-          data={data?.cities || []}
-          icon={MapPin}
-          formatLabel={(x) => x || 'Desconhecido'}
-        />
-      </div>
-
-      {/* Languages and Screens */}
+      {/* Browsers and Devices */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PieChartCard 
-          title="Idiomas" 
-          subtitle="Idiomas dos navegadores"
-          data={data?.languages || []}
-          icon={Languages}
-        />
-        <PieChartCard 
-          title="Resoluções de Tela" 
-          subtitle="Tamanhos de tela mais comuns"
-          data={data?.screens || []}
-          icon={Layout}
-        />
+        <BrowsersCard data={data?.browsers || []} />
+        <DevicesCard data={data?.devices || []} />
       </div>
     </div>
   );

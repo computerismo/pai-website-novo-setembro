@@ -8,7 +8,6 @@ import {
   Share2,
   RefreshCw,
   ArrowRight,
-  ExternalLink,
   TrendingUp
 } from 'lucide-react';
 import {
@@ -16,14 +15,9 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  Tooltip,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
 } from 'recharts';
 import Link from 'next/link';
+import { getChannels, getReferrers, type ChannelsResponse, type ReferrersResponse } from '@/lib/analytics/ga4-api';
 
 const PERIODS = [
   { value: '24h', label: 'Últimas 24h' },
@@ -34,28 +28,21 @@ const PERIODS = [
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
-interface MetricData {
-  x: string;
-  y: number;
-}
-
 interface AcquisitionData {
-  referrers: MetricData[];
-  channels: MetricData[];
-  queries: MetricData[];
-  activeVisitors?: number; 
+  channels: ChannelsResponse['channels'];
+  referrers: ReferrersResponse['referrers'];
   period: string;
-  totalVisitors?: number; // Needed for fallback
 }
 
 // Channel icons and colors
 const channelConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  direct: { icon: Globe, color: '#3b82f6', label: 'Tráfego Direto' },
-  organic: { icon: Search, color: '#10b981', label: 'Busca Orgânica' },
-  referral: { icon: LinkIcon, color: '#f59e0b', label: 'Referência' },
-  social: { icon: Share2, color: '#ec4899', label: 'Redes Sociais' },
-  paid: { icon: TrendingUp, color: '#ef4444', label: 'Anúncios Pagos' },
-  email: { icon: Globe, color: '#8b5cf6', label: 'Email Marketing' },
+  'Direct': { icon: Globe, color: '#3b82f6', label: 'Tráfego Direto' },
+  'Organic Search': { icon: Search, color: '#10b981', label: 'Busca Orgânica' },
+  'Referral': { icon: LinkIcon, color: '#f59e0b', label: 'Referência' },
+  'Organic Social': { icon: Share2, color: '#ec4899', label: 'Redes Sociais' },
+  'Paid Search': { icon: TrendingUp, color: '#ef4444', label: 'Busca Paga' },
+  'Email': { icon: Globe, color: '#8b5cf6', label: 'Email Marketing' },
+  'Unassigned': { icon: Globe, color: '#94a3b8', label: 'Não Atribuído' },
 };
 
 function getChannelLabel(channel: string): string {
@@ -69,14 +56,12 @@ function DataTable({
   data, 
   icon: Icon,
   iconColor = 'blue',
-  formatLabel = (x: string) => x
 }: { 
   title: string; 
   subtitle?: string;
-  data: MetricData[]; 
+  data: Array<{ x: string; y: number }>; 
   icon: React.ElementType;
   iconColor?: string;
-  formatLabel?: (x: string) => string;
 }) {
   const colorMap: Record<string, string> = {
     blue: 'bg-blue-100 text-blue-600',
@@ -108,25 +93,14 @@ function DataTable({
         {data.slice(0, 15).map((item, i) => {
           const maxValue = data[0]?.y || 1;
           const percentage = (item.y / maxValue) * 100;
-          const formattedLabel = formatLabel(item.x);
           
           return (
             <div key={i}>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <span className="text-sm text-slate-700 truncate" title={item.x}>
-                    {formattedLabel || '(direto)'}
+                    {item.x || '(direto)'}
                   </span>
-                  {item.x && item.x.startsWith('http') && (
-                    <a 
-                      href={item.x} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-slate-400 hover:text-blue-500 shrink-0"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
                 </div>
                 <span className="text-sm font-semibold text-slate-900 ml-2 shrink-0">
                   {item.y.toLocaleString('pt-BR')}
@@ -150,27 +124,12 @@ function DataTable({
 }
 
 // Channel overview card
-function ChannelOverview({ data, totalVisitors = 0 }: { data: MetricData[], totalVisitors?: number }) {
-  let chartData = data.slice(0, 6).map((item, i) => ({
+function ChannelOverview({ data }: { data: Array<{ x: string; y: number; users: number }> }) {
+  const chartData = data.slice(0, 6).map((item, i) => ({
     name: getChannelLabel(item.x),
     value: item.y,
     color: channelConfig[item.x]?.color || COLORS[i % COLORS.length],
   }));
-
-  // Logic to add Direct traffic if missing
-  const currentTotal = chartData.reduce((sum, item) => sum + item.value, 0);
-  if (totalVisitors > currentTotal) {
-    const diff = totalVisitors - currentTotal;
-    // If diff is significant (e.g. > 10% of total or just non-zero if list is empty), add Direct
-    // For now, if list is empty and we have visitors, definitely add it.
-    if (chartData.length === 0 && diff > 0) {
-       chartData.push({
-         name: getChannelLabel('direct'),
-         value: diff,
-         color: channelConfig['direct'].color
-       });
-    }
-  }
 
   const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
@@ -206,12 +165,11 @@ function ChannelOverview({ data, totalVisitors = 0 }: { data: MetricData[], tota
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                {/* No Tooltip */}
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
               <span className="text-3xl font-bold text-slate-900">{total.toLocaleString('pt-BR')}</span>
-              <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Visitantes</span>
+              <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">Sessões</span>
             </div>
           </div>
           
@@ -269,13 +227,16 @@ export default function AquisicaoPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/analytics/aquisicao?period=${period}`);
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Falha ao carregar dados');
-      }
-      const result = await res.json();
-      setData(result);
+      const [channelsRes, referrersRes] = await Promise.all([
+        getChannels(period),
+        getReferrers(period),
+      ]);
+      
+      setData({
+        channels: channelsRes.channels,
+        referrers: referrersRes.referrers,
+        period,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
@@ -359,10 +320,7 @@ export default function AquisicaoPage() {
       </div>
 
       {/* Channels Overview */}
-      <ChannelOverview 
-        data={data?.channels || []} 
-        totalVisitors={data?.totalVisitors || 0}
-      />
+      <ChannelOverview data={data?.channels || []} />
 
       {/* Referrers */}
       <DataTable 
@@ -372,33 +330,6 @@ export default function AquisicaoPage() {
         icon={LinkIcon}
         iconColor="orange"
       />
-
-      {/* UTM Queries */}
-      {(() => {
-        // Filter for valid marketing parameters only to avoid internal app state (like view=kanban)
-        const validPrefixes = [
-          'utm_source=', 'utm_medium=', 'utm_campaign=', 'utm_term=', 'utm_content=',
-          'ref=', 'gclid=', 'fbclid=', 'ttclid=', 'irclid=', 'dclid=', 'wbraid=', 'gbraid='
-        ];
-        
-        const filteredQueries = (data?.queries || []).filter(q => {
-           if (q.x === '(direto)') return true;
-           // Check if it starts with any valid parameter prefix
-           // Umami usually returns "key=value" for query metrics
-           return validPrefixes.some(prefix => q.x.startsWith(prefix));
-        });
-
-        // Always render, if empty DataTable will handle 'No data' state
-        return (
-          <DataTable 
-            title="Parâmetros de Campanha" 
-            subtitle="Rastreamento UTM e campanhas de marketing"
-            data={filteredQueries}
-            icon={Search}
-            iconColor="purple"
-          />
-        );
-      })()}
     </div>
   );
 }

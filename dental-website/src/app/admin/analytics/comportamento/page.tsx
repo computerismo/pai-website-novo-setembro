@@ -6,76 +6,40 @@ import {
   RefreshCw,
   Map,
   Zap,
-  Target,
   AlertTriangle,
-  Clock,
-  Filter,
-  TrendingUp,
   Timer,
-  MousePointerClick,
   ArrowDownRight,
-  ArrowUpRight
+  ArrowUpRight,
+  TrendingUp
 } from 'lucide-react';
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-  Cell,
-  ScatterChart, 
-  Scatter, 
-  ZAxis,
-  ReferenceLine,
-  AreaChart,
-  Area,
   Tooltip,
 } from 'recharts';
+import Link from 'next/link';
+import { 
+  getTopPages, 
+  getPageviewsSeries, 
+  getLandingPages,
+  type TopPagesResponse, 
+  type PageviewsSeriesResponse,
+  type LandingPagesResponse
+} from '@/lib/analytics/ga4-api';
 
-// === Types ===
-interface MetricData {
-  x: string;
-  y: number;
-}
-
-interface ExpandedMetricData {
-  name: string;
-  pageviews: number;
-  visitors: number;
-  visits: number;
-  bounces: number;
-  totaltime: number;
-}
-
-interface EventSeries {
-  x: string;
-  t: string;
-  y: number;
-}
-
-interface UmamiStats {
-  pageviews: number;
-  visitors: number;
-  visits: number;
-  bounces: number;
-  totaltime: number;
-}
-
+// Types
 interface BehaviorData {
-  topPages: MetricData[];
-  topPagesExpanded: ExpandedMetricData[];
-  entryPages: MetricData[];
-  exitPages: MetricData[];
-  events: MetricData[];
-  eventsSeries: EventSeries[];
-  pageviews: MetricData[]; // Format: { x: date, y: views }
-  sessionsWeekly: number[][];
-  stats: UmamiStats;
+  topPages: TopPagesResponse['pages'];
+  pageviews: PageviewsSeriesResponse['pageviews'];
+  landingPages: LandingPagesResponse['landingPages'];
   period: string;
 }
 
-// === Constants ===
+// Constants
 const PERIODS = [
   { value: '24h', label: 'Últimas 24h' },
   { value: '7d', label: 'Últimos 7 dias' },
@@ -83,21 +47,10 @@ const PERIODS = [
   { value: '90d', label: 'Últimos 90 dias' },
 ];
 
-const COLORS = {
-  primary: '#3b82f6',   // Blue
-  success: '#10b981',   // Emerald
-  warning: '#f59e0b',   // Amber
-  danger: '#ef4444',    // Red
-  accent: '#8b5cf6',    // Purple
-  neutral: '#94a3b8',   // Slate-400
-  grid: '#e2e8f0'       // Slate-200
-};
-
-// === Helpers ===
+// Helpers
 function formatPagePath(path: string): string {
   if (path === '/') return 'Início';
   if (!path) return 'Desconhecido';
-  // Strip slashes for cleaner look
   return path.replace(/^\//, '').replace(/\/$/, '') || 'Início';
 }
 
@@ -107,15 +60,13 @@ function formatTime(seconds: number): string {
   return `${Math.floor(seconds / 60)}m ${Math.round(seconds % 60)}s`;
 }
 
-// Filter Logic - CRITICAL: Exclude admin pages
+// Filter admin pages
 const isPublicPage = (path: string) => {
   if (!path) return false;
   return !path.startsWith('/admin') && !path.startsWith('/login');
 };
 
-// === Components ===
-
-// 1. Overview Metric Card
+// Insight Card
 function InsightCard({ 
   title, 
   value, 
@@ -123,7 +74,6 @@ function InsightCard({
   icon: Icon,
   colorClass = "text-blue-600",
   bgClass = "bg-blue-50",
-  trend
 }: { 
   title: string; 
   value: string; 
@@ -131,7 +81,6 @@ function InsightCard({
   icon: React.ElementType;
   colorClass?: string;
   bgClass?: string;
-  trend?: 'up' | 'down' | 'neutral';
 }) {
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-start justify-between">
@@ -147,20 +96,17 @@ function InsightCard({
   );
 }
 
-// 2. Navigation Flow Card
+// Flow Card
 function FlowCard({ 
   entryPages, 
-  exitPages,
   topPages 
 }: { 
-  entryPages: MetricData[] | null; 
-  exitPages: MetricData[] | null;
-  topPages: ExpandedMetricData[] | null;
+  entryPages: LandingPagesResponse['landingPages']; 
+  topPages: TopPagesResponse['pages'];
 }) {
-  const topEntries = Array.isArray(entryPages) ? entryPages.slice(0, 5) : [];
-  const topExits = Array.isArray(exitPages) ? exitPages.slice(0, 5) : [];
-  const safeTopPages = Array.isArray(topPages) ? topPages : [];
-  const totalVisitors = safeTopPages.reduce((acc, curr) => acc + curr.visitors, 0);
+  const filteredEntries = entryPages.filter(p => isPublicPage(p.x)).slice(0, 5);
+  const filteredTop = topPages.filter(p => isPublicPage(p.x)).slice(0, 5);
+  const totalVisitors = filteredTop.reduce((acc, curr) => acc + curr.visitors, 0);
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm col-span-1 lg:col-span-3">
@@ -170,11 +116,8 @@ function FlowCard({
       </h3>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
-        {/* Connector Lines (Desktop only) */}
-        <div className="hidden md:block absolute top-[60px] left-[20%] w-[60%] h-0.5 bg-gradient-to-r from-emerald-200 via-blue-200 to-orange-200 -z-0" />
-
         {/* Entry */}
-        <div className="bg-white border-2 border-emerald-50 rounded-xl p-4 z-10 hover:border-emerald-100 transition-colors">
+        <div className="bg-white border-2 border-emerald-50 rounded-xl p-4 hover:border-emerald-100 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-bold text-emerald-900 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -183,7 +126,7 @@ function FlowCard({
             <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Top 5</span>
           </div>
           <div className="space-y-3">
-            {topEntries.length > 0 ? topEntries.map((p, i) => (
+            {filteredEntries.length > 0 ? filteredEntries.map((p, i) => (
               <div key={i} className="flex justify-between items-center text-sm group">
                 <span className="truncate max-w-[150px] text-slate-600 font-medium group-hover:text-emerald-700 transition-colors" title={p.x}>
                   {formatPagePath(p.x)}
@@ -197,7 +140,7 @@ function FlowCard({
         </div>
 
         {/* Core */}
-        <div className="bg-white border-2 border-blue-50 rounded-xl p-4 z-10 hover:border-blue-100 transition-colors text-center flex flex-col justify-center min-h-[160px]">
+        <div className="bg-white border-2 border-blue-50 rounded-xl p-4 hover:border-blue-100 transition-colors text-center flex flex-col justify-center min-h-[160px]">
           <h4 className="font-bold text-blue-900 mb-2">Engajamento Central</h4>
           <p className="text-4xl font-bold text-blue-600 mb-1">
             {totalVisitors.toLocaleString()}
@@ -205,17 +148,17 @@ function FlowCard({
           <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Visitantes nos Principais Conteúdos</p>
         </div>
 
-        {/* Exit */}
-        <div className="bg-white border-2 border-orange-50 rounded-xl p-4 z-10 hover:border-orange-100 transition-colors">
+        {/* Top Pages (as exit proxy) */}
+        <div className="bg-white border-2 border-orange-50 rounded-xl p-4 hover:border-orange-100 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-bold text-orange-900 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-orange-500" />
-              Saída
+              Mais Visitadas
             </h4>
             <span className="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-full">Top 5</span>
           </div>
           <div className="space-y-3">
-            {topExits.length > 0 ? topExits.map((p, i) => (
+            {filteredTop.length > 0 ? filteredTop.map((p, i) => (
               <div key={i} className="flex justify-between items-center text-sm group">
                 <span className="truncate max-w-[150px] text-slate-600 font-medium group-hover:text-orange-700 transition-colors" title={p.x}>
                   {formatPagePath(p.x)}
@@ -223,7 +166,7 @@ function FlowCard({
                 <span className="font-bold text-slate-900">{p.y}</span>
               </div>
              )) : (
-              <p className="text-sm text-slate-400 py-2">Sem dados de saída</p>
+              <p className="text-sm text-slate-400 py-2">Sem dados</p>
             )}
           </div>
         </div>
@@ -232,22 +175,20 @@ function FlowCard({
   );
 }
 
-// 3. Page Performance Lists (Sticky vs Slippery)
-function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] | null }) {
-  if (!Array.isArray(pages)) return null; // Strict check
-
-  // Sticky: High Time on Page (> 10s), Low Bounce (< 70%), sorted by Time
-  // Use visits for denominator
-  const stickyPages = [...pages]
-    .filter(p => p.visits > 2 && (p.totaltime/p.visits) > 10)
-    .sort((a, b) => (b.totaltime/b.visits) - (a.totaltime/a.visits))
+// Page Performance Lists
+function PagePerformanceLists({ pages }: { pages: TopPagesResponse['pages'] }) {
+  const filteredPages = pages.filter(p => isPublicPage(p.x));
+  
+  // Sticky: High Time on Page (> 30s)
+  const stickyPages = [...filteredPages]
+    .filter(p => p.avgTime > 30)
+    .sort((a, b) => b.avgTime - a.avgTime)
     .slice(0, 5);
 
-  // Slippery: High Bounce (> 50%), sorted by Bounce Rate (desc)
-  // Use visits for denominator
-  const slipperyPages = [...pages]
-    .filter(p => p.visits > 2 && (p.bounces/p.visits) > 0.5)
-    .sort((a, b) => (b.bounces/b.visits) - (a.bounces/a.visits))
+  // Slippery: High Bounce (> 50%)
+  const slipperyPages = [...filteredPages]
+    .filter(p => p.bounceRate > 50)
+    .sort((a, b) => b.bounceRate - a.bounceRate)
     .slice(0, 5);
 
   return (
@@ -269,11 +210,11 @@ function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] | null })
             <tbody className="divide-y divide-slate-50">
               {stickyPages.length > 0 ? stickyPages.map((p, i) => (
                 <tr key={i} className="group hover:bg-slate-50 transition-colors">
-                  <td className="px-3 py-3 font-medium text-slate-700 truncate max-w-[180px]" title={p.name}>
-                    {formatPagePath(p.name)}
+                  <td className="px-3 py-3 font-medium text-slate-700 truncate max-w-[180px]" title={p.x}>
+                    {formatPagePath(p.x)}
                   </td>
                   <td className="px-3 py-3 text-right text-emerald-600 font-bold">
-                    {formatTime(p.totaltime/p.visits)}
+                    {formatTime(p.avgTime)}
                   </td>
                 </tr>
               )) : (
@@ -301,11 +242,11 @@ function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] | null })
             <tbody className="divide-y divide-slate-50">
               {slipperyPages.length > 0 ? slipperyPages.map((p, i) => (
                 <tr key={i} className="group hover:bg-slate-50 transition-colors">
-                  <td className="px-3 py-3 font-medium text-slate-700 truncate max-w-[180px]" title={p.name}>
-                    {formatPagePath(p.name)}
+                  <td className="px-3 py-3 font-medium text-slate-700 truncate max-w-[180px]" title={p.x}>
+                    {formatPagePath(p.x)}
                   </td>
                   <td className="px-3 py-3 text-right text-orange-600 font-bold">
-                    {Math.min(100, (p.bounces/p.visits)*100).toFixed(0)}%
+                    {p.bounceRate.toFixed(0)}%
                   </td>
                 </tr>
               )) : (
@@ -319,9 +260,9 @@ function PagePerformanceLists({ pages }: { pages: ExpandedMetricData[] | null })
   );
 }
 
-// 4. Traffic Trend (Chart)
-function TrafficTrendCard({ data }: { data: MetricData[] | null }) {
-  if (!Array.isArray(data) || data.length === 0) return null; // Strict array check
+// Traffic Trend Chart
+function TrafficTrendCard({ data }: { data: PageviewsSeriesResponse['pageviews'] }) {
+  if (!data || data.length === 0) return null;
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
@@ -363,11 +304,10 @@ function TrafficTrendCard({ data }: { data: MetricData[] | null }) {
               stroke="#94a3b8" 
               tickLine={false}
               axisLine={false}
-              tickFormatter={(val) => `${val}`}
             />
             <Tooltip 
               contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-              labelFormatter={(label) => new Date(label).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })}
+              labelFormatter={(label) => new Date(label).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
             />
             <Area 
               type="monotone" 
@@ -384,43 +324,7 @@ function TrafficTrendCard({ data }: { data: MetricData[] | null }) {
   );
 }
 
-// 5. Heatmap Card
-function HeatmapCard({ heatmap }: { heatmap: number[][] | null }) {
-  if (!heatmap) return null; // Safety check
-
-  // Find Peak Time
-  let peakVal = 0;
-  let peakDay = 0;
-  let peakHour = 0;
-  heatmap.forEach((d, di) => d.forEach((h, hi) => {
-    if (h > peakVal) { peakVal = h; peakDay = di; peakHour = hi; }
-  }));
-  const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
-  return (
-    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col h-full">
-       <div className="mb-6">
-        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <Clock className="w-5 h-5 text-purple-500" />
-          Melhor Horário
-        </h3>
-        <p className="text-xs text-slate-500">Pico de atividade dos usuários</p>
-      </div>
-
-       <div className="flex-1 flex flex-col items-center justify-center p-6 bg-purple-50 rounded-xl border border-purple-100 mb-4">
-        <p className="text-sm text-purple-600 uppercase tracking-widest font-bold mb-2">Momento de Ouro</p>
-        <p className="text-4xl font-extrabold text-slate-900 mb-1">{days[peakDay]}</p>
-        <p className="text-2xl font-medium text-slate-600">{peakHour}:00 - {peakHour+1}:00</p>
-      </div>
-      
-      <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-sm text-slate-600">
-        <p>A maioria dos seus usuários acessa neste horário. Ótimo momento para lançar novidades.</p>
-      </div>
-    </div>
-  );
-}
-
-// === Main Page ===
+// Main Page
 export default function ComportamentoPage() {
   const [data, setData] = useState<BehaviorData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -431,10 +335,18 @@ export default function ComportamentoPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/analytics/comportamento?period=${period}`);
-      if (!res.ok) throw new Error('Falha ao carregar dados');
-      const result = await res.json();
-      setData(result);
+      const [topPagesRes, pageviewsRes, landingPagesRes] = await Promise.all([
+        getTopPages(period, 20),
+        getPageviewsSeries(period),
+        getLandingPages(period, 10),
+      ]);
+      
+      setData({
+        topPages: topPagesRes.pages,
+        pageviews: pageviewsRes.pageviews,
+        landingPages: landingPagesRes.landingPages,
+        period,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
@@ -446,48 +358,19 @@ export default function ComportamentoPage() {
     fetchData();
   }, [period]);
 
-  // Filter out admin pages
-  const filterData = (result: BehaviorData | null) => {
-    if (!result) return null;
-    const filteredTopPages = result.topPagesExpanded.filter(p => isPublicPage(p.name));
-    const filteredEntry = result.entryPages.filter(p => isPublicPage(p.x));
-    const filteredExit = result.exitPages.filter(p => isPublicPage(p.x));
-    
-    return {
-      ...result,
-      topPagesExpanded: filteredTopPages,
-      entryPages: filteredEntry,
-      exitPages: filteredExit
-    };
-  };
-
-  const processedData = filterData(data);
-
-  // Calculate totals from filtered pages to exclude Admin data cleanly
-  // This replaces the global 'stats' object which includes all traffic
-  const publicStats = {
-    visits: processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.visits, 0) || 0,
-    bounces: processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.bounces, 0) || 0,
-    totaltime: processedData?.topPagesExpanded.reduce((acc, curr) => acc + curr.totaltime, 0) || 0,
-  };
-
-  // Derived Global Metrics (Public Only)
-  const avgTimeGlobal = publicStats.visits > 0 
-    ? publicStats.totaltime / publicStats.visits 
+  const publicPages = data?.topPages.filter(p => isPublicPage(p.x)) || [];
+  const topPage = publicPages[0];
+  const avgBounce = publicPages.length > 0 
+    ? publicPages.reduce((acc, p) => acc + p.bounceRate, 0) / publicPages.length 
     : 0;
-  
-  // Avg Bounce = Total Bounces / Total Sessions
-  const avgBounceRate = publicStats.visits > 0 
-    ? Math.min(100, (publicStats.bounces / publicStats.visits) * 100) 
+  const avgTime = publicPages.length > 0 
+    ? publicPages.reduce((acc, p) => acc + p.avgTime, 0) / publicPages.length 
     : 0;
 
-  // Most Active Page
-  const topPage = processedData?.topPagesExpanded[0];
-
-  if (loading && !processedData) {
+  if (loading && !data) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+        <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mb-4" />
         <p className="text-slate-500">Carregando análise...</p>
       </div>
     );
@@ -511,6 +394,11 @@ export default function ComportamentoPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
+          <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
+            <Link href="/admin/analytics" className="hover:text-blue-600">Análise de Tráfego</Link>
+            <ArrowRight className="w-3 h-3" />
+            <span className="text-slate-900 font-medium">Comportamento</span>
+          </div>
           <h1 className="text-2xl font-bold text-slate-900">Comportamento</h1>
           <p className="text-slate-500">Análise de jornada e engajamento</p>
         </div>
@@ -532,13 +420,13 @@ export default function ComportamentoPage() {
         </div>
       </div>
 
-      {processedData && (
+      {data && (
         <>
-          {/* 1. Global Metrics Cards */}
+          {/* Global Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <InsightCard 
               title="Tempo Médio Global" 
-              value={formatTime(avgTimeGlobal)} 
+              value={formatTime(avgTime)} 
               subtext="Média em todas as páginas" 
               icon={Timer}
               colorClass="text-blue-600"
@@ -546,7 +434,7 @@ export default function ComportamentoPage() {
             />
             <InsightCard 
               title="Taxa de Rejeição Média" 
-              value={`${avgBounceRate.toFixed(1)}%`} 
+              value={`${avgBounce.toFixed(1)}%`} 
               subtext="Visitantes que saíram direto" 
               icon={ArrowUpRight}
               colorClass="text-orange-600"
@@ -554,7 +442,7 @@ export default function ComportamentoPage() {
             />
              <InsightCard 
               title="Página Mais Popular" 
-              value={topPage ? formatPagePath(topPage.name) : '-'} 
+              value={topPage ? formatPagePath(topPage.x) : '-'} 
               subtext={`${topPage?.visitors || 0} visitantes únicos`} 
               icon={Zap}
               colorClass="text-purple-600"
@@ -562,23 +450,19 @@ export default function ComportamentoPage() {
             />
           </div>
 
-          {/* 2. Flow & Heatmap Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Flow */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <FlowCard 
-              entryPages={processedData.entryPages}
-              exitPages={processedData.exitPages}
-              topPages={processedData.topPagesExpanded}
+              entryPages={data.landingPages}
+              topPages={data.topPages}
             />
-            <div className="col-span-1 lg:col-span-1 h-full">
-               <HeatmapCard heatmap={processedData.sessionsWeekly} />
-            </div>
           </div>
 
-          {/* 3. Detailed Performance Lists */}
-          <PagePerformanceLists pages={processedData.topPagesExpanded} />
+          {/* Performance Lists */}
+          <PagePerformanceLists pages={data.topPages} />
 
-          {/* 4. Traffic Trend (Replaces Empty Events) */}
-          <TrafficTrendCard data={processedData.pageviews} />
+          {/* Traffic Trend */}
+          <TrafficTrendCard data={data.pageviews} />
         </>
       )}
     </div>

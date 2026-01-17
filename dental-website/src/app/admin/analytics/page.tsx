@@ -12,9 +12,7 @@ import {
   Smartphone,
   Tablet,
   Laptop,
-  ArrowUpRight,
   RefreshCw,
-  ExternalLink,
   Activity
 } from 'lucide-react';
 import {
@@ -29,40 +27,18 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { getAllAnalyticsData, type StatsResponse, type MetricItem, type TopPageItem } from '@/lib/analytics/ga4-api';
 
-// Types
-interface UmamiStats {
-  pageviews: number;
-  visitors: number;
-  visits: number;
-  bounces: number;
-  totaltime: number;
-}
-
-interface PageviewData {
-  x: string;
-  y: number;
-}
-
-interface MetricData {
-  x: string;
-  y: number;
-}
-
+// Types for our unified data structure
 interface AnalyticsData {
-  stats: UmamiStats & {
-    comparison: UmamiStats;
-  };
+  stats: StatsResponse;
   pageviews: {
-    pageviews: PageviewData[];
-    sessions: PageviewData[];
+    pageviews: { x: string; y: number }[];
+    sessions: { x: string; y: number }[];
   };
-  topPages: MetricData[];
-  referrers: MetricData[];
-  channels: MetricData[];
-  devices: MetricData[];
-  browsers: MetricData[];
-  countries: MetricData[];
+  topPages: TopPageItem[];
+  devices: MetricItem[];
+  channels: Array<{ x: string; y: number; users: number }>;
   activeVisitors: number;
   period: string;
 }
@@ -106,14 +82,12 @@ function formatChartDate(dateString: string, period: string): string {
 function StatsCard({ 
   title, 
   value, 
-  previousValue,
   icon: Icon, 
   color = 'blue',
   suffix = ''
 }: { 
   title: string; 
   value: string | number; 
-  previousValue?: number;
   icon: React.ElementType;
   color?: 'blue' | 'green' | 'purple' | 'orange';
   suffix?: string;
@@ -125,14 +99,6 @@ function StatsCard({
     orange: 'from-orange-500 to-orange-600',
   };
 
-  // Calculate trend
-  let trend = 0;
-  let trendDirection: 'up' | 'down' | 'neutral' = 'neutral';
-  if (previousValue && previousValue > 0 && typeof value === 'number') {
-    trend = ((value - previousValue) / previousValue) * 100;
-    trendDirection = trend > 0 ? 'up' : trend < 0 ? 'down' : 'neutral';
-  }
-
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center justify-between">
@@ -142,19 +108,6 @@ function StatsCard({
             {typeof value === 'number' ? value.toLocaleString('pt-BR') : value}
             {suffix && <span className="text-lg font-normal text-slate-400 ml-1">{suffix}</span>}
           </p>
-          {previousValue !== undefined && trendDirection !== 'neutral' && (
-            <div className={`flex items-center gap-1 mt-2 text-sm font-medium ${
-              trendDirection === 'up' ? 'text-emerald-600' : 'text-red-500'
-            }`}>
-              {trendDirection === 'up' ? (
-                <TrendingUp className="w-4 h-4" />
-              ) : (
-                <TrendingUp className="w-4 h-4 rotate-180" />
-              )}
-              <span>{Math.abs(trend).toFixed(1)}%</span>
-              <span className="text-slate-400 font-normal">vs anterior</span>
-            </div>
-          )}
         </div>
         <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center`}>
           <Icon className="w-6 h-6 text-white" />
@@ -175,12 +128,7 @@ export default function AnalyticsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/analytics?period=${period}`);
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Falha ao carregar dados');
-      }
-      const result = await res.json();
+      const result = await getAllAnalyticsData(period);
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
@@ -203,13 +151,6 @@ export default function AnalyticsPage() {
     sessions: data.pageviews.sessions[i]?.y || 0,
   })) || [];
 
-  // Calculate bounce rate
-  const bounceRate = data?.stats ? Math.round((data.stats.bounces / data.stats.visits) * 100) : 0;
-  const prevBounceRate = data?.stats?.comparison ? Math.round((data.stats.comparison.bounces / data.stats.comparison.visits) * 100) : undefined;
-
-  // Calculate avg time
-  const avgTime = data?.stats ? data.stats.totaltime / data.stats.visits : 0;
-
   // Device chart data
   const deviceData = data?.devices?.map((d, i) => ({
     name: d.x,
@@ -222,7 +163,7 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Análise de Tráfego</h1>
-          <p className="text-slate-500 mt-1">Métricas e insights do site via Umami Analytics</p>
+          <p className="text-slate-500 mt-1">Métricas e insights do site via Google Analytics</p>
         </div>
         <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center">
           <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
@@ -237,7 +178,7 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Análise de Tráfego</h1>
-          <p className="text-slate-500 mt-1">Métricas e insights do site via Umami Analytics</p>
+          <p className="text-slate-500 mt-1">Métricas e insights do site via Google Analytics</p>
         </div>
         <div className="bg-white rounded-2xl p-12 flex flex-col items-center justify-center border-2 border-dashed border-red-200">
           <div className="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center mb-4">
@@ -263,7 +204,7 @@ export default function AnalyticsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Análise de Tráfego</h1>
-          <p className="text-slate-500 mt-1">Métricas e insights do site via Umami Analytics</p>
+          <p className="text-slate-500 mt-1">Métricas e insights do site via Google Analytics</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -294,17 +235,6 @@ export default function AnalyticsPage() {
           >
             <RefreshCw className={`w-5 h-5 text-slate-600 ${loading ? 'animate-spin' : ''}`} />
           </button>
-
-          {/* Link to Umami */}
-          <a
-            href={process.env.NEXT_PUBLIC_UMAMI_URL || 'https://umami-production-4051.up.railway.app'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-            title="Abrir Umami Dashboard"
-          >
-            <ExternalLink className="w-5 h-5 text-slate-600" />
-          </a>
         </div>
       </div>
 
@@ -313,28 +243,25 @@ export default function AnalyticsPage() {
         <StatsCard
           title="Visitantes Únicos"
           value={data?.stats?.visitors || 0}
-          previousValue={data?.stats?.comparison?.visitors}
           icon={Users}
           color="blue"
         />
         <StatsCard
           title="Visualizações"
           value={data?.stats?.pageviews || 0}
-          previousValue={data?.stats?.comparison?.pageviews}
           icon={Eye}
           color="green"
         />
         <StatsCard
           title="Taxa de Rejeição"
-          value={bounceRate}
-          previousValue={prevBounceRate}
+          value={Math.round(data?.stats?.bounceRate || 0)}
           suffix="%"
           icon={TrendingUp}
           color="orange"
         />
         <StatsCard
           title="Tempo Médio"
-          value={formatTime(avgTime)}
+          value={formatTime(data?.stats?.avgSessionDuration || 0)}
           icon={Clock}
           color="purple"
         />
@@ -397,7 +324,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Bottom section: Pages, Referrers, Devices */}
+      {/* Bottom section: Pages, Channels, Devices */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Top Pages */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
@@ -409,14 +336,9 @@ export default function AnalyticsPage() {
             {data?.topPages
               ?.filter(page => {
                  const x = page.x;
-                 const validRoutes = [
-                   '/', '/sobre', '/contato', '/blog', '/tratamento-bruxismo',
-                   '/placa-miorrelaxante', '/botox-bruxismo', '/login'
-                 ];
-                 const isValid = validRoutes.includes(x) || x.startsWith('/blog/') || x.startsWith('/admin'); // Admin filtered next
-                 return !x.startsWith('/admin') && !x.startsWith('/login') && isValid;
+                 return !x.startsWith('/admin') && !x.startsWith('/login');
               })
-              .slice(0, 5) // Reduced to 5 to fit better with card style
+              .slice(0, 5)
               .map((page, i) => (
               <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-100 border border-slate-200 hover:border-blue-300 transition-colors group">
                 <span className="text-sm font-medium text-slate-700 truncate max-w-[70%]" title={page.x}>
@@ -427,7 +349,7 @@ export default function AnalyticsPage() {
                 </span>
               </div>
             ))}
-            {(!data?.topPages || data.topPages.filter(page => !page.x.startsWith('/admin') && !page.x.startsWith('/login')).length === 0) && (
+            {(!data?.topPages || data.topPages.length === 0) && (
               <p className="text-sm text-slate-400 text-center py-4">Nenhum dado disponível</p>
             )}
           </div>
@@ -440,35 +362,27 @@ export default function AnalyticsPage() {
             <h3 className="font-semibold text-slate-900">Fontes de Tráfego</h3>
           </div>
           <div className="space-y-3">
-            {(() => {
-              // Fallback logic: If no channels data but we have visitors, assume it's Direct traffic
-              let displayChannels = data?.channels || [];
-              if (displayChannels.length === 0 && (data?.stats?.visitors || 0) > 0) {
-                displayChannels = [{ x: 'Direct', y: data?.stats?.visitors || 0 }];
-              }
-
-              return displayChannels.slice(0, 5).map((channel, i) => { // Reduced to 5
-                const channelNames: Record<string, string> = {
-                  'Direct': 'Direto',
-                  'Organic': 'Orgânico',
-                  'Referral': 'Referência',
-                  'Social': 'Redes Sociais',
-                  'Email': 'Email',
-                  'Paid': 'Pago',
-                };
-                return (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-100 border border-slate-200 hover:border-emerald-300 transition-colors group">
-                    <span className="text-sm font-medium text-slate-700 capitalize truncate flex-1">
-                      {channelNames[channel.x] || channel.x}
-                    </span>
-                    <span className="px-2 py-1 bg-white rounded-md text-xs font-bold text-emerald-600 shadow-sm border border-slate-100 group-hover:border-emerald-100">
-                      {channel.y.toLocaleString('pt-BR')}
-                    </span>
-                  </div>
-                );
-              });
-            })()}
-            {(!data?.channels || (data.channels.length === 0 && (!data?.stats?.visitors || data.stats.visitors === 0))) && (
+            {data?.channels?.slice(0, 5).map((channel, i) => {
+              const channelNames: Record<string, string> = {
+                'Direct': 'Direto',
+                'Organic Search': 'Busca Orgânica',
+                'Referral': 'Referência',
+                'Organic Social': 'Redes Sociais',
+                'Email': 'Email',
+                'Paid Search': 'Busca Paga',
+              };
+              return (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-100 border border-slate-200 hover:border-emerald-300 transition-colors group">
+                  <span className="text-sm font-medium text-slate-700 capitalize truncate flex-1">
+                    {channelNames[channel.x] || channel.x}
+                  </span>
+                  <span className="px-2 py-1 bg-white rounded-md text-xs font-bold text-emerald-600 shadow-sm border border-slate-100 group-hover:border-emerald-100">
+                    {channel.y.toLocaleString('pt-BR')}
+                  </span>
+                </div>
+              );
+            })}
+            {(!data?.channels || data.channels.length === 0) && (
               <p className="text-sm text-slate-400 text-center py-4">Nenhum dado disponível</p>
             )}
           </div>
@@ -510,17 +424,8 @@ export default function AnalyticsPage() {
                       style={{ backgroundColor: device.color }}
                     />
                     <span className="text-sm text-slate-600 capitalize flex items-center gap-1">
-                      {/* Use Monitor icon for both to be consistent with 'Computador' label */}
-                      {(device.name.toLowerCase() === 'laptop' || device.name.toLowerCase() === 'desktop') 
-                        ? <Monitor className="w-4 h-4" /> 
-                        : (deviceIcons[device.name.toLowerCase()] || <Monitor className="w-4 h-4" />)
-                      }
-                      {(() => {
-                        const name = device.name.toLowerCase();
-                        if (name === 'desktop' || name === 'laptop') return 'Computador';
-                        if (name === 'mobile') return 'Móvel';
-                        return device.name;
-                      })()}
+                      {deviceIcons[device.name.toLowerCase()] || <Monitor className="w-4 h-4" />}
+                      {device.name === 'desktop' ? 'Computador' : device.name === 'mobile' ? 'Móvel' : device.name}
                     </span>
                     <span className="text-sm font-medium text-slate-900">
                       {device.value}
