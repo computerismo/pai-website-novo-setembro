@@ -4,6 +4,7 @@ import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { BlogHero } from '@/components/blog/BlogHero';
+import { Mail } from 'lucide-react';
 
 import { Metadata } from 'next';
 
@@ -69,8 +70,6 @@ export default async function BlogPage() {
     readingTime: post.readingTime || '5 min',
   }));
 
-
-
   return (
     <>
       <Navigation />
@@ -79,83 +78,56 @@ export default async function BlogPage() {
 
         {/* Featured Posts */}
         {featuredPosts.length > 0 && (
-          <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-b border-blue-100/50">
-            {/* Decorative Elements */}
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
-
-            <div className="container mx-auto px-4">
+          <section className="py-16 lg:py-24 bg-white dark:bg-surface-dark border-y border-gray-100 dark:border-gray-800">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-16">
-                <div className="inline-block mb-4">
-                  <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                    ⭐ Em Destaque
-                  </span>
-                </div>
-                <h2 className="text-2xl md:text-4xl font-bold mb-4 text-gray-900">
+                <span className="text-[#2563EB] font-semibold tracking-wider uppercase text-sm">Em Destaque</span>
+                <h2 className="text-3xl lg:text-4xl font-bold text-heading-light dark:text-heading-dark mt-2 mb-6">
                   Artigos em Destaque
                 </h2>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-text-light dark:text-text-dark max-w-2xl mx-auto">
                   Nossos conteúdos mais importantes sobre saúde bucal e tratamento de bruxismo
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 relative">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featuredPosts.map((post) => (
                   <BlogCard key={post.slug} post={post} featured />
                 ))}
               </div>
             </div>
-
-            {/* Bottom Decorative Line */}
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
           </section>
         )}
 
-
-
         {/* All Posts */}
-        <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-t border-blue-100/50">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
-
-          <div className="container mx-auto px-4">
+        <section className="py-16 lg:py-24 bg-[#F8FAFC] dark:bg-background-dark">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  📚 Biblioteca
-                </span>
-              </div>
-              <h2 className="text-2xl md:text-4xl font-bold mb-4 text-gray-900">
+              <span className="text-[#2563EB] font-semibold tracking-wider uppercase text-sm">Biblioteca</span>
+              <h2 className="text-3xl lg:text-4xl font-bold text-heading-light dark:text-heading-dark mt-2 mb-6">
                 Todos os Artigos
               </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              <p className="text-text-light dark:text-text-dark max-w-2xl mx-auto">
                 Explore nossa coleção completa de artigos sobre saúde bucal e odontologia
               </p>
             </div>
 
             {allPosts.length > 0 ? (
-              <div className="relative">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute top-10 left-10 w-32 h-32 bg-blue-200 rounded-full filter blur-2xl"></div>
-                  <div className="absolute bottom-10 right-10 w-32 h-32 bg-teal-200 rounded-full filter blur-2xl"></div>
-                </div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 relative">
-                  {allPosts.map((post) => (
-                    <BlogCard key={post.slug} post={post} />
-                  ))}
-                </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {allPosts.map((post) => (
+                  <BlogCard key={post.slug} post={post} />
+                ))}
               </div>
             ) : (
               <div className="text-center py-16">
-                <div className="bg-white rounded-2xl p-12 shadow-lg border border-gray-100 max-w-md mx-auto">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="bg-white dark:bg-surface-dark rounded-2xl p-12 border border-gray-200 dark:border-gray-700 max-w-md mx-auto">
+                  <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <span className="text-2xl">📝</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  <h3 className="text-xl font-bold text-heading-light dark:text-heading-dark mb-4">
                     Artigos em Breve
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-text-light dark:text-text-dark">
                     Estamos preparando conteúdo exclusivo sobre saúde bucal e bruxismo.
                     Volte em breve para conferir nossas publicações!
                   </p>
@@ -165,62 +137,51 @@ export default async function BlogPage() {
           </div>
         </section>
 
-        {/* Newsletter Signup */}
-        <section className="py-20 bg-gradient-to-br from-sky-700 to-cyan-700 text-white relative overflow-hidden">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl -translate-y-48 translate-x-48"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-300 rounded-full filter blur-3xl translate-y-48 -translate-x-48"></div>
-          </div>
+        {/* Newsletter CTA */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-[#2563EB] opacity-90 dark:opacity-80 z-0"></div>
+          <div 
+            className="absolute inset-0 opacity-10 z-0" 
+            style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }}
+          ></div>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10 text-center">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
+              Receba Nossas Dicas de Saúde Bucal
+            </h2>
+            <p className="text-blue-100 text-lg mb-10 max-w-2xl mx-auto">
+              Inscreva-se para receber artigos exclusivos, dicas importantes sobre cuidados dentários
+              e novidades sobre tratamento de bruxismo
+            </p>
 
-          <div className="container mx-auto px-4 text-center relative">
-            <div className="max-w-4xl mx-auto">
-              <div className="inline-block mb-6">
-                <span className="text-sm font-medium text-blue-100 bg-blue-500 px-4 py-2 rounded-full">
-                  💌 Newsletter
-                </span>
-              </div>
+            <div className="max-w-lg mx-auto">
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
+                <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                  <input
+                    type="email"
+                    placeholder="Seu melhor email"
+                    className="flex-1 px-6 py-4 rounded-xl text-heading-light bg-white border border-gray-200 focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all placeholder-gray-400"
+                  />
+                  <button className="px-8 py-4 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-[#1D4ED8] transition-colors shadow-lg shadow-blue-500/25 whitespace-nowrap flex items-center justify-center gap-2">
+                    <Mail className="w-5 h-5" />
+                    Inscrever-se
+                  </button>
+                </div>
 
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6">
-                Receba Nossas Dicas de Saúde Bucal
-              </h2>
-
-              <p className="text-xl mb-10 text-blue-100 max-w-2xl mx-auto leading-relaxed">
-                Inscreva-se para receber artigos exclusivos, dicas importantes sobre cuidados dentários
-                e novidades sobre tratamento de bruxismo
-              </p>
-
-              <div className="max-w-lg mx-auto">
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
-                  <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                    <div className="flex-1">
-                      <input
-                        type="email"
-                        placeholder="Seu melhor email"
-                        className="w-full px-6 py-4 rounded-xl text-gray-900 bg-white border-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-sky-500 focus:shadow-lg transition-all duration-300 placeholder-gray-400 shadow-sm"
-                      />
-                    </div>
-                    <button className="bg-sky-700 border-2 border-sky-700 text-white px-8 py-4 rounded-xl font-semibold hover:bg-teal-600 hover:border-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap">
-                      Inscrever-se
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <span className="text-green-500">📧</span>
-                      <span>Conteúdo de qualidade</span>
-                    </div>
-                    <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-blue-500">🔒</span>
-                      <span>Dados seguros</span>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-center gap-4 text-sm text-text-light">
+                  <span className="flex items-center gap-1">
+                    <span className="text-green-500">✓</span>
+                    Conteúdo de qualidade
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="text-green-500">✓</span>
+                    Dados seguros
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </main>
       <Footer />
       <WhatsAppButton />

@@ -1,32 +1,26 @@
 export function BlogHero() {
   return (
-    <section className="relative py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-500 rounded-full filter blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-blue-400 rounded-full filter blur-3xl"></div>
-      </div>
+    <section className="pt-32 pb-16 bg-[#F8FAFC] dark:bg-background-dark relative overflow-hidden">
+      {/* Subtle glow effect */}
+      <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl -z-10"></div>
 
-      <div className="container mx-auto px-4 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-6">
-            <span className="inline-block text-sm font-medium text-blue-600 bg-blue-100 px-4 py-2 rounded-full">
-              📝 Centro de Conhecimento
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-heading-light dark:text-heading-dark mb-6 leading-tight">
+            Nosso{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-[#06B6D4]">
+              Blog
             </span>
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Blog
           </h1>
 
-          <p className="text-xl text-gray-600 leading-relaxed mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-text-light dark:text-text-dark leading-relaxed mb-8 max-w-2xl mx-auto">
             Artigos especializados sobre saúde bucal, bruxismo e cuidados dentários.
             Conteúdo confiável escrito por profissionais experientes.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-3 text-sm text-gray-500">
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-text-light dark:text-text-dark">
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+              <span className="w-2 h-2 bg-[#2563EB] rounded-full"></span>
               Conteúdo Atualizado
             </span>
             <span className="flex items-center gap-2">
