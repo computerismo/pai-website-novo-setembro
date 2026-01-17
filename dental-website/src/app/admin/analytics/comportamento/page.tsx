@@ -496,14 +496,14 @@ export default function ComportamentoPage() {
             />
           </div>
 
+          {/* Traffic Trend - moved to top */}
+          <TrafficTrendCard data={data.pageviews} />
+
           {/* Page Performance Table */}
           <PagePerformanceTable pages={data.topPages} />
 
           {/* Performance Lists */}
           <PagePerformanceLists pages={data.topPages} />
-
-          {/* Traffic Trend */}
-          <TrafficTrendCard data={data.pageviews} />
         </>
       )}
     </div>
