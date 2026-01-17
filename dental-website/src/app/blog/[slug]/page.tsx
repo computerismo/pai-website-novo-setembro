@@ -1,15 +1,15 @@
-import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/db';
-import NextImage from 'next/image';
-import { Navigation } from '@/components/shared/Navigation';
-import { Footer } from '@/components/shared/Footer';
-import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
-import { BlogPostHeader } from '@/components/blog/BlogPostHeader';
-import { BlogPostContent } from '@/components/blog/BlogPostContent';
-import { BlogPostSidebar } from '@/components/blog/BlogPostSidebar';
-import { RelatedPosts } from '@/components/blog/RelatedPosts';
-import { BlogPostNavigation } from '@/components/blog/BlogPostNavigation';
-import { Metadata } from 'next';
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/db";
+import NextImage from "next/image";
+import { Navigation } from "@/components/shared/Navigation";
+import { Footer } from "@/components/shared/Footer";
+import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
+import { BlogPostHeader } from "@/components/blog/BlogPostHeader";
+import { BlogPostContent } from "@/components/blog/BlogPostContent";
+
+import { RelatedPosts } from "@/components/blog/RelatedPosts";
+import { BlogPostNavigation } from "@/components/blog/BlogPostNavigation";
+import { Metadata } from "next";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -20,7 +20,7 @@ interface BlogPostPageProps {
 export async function generateStaticParams() {
   try {
     const posts = await prisma.post.findMany({
-      where: { status: 'published' },
+      where: { status: "published" },
       select: { slug: true },
     });
 
@@ -30,12 +30,16 @@ export async function generateStaticParams() {
   } catch (error) {
     // Return empty array if database is unreachable during build
     // Pages will be generated on-demand instead
-    console.log('generateStaticParams: Database unreachable, skipping static generation');
+    console.log(
+      "generateStaticParams: Database unreachable, skipping static generation",
+    );
     return [];
   }
 }
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
 
   const post = await prisma.post.findUnique({
@@ -48,28 +52,28 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
   if (!post) {
     return {
-      title: 'Artigo não encontrado',
+      title: "Artigo não encontrado",
     };
   }
 
   return {
     title: `${post.title} - Clínica Odontológica`,
-    description: post.excerpt || '',
-    keywords: post.tags.map(t => t.name).join(', '),
-    authors: [{ name: post.author.name || 'Admin' }],
+    description: post.excerpt || "",
+    keywords: post.tags.map((t) => t.name).join(", "),
+    authors: [{ name: post.author.name || "Admin" }],
     openGraph: {
-      type: 'article',
+      type: "article",
       title: post.title,
-      description: post.excerpt || '',
+      description: post.excerpt || "",
       images: post.featuredImage ? [post.featuredImage] : [],
       publishedTime: post.publishedAt?.toISOString(),
-      authors: [post.author.name || 'Admin'],
-      tags: post.tags.map(t => t.name),
+      authors: [post.author.name || "Admin"],
+      tags: post.tags.map((t) => t.name),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: post.title,
-      description: post.excerpt || '',
+      description: post.excerpt || "",
       images: post.featuredImage ? [post.featuredImage] : [],
     },
   };
@@ -86,7 +90,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     },
   });
 
-  if (!postData || postData.status !== 'published') {
+  if (!postData || postData.status !== "published") {
     notFound();
   }
 
@@ -99,15 +103,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   // Get related posts (same category or shared tags)
   const relatedPostsData = await prisma.post.findMany({
     where: {
-      status: 'published',
+      status: "published",
       publishedAt: { lte: new Date() },
       slug: { not: slug },
-      OR: [
-        { tags: { some: { id: { in: postData.tags.map(t => t.id) } } } },
-      ],
+      OR: [{ tags: { some: { id: { in: postData.tags.map((t) => t.id) } } } }],
     },
     take: 3,
-    orderBy: { publishedAt: 'desc' },
+    orderBy: { publishedAt: "desc" },
     include: {
       author: { select: { name: true } },
       tags: { select: { name: true } },
@@ -118,29 +120,30 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const post = {
     slug: postData.slug,
     title: postData.title,
-    excerpt: postData.excerpt || '',
+    excerpt: postData.excerpt || "",
     content: postData.content,
-    date: postData.publishedAt?.toISOString() || postData.createdAt.toISOString(),
-    author: postData.author.name || 'Admin',
+    date:
+      postData.publishedAt?.toISOString() || postData.createdAt.toISOString(),
+    author: postData.author.name || "Admin",
 
-    tags: postData.tags.map(t => t.name),
-    image: postData.featuredImage || '/images/blog/default.jpg',
+    tags: postData.tags.map((t) => t.name),
+    image: postData.featuredImage || "/images/blog/default.jpg",
     featured: postData.featured,
-    readingTime: postData.readingTime || '5 min',
+    readingTime: postData.readingTime || "5 min",
   };
 
-  const relatedPosts = relatedPostsData.map(p => ({
+  const relatedPosts = relatedPostsData.map((p) => ({
     slug: p.slug,
     title: p.title,
-    excerpt: p.excerpt || '',
-    content: '', // Not needed for card display
+    excerpt: p.excerpt || "",
+    content: "", // Not needed for card display
     date: p.publishedAt?.toISOString() || p.createdAt.toISOString(),
-    author: p.author.name || 'Admin',
+    author: p.author.name || "Admin",
 
-    tags: p.tags.map(t => t.name),
-    image: p.featuredImage || '/images/blog/default.jpg',
+    tags: p.tags.map((t) => t.name),
+    image: p.featuredImage || "/images/blog/default.jpg",
     featured: p.featured,
-    readingTime: p.readingTime || '5 min',
+    readingTime: p.readingTime || "5 min",
   }));
 
   return (
@@ -158,89 +161,86 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="container mx-auto px-4">
             <BlogPostHeader post={post} />
 
-            <div className="grid lg:grid-cols-4 gap-8 mt-8">
-              {/* Main Content */}
-              <div className="lg:col-span-3">
-                {/* Split Intro Section (Variation C) */}
-                <div className="flex flex-col md:flex-row gap-8 mb-12 items-stretch">
-                  {/* Image Side - 4:3 Aspect Ratio */}
-                  {post.image && post.image !== '/images/blog/default.jpg' && (
-                    <div className="w-full md:w-1/2 rounded-2xl overflow-hidden shadow-lg border border-gray-100 relative min-h-[300px]">
-                      <NextImage
-                        src={post.image}
-                        alt={post.title}
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                    </div>
-                  )}
-
-                  {/* Intro/Hook Side */}
-                  <div className="w-full md:w-1/2 flex flex-col justify-center">
-                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/60 h-full flex items-center shadow-md">
-                      <p className="text-xl md:text-2xl text-slate-600 leading-relaxed font-medium italic">
-                        {/* Note: text-gray-700 (#374151) is research-backed as optimal for reading on white */}
-                        {post.excerpt || "Leia abaixo para saber mais sobre este assunto importante."}
-                      </p>
-                    </div>
+            <div className="max-w-4xl mx-auto mt-8">
+              {/* Split Intro Section (Variation C) */}
+              <div className="flex flex-col md:flex-row gap-8 mb-12 items-stretch">
+                {/* Image Side - 4:3 Aspect Ratio */}
+                {post.image && post.image !== "/images/blog/default.jpg" && (
+                  <div className="w-full md:w-1/2 rounded-2xl overflow-hidden shadow-lg border border-gray-100 relative min-h-[300px]">
+                    <NextImage
+                      src={post.image}
+                      alt={post.title}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
                   </div>
-                </div>
+                )}
 
-                <BlogPostContent>
-                  <div
-                    className="prose prose-lg max-w-none"
-                    dangerouslySetInnerHTML={{ __html: post.content }}
-                  />
-                </BlogPostContent>
-
-                {/* Post Tags */}
-                <div className="mt-8 pt-8 border-t border-gray-200">
-                  <h3 className="text-lg font-semibold mb-4 text-gray-900">Tags:</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Share Buttons */}
-                <div className="mt-8 pt-8 border-t border-gray-200">
-                  <h3 className="text-lg font-semibold mb-4 text-gray-900">Compartilhar:</h3>
-                  <div className="flex flex-wrap gap-3">
-                    <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                      Facebook
-                    </button>
-                    <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                      Twitter
-                    </button>
-                    <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                      WhatsApp
-                    </button>
+                {/* Intro/Hook Side */}
+                <div className="w-full md:w-1/2 flex flex-col justify-center">
+                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/60 h-full flex items-center shadow-md">
+                    <p className="text-xl md:text-2xl text-slate-600 leading-relaxed font-medium italic">
+                      {/* Note: text-gray-700 (#374151) is research-backed as optimal for reading on white */}
+                      {post.excerpt ||
+                        "Leia abaixo para saber mais sobre este assunto importante."}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Sidebar */}
-              <div className="lg:col-span-1">
-                <BlogPostSidebar post={post} />
+              <BlogPostContent>
+                <div
+                  className="prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
+              </BlogPostContent>
+
+              {/* Post Tags */}
+              <div className="mt-8 pt-8 border-t border-gray-200">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900">
+                  Tags:
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Share Buttons */}
+              <div className="mt-8 pt-8 border-t border-gray-200">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900">
+                  Compartilhar:
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    Facebook
+                  </button>
+                  <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    Twitter
+                  </button>
+                  <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    WhatsApp
+                  </button>
+                </div>
+              </div>
+
+              {/* Navigation between posts */}
+              <div className="mt-12">
+                <BlogPostNavigation currentSlug={slug} />
               </div>
             </div>
-
-            {/* Navigation between posts */}
-            <BlogPostNavigation currentSlug={slug} />
           </div>
         </article>
 
         {/* Related Posts */}
-        {relatedPosts.length > 0 && (
-          <RelatedPosts posts={relatedPosts} />
-        )}
+        {relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
 
         {/* CTA Section */}
         <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-t border-blue-100/50">
