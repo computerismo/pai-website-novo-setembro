@@ -49,7 +49,7 @@ const generateImages = (): GridImage[] => {
       idCounter++;
       images.push({
         id: `smile-${idCounter}`,
-        src: `/uploads/${filename}`,
+        src: `/images/hero-grid/${filename}`,
         alt: `Paciente sorrindo ${idCounter}`,
       });
     });
