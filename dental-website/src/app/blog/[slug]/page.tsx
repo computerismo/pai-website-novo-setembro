@@ -8,7 +8,7 @@ import { BlogPostHeader } from "@/components/blog/BlogPostHeader";
 import { BlogPostContent } from "@/components/blog/BlogPostContent";
 
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
-import { BlogPostNavigation } from "@/components/blog/BlogPostNavigation";
+
 import { Metadata } from "next";
 
 interface BlogPostPageProps {
@@ -158,7 +158,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Main Content - Centered Reading Column */}
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <BlogPostContent>
                 <div
                   className="prose prose-lg prose-slate max-w-none 
@@ -204,10 +204,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 </div>
               </div>
 
-              {/* Navigation between posts */}
-              <div className="mt-16">
-                <BlogPostNavigation currentSlug={slug} />
-              </div>
+
             </div>
           </div>
         </article>
