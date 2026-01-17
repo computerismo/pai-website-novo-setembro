@@ -29,7 +29,7 @@ import {
   Geography,
   Marker,
 } from 'react-simple-maps';
-import { getRealtime, type RealtimeResponse, type RealtimeCityItem } from '@/lib/analytics/ga4-api';
+import { getRealtime, geocodeCities, type RealtimeResponse, type RealtimeCityItem, type GeocodedCity } from '@/lib/analytics/ga4-api';
 
 // Country code mapping for flags
 const countryToCode: Record<string, string> = {
@@ -39,39 +39,6 @@ const countryToCode: Record<string, string> = {
   'Italy': 'IT', 'United Kingdom': 'GB', 'Poland': 'PL', 'Japan': 'JP',
   'Australia': 'AU', 'India': 'IN', 'China': 'CN', 'Russia': 'RU',
   'Netherlands': 'NL', 'Belgium': 'BE', 'Switzerland': 'CH',
-};
-
-// City coordinates for map placement
-const cityCoordinates: Record<string, [number, number]> = {
-  // Brazil
-  'Sao Paulo': [-46.63, -23.55], 'São Paulo': [-46.63, -23.55],
-  'Rio de Janeiro': [-43.17, -22.91],
-  'Belo Horizonte': [-43.94, -19.92],
-  'Brasilia': [-47.93, -15.78], 'Brasília': [-47.93, -15.78],
-  'Salvador': [-38.51, -12.97],
-  'Curitiba': [-49.27, -25.42],
-  'Porto Alegre': [-51.23, -30.03],
-  'Recife': [-34.88, -8.05],
-  'Fortaleza': [-38.52, -3.72],
-  // USA
-  'New York': [-74.01, 40.71],
-  'Los Angeles': [-118.24, 34.05],
-  'Chicago': [-87.63, 41.88],
-  'Miami': [-80.19, 25.76],
-  'San Francisco': [-122.42, 37.77],
-  // Europe
-  'London': [-0.12, 51.51],
-  'Paris': [2.35, 48.86],
-  'Berlin': [13.41, 52.52],
-  'Madrid': [-3.70, 40.42],
-  'Rome': [12.50, 41.90],
-  'Lisbon': [-9.14, 38.72], 'Lisboa': [-9.14, 38.72],
-  'Amsterdam': [4.90, 52.37],
-  // Other
-  'Tokyo': [139.69, 35.69],
-  'Sydney': [151.21, -33.87],
-  'Buenos Aires': [-58.38, -34.60],
-  'Mexico City': [-99.13, 19.43],
 };
 
 function getCountryCode(country: string): string | null {
@@ -148,21 +115,14 @@ function LiveIndicator() {
 // World Map Component
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-function WorldMap({ cities }: { cities: RealtimeCityItem[] }) {
-  // Get coordinates for cities
-  const markers = cities
-    .filter(city => city.city && city.city !== '(not set)')
-    .map(city => {
-      const coords = cityCoordinates[city.city];
-      if (!coords) return null;
-      return {
-        name: city.city,
-        country: city.country,
-        users: city.users,
-        coordinates: coords,
-      };
-    })
-    .filter(Boolean) as Array<{ name: string; country: string; users: number; coordinates: [number, number] }>;
+function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geocodedCities: GeocodedCity[] }) {
+  // Use geocoded cities for markers
+  const markers = geocodedCities.map(city => ({
+    name: city.city,
+    country: city.country,
+    users: city.users,
+    coordinates: [city.lng, city.lat] as [number, number],
+  }));
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 overflow-hidden">
@@ -476,6 +436,7 @@ function DevicesCard({ devices }: { devices: Record<string, number> }) {
 // Main page
 export default function TempoRealPage() {
   const [data, setData] = useState<RealtimeResponse | null>(null);
+  const [geocodedCities, setGeocodedCities] = useState<GeocodedCity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<string>('');
@@ -488,6 +449,17 @@ export default function TempoRealPage() {
       setData(result);
       setLastUpdate(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
       setError(null);
+      
+      // Geocode cities for map display
+      if (result.cities && result.cities.length > 0) {
+        try {
+          const geocoded = await geocodeCities(result.cities);
+          setGeocodedCities(geocoded.cities);
+        } catch (geoErr) {
+          console.error('Geocoding error:', geoErr);
+          // Continue without geocoded cities
+        }
+      }
     } catch (err) {
       console.error('Error fetching realtime data:', err);
       setError('Erro ao carregar dados em tempo real');
@@ -602,7 +574,7 @@ export default function TempoRealPage() {
       {/* Map and Cities */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <WorldMap cities={data?.cities || []} />
+          <WorldMap cities={data?.cities || []} geocodedCities={geocodedCities} />
         </div>
         <div className="lg:col-span-1">
           <CitiesList cities={data?.cities || []} />

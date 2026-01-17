@@ -711,6 +711,90 @@ async def get_exit_pages(days: int = Query(default=7, ge=1, le=365), limit: int 
     return {"exitPages": pages, "period": f"{days}d"}
 
 
+# ============ Geocoding ============
+
+import httpx
+from functools import lru_cache
+
+# In-memory cache for geocoding results (persists during app runtime)
+geocoding_cache: Dict[str, Optional[Dict[str, float]]] = {}
+
+@lru_cache(maxsize=1000)
+def geocode_city_cached(city: str, country: str) -> Optional[Dict[str, float]]:
+    """Geocode a city using OpenStreetMap Nominatim API."""
+    try:
+        query = f"{city}, {country}" if country else city
+        response = httpx.get(
+            "https://nominatim.openstreetmap.org/search",
+            params={
+                "q": query,
+                "format": "json",
+                "limit": 1,
+            },
+            headers={"User-Agent": "PAI-Analytics/1.0"},
+            timeout=5.0,
+        )
+        response.raise_for_status()
+        data = response.json()
+        
+        if data and len(data) > 0:
+            return {
+                "lat": float(data[0]["lat"]),
+                "lng": float(data[0]["lon"]),
+            }
+        return None
+    except Exception as e:
+        print(f"Geocoding error for {city}: {e}")
+        return None
+
+
+class GeocodeBatchRequest(BaseModel):
+    cities: List[Dict[str, str]]  # List of {"city": "...", "country": "..."}
+
+
+class GeocodedCity(BaseModel):
+    city: str
+    country: str
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    users: int = 0
+
+
+@app.post("/api/geocode-cities")
+async def geocode_cities(request: GeocodeBatchRequest):
+    """Batch geocode cities for map display."""
+    results = []
+    
+    for item in request.cities:
+        city = item.get("city", "")
+        country = item.get("country", "")
+        users = item.get("users", 0)
+        
+        # Skip invalid cities
+        if not city or city == "(not set)":
+            continue
+        
+        # Check cache first
+        cache_key = f"{city}|{country}"
+        if cache_key in geocoding_cache:
+            coords = geocoding_cache[cache_key]
+        else:
+            # Geocode and cache
+            coords = geocode_city_cached(city, country)
+            geocoding_cache[cache_key] = coords
+        
+        if coords:
+            results.append({
+                "city": city,
+                "country": country,
+                "lat": coords["lat"],
+                "lng": coords["lng"],
+                "users": users,
+            })
+    
+    return {"cities": results}
+
+
 # ============ Run Server ============
 
 if __name__ == "__main__":

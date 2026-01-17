@@ -144,6 +144,18 @@ export interface LandingPagesResponse {
   period: string;
 }
 
+export interface GeocodedCity {
+  city: string;
+  country: string;
+  lat: number;
+  lng: number;
+  users: number;
+}
+
+export interface GeocodeCitiesResponse {
+  cities: GeocodedCity[];
+}
+
 // ============ API Functions ============
 
 export async function getStats(period: string): Promise<StatsResponse> {
@@ -285,4 +297,25 @@ export async function getAllAnalyticsData(period: string) {
     activeVisitors: realtime.activeVisitors,
     period,
   };
+}
+
+/**
+ * Geocode cities for map display
+ */
+export async function geocodeCities(
+  cities: Array<{ city: string; country: string; users: number }>
+): Promise<GeocodeCitiesResponse> {
+  const response = await fetch(`${GA_BACKEND_URL}/api/geocode-cities`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ cities }),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Geocoding failed: ${response.status}`);
+  }
+  
+  return response.json();
 }
