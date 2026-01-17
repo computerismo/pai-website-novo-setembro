@@ -717,7 +717,26 @@ import httpx
 from functools import lru_cache
 
 # In-memory cache for geocoding results (persists during app runtime)
-geocoding_cache: Dict[str, Optional[Dict[str, float]]] = {}
+# In-memory cache for geocoding results (persists during app runtime)
+CACHE_FILE = "geocoding_cache.json"
+
+def load_cache() -> Dict[str, Optional[Dict[str, float]]]:
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading cache: {e}")
+    return {}
+
+def save_cache(cache: Dict[str, Optional[Dict[str, float]]]):
+    try:
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(cache, f, indent=2)
+    except Exception as e:
+        print(f"Error saving cache: {e}")
+
+geocoding_cache: Dict[str, Optional[Dict[str, float]]] = load_cache()
 
 @lru_cache(maxsize=1000)
 def geocode_city_cached(city: str, country: str) -> Optional[Dict[str, float]]:
@@ -731,7 +750,7 @@ def geocode_city_cached(city: str, country: str) -> Optional[Dict[str, float]]:
                 "format": "json",
                 "limit": 1,
             },
-            headers={"User-Agent": "PAI-Analytics/1.0"},
+            headers={"User-Agent": "PAI-Dental-Analytics/1.0 (ferramenta interna de analise)"},
             timeout=5.0,
         )
         response.raise_for_status()
@@ -782,6 +801,8 @@ async def geocode_cities(request: GeocodeBatchRequest):
             # Geocode and cache
             coords = geocode_city_cached(city, country)
             geocoding_cache[cache_key] = coords
+            # Save updated cache
+            save_cache(geocoding_cache)
         
         if coords:
             results.append({
