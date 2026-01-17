@@ -13,7 +13,8 @@ import {
   Tablet,
   Laptop,
   RefreshCw,
-  Activity
+  Activity,
+  Info
 } from 'lucide-react';
 import {
   BarChart,
@@ -78,19 +79,21 @@ function formatChartDate(dateString: string, period: string): string {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 }
 
-// Stats Card Component with Trend
+// Stats Card Component with Trend and Info Tooltip
 function StatsCard({ 
   title, 
   value, 
   icon: Icon, 
   color = 'blue',
-  suffix = ''
+  suffix = '',
+  tooltip
 }: { 
   title: string; 
   value: string | number; 
   icon: React.ElementType;
   color?: 'blue' | 'green' | 'purple' | 'orange';
   suffix?: string;
+  tooltip?: string;
 }) {
   const colorClasses = {
     blue: 'from-blue-500 to-blue-600',
@@ -103,7 +106,18 @@ function StatsCard({
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-medium text-slate-500">{title}</p>
+            {tooltip && (
+              <div className="relative group">
+                <Info className="w-3.5 h-3.5 text-slate-400 cursor-help hover:text-blue-500 transition-colors" />
+                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-slate-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-48 text-center z-50 shadow-lg">
+                  {tooltip}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-slate-800" />
+                </div>
+              </div>
+            )}
+          </div>
           <p className="text-3xl font-bold text-slate-900 mt-1">
             {typeof value === 'number' ? value.toLocaleString('pt-BR') : value}
             {suffix && <span className="text-lg font-normal text-slate-400 ml-1">{suffix}</span>}
@@ -245,12 +259,14 @@ export default function AnalyticsPage() {
           value={data?.stats?.visitors || 0}
           icon={Users}
           color="blue"
+          tooltip="Número de pessoas diferentes que visitaram seu site no período selecionado."
         />
         <StatsCard
           title="Visualizações"
           value={data?.stats?.pageviews || 0}
           icon={Eye}
           color="green"
+          tooltip="Total de páginas visualizadas. Inclui visitas repetidas à mesma página."
         />
         <StatsCard
           title="Taxa de Rejeição"
@@ -258,12 +274,14 @@ export default function AnalyticsPage() {
           suffix="%"
           icon={TrendingUp}
           color="orange"
+          tooltip="Porcentagem de visitantes que saíram sem interagir. Menor é melhor."
         />
         <StatsCard
           title="Tempo Médio"
           value={formatTime(data?.stats?.avgSessionDuration || 0)}
           icon={Clock}
           color="purple"
+          tooltip="Duração média que os visitantes passam no seu site por sessão."
         />
       </div>
 

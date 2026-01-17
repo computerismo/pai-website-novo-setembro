@@ -52,9 +52,9 @@ const PERIODS = [
 
 // Helpers
 function formatPagePath(path: string): string {
-  if (path === '/') return 'Início';
+  if (path === '/' || path === 'Início') return 'Página Inicial';
   if (!path) return 'Desconhecido';
-  return path.replace(/^\//, '').replace(/\/$/, '') || 'Início';
+  return path.replace(/^\//, '').replace(/\/$/, '') || 'Página Inicial';
 }
 
 function formatTime(seconds: number): string {
