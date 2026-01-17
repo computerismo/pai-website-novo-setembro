@@ -50,28 +50,98 @@ interface AudienceData {
   period: string;
 }
 
-// Country flags mapping
+// Comprehensive country to emoji flag mapping
 const countryFlags: Record<string, string> = {
-  Brazil: '🇧🇷',
+  // Americas
+  'Brazil': '🇧🇷',
   'United States': '🇺🇸',
-  Portugal: '🇵🇹',
-  Argentina: '🇦🇷',
-  Mexico: '🇲🇽',
-  Spain: '🇪🇸',
-  Colombia: '🇨🇴',
-  Chile: '🇨🇱',
-  Peru: '🇵🇪',
-  Uruguay: '🇺🇾',
+  'Canada': '🇨🇦',
+  'Mexico': '🇲🇽',
+  'Argentina': '🇦🇷',
+  'Chile': '🇨🇱',
+  'Colombia': '🇨🇴',
+  'Peru': '🇵🇪',
+  'Venezuela': '🇻🇪',
+  'Ecuador': '🇪🇨',
+  'Bolivia': '🇧🇴',
+  'Paraguay': '🇵🇾',
+  'Uruguay': '🇺🇾',
+  'Costa Rica': '🇨🇷',
+  'Panama': '🇵🇦',
+  'Guatemala': '🇬🇹',
+  'Cuba': '🇨🇺',
+  'Dominican Republic': '🇩🇴',
+  'Puerto Rico': '🇵🇷',
+  // Europe
+  'Portugal': '🇵🇹',
+  'Spain': '🇪🇸',
+  'France': '🇫🇷',
+  'Germany': '🇩🇪',
+  'Italy': '🇮🇹',
   'United Kingdom': '🇬🇧',
-  Germany: '🇩🇪',
-  France: '🇫🇷',
-  Italy: '🇮🇹',
-  Canada: '🇨🇦',
-  Japan: '🇯🇵',
-  China: '🇨🇳',
-  India: '🇮🇳',
-  Australia: '🇦🇺',
+  'Netherlands': '🇳🇱',
+  'Belgium': '🇧🇪',
+  'Switzerland': '🇨🇭',
+  'Austria': '🇦🇹',
+  'Poland': '🇵🇱',
+  'Sweden': '🇸🇪',
+  'Norway': '🇳🇴',
+  'Denmark': '🇩🇰',
+  'Finland': '🇫🇮',
+  'Ireland': '🇮🇪',
+  'Greece': '🇬🇷',
+  'Czech Republic': '🇨🇿',
+  'Czechia': '🇨🇿',
+  'Romania': '🇷🇴',
+  'Hungary': '🇭🇺',
+  'Ukraine': '🇺🇦',
+  'Russia': '🇷🇺',
+  // Asia & Oceania
+  'Japan': '🇯🇵',
+  'China': '🇨🇳',
+  'South Korea': '🇰🇷',
+  'India': '🇮🇳',
+  'Indonesia': '🇮🇩',
+  'Thailand': '🇹🇭',
+  'Vietnam': '🇻🇳',
+  'Philippines': '🇵🇭',
+  'Malaysia': '🇲🇾',
+  'Singapore': '🇸🇬',
+  'Australia': '🇦🇺',
+  'New Zealand': '🇳🇿',
+  'Taiwan': '🇹🇼',
+  'Hong Kong': '🇭🇰',
+  // Middle East & Africa
+  'Israel': '🇮🇱',
+  'United Arab Emirates': '🇦🇪',
+  'Saudi Arabia': '🇸🇦',
+  'Turkey': '🇹🇷',
+  'South Africa': '🇿🇦',
+  'Egypt': '🇪🇬',
+  'Morocco': '🇲🇦',
+  'Nigeria': '🇳🇬',
+  'Angola': '🇦🇴',
 };
+
+/**
+ * Get country flag emoji. Returns globe for unknown/not set.
+ */
+function getCountryFlag(country: string): string {
+  if (!country || country === '(not set)' || country === 'not set' || country === 'Unknown') {
+    return '🌍';
+  }
+  return countryFlags[country] || '🌍';
+}
+
+/**
+ * Get display name for country (handles "(not set)")
+ */
+function getCountryDisplayName(country: string): string {
+  if (!country || country === '(not set)' || country === 'not set') {
+    return 'Desconhecido';
+  }
+  return country;
+}
 
 // Device icons
 const deviceIcons: Record<string, React.ReactNode> = {
@@ -140,8 +210,8 @@ function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
             return (
               <div key={i} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">{countryFlags[country.x] || '🌍'}</span>
-                  <span className="text-sm font-medium text-slate-700">{country.x}</span>
+                  <span className="text-xl">{getCountryFlag(country.x)}</span>
+                  <span className="text-sm font-medium text-slate-700">{getCountryDisplayName(country.x)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-400">{percentage}%</span>

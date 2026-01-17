@@ -360,9 +360,6 @@ export default function ComportamentoPage() {
 
   const publicPages = data?.topPages.filter(p => isPublicPage(p.x)) || [];
   const topPage = publicPages[0];
-  const avgBounce = publicPages.length > 0 
-    ? publicPages.reduce((acc, p) => acc + p.bounceRate, 0) / publicPages.length 
-    : 0;
   const avgTime = publicPages.length > 0 
     ? publicPages.reduce((acc, p) => acc + p.avgTime, 0) / publicPages.length 
     : 0;
@@ -433,9 +430,9 @@ export default function ComportamentoPage() {
               bgClass="bg-blue-50"
             />
             <InsightCard 
-              title="Taxa de Rejeição Média" 
-              value={`${avgBounce.toFixed(1)}%`} 
-              subtext="Visitantes que saíram direto" 
+              title="Páginas com Alta Rejeição" 
+              value={`${publicPages.filter(p => p.bounceRate > 60).length}`} 
+              subtext="Páginas com >60% de rejeição" 
               icon={ArrowUpRight}
               colorClass="text-orange-600"
               bgClass="bg-orange-50"

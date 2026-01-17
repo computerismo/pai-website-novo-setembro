@@ -152,12 +152,15 @@ def run_report(
         raise HTTPException(status_code=500, detail=f"GA4 API error: {str(e)}")
 
 
-def run_aggregate_report(metrics: List[str], days: int) -> Dict[str, Any]:
+def run_aggregate_report(metrics: List[str], days: int, exclude_admin: bool = True) -> Dict[str, Any]:
     """Run a report without dimensions to get aggregate totals."""
     from google.analytics.data_v1beta.types import (
         RunReportRequest,
         DateRange,
         Metric,
+        FilterExpression,
+        FilterExpressionList,
+        Filter,
     )
     
     if not GA_PROPERTY_ID:
@@ -166,13 +169,43 @@ def run_aggregate_report(metrics: List[str], days: int) -> Dict[str, Any]:
     client = get_ga_client()
     start_date, end_date = get_date_range(days)
     
-    request = RunReportRequest(
-        property=f"properties/{GA_PROPERTY_ID}",
-        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
-        metrics=[Metric(name=m) for m in metrics],
-    )
+    request_params = {
+        "property": f"properties/{GA_PROPERTY_ID}",
+        "date_ranges": [DateRange(start_date=start_date, end_date=end_date)],
+        "metrics": [Metric(name=m) for m in metrics],
+    }
+    
+    # Add filter to exclude admin and login pages
+    if exclude_admin:
+        request_params["dimension_filter"] = FilterExpression(
+            not_expression=FilterExpression(
+                or_group=FilterExpressionList(
+                    expressions=[
+                        FilterExpression(
+                            filter=Filter(
+                                field_name="pagePath",
+                                string_filter=Filter.StringFilter(
+                                    match_type=Filter.StringFilter.MatchType.BEGINS_WITH,
+                                    value="/admin"
+                                )
+                            )
+                        ),
+                        FilterExpression(
+                            filter=Filter(
+                                field_name="pagePath",
+                                string_filter=Filter.StringFilter(
+                                    match_type=Filter.StringFilter.MatchType.BEGINS_WITH,
+                                    value="/login"
+                                )
+                            )
+                        ),
+                    ]
+                )
+            )
+        )
     
     try:
+        request = RunReportRequest(**request_params)
         response = client.run_report(request)
         
         result = {}
