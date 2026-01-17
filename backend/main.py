@@ -835,3 +835,105 @@ async def geocode_cities(request: GeocodeBatchRequest):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# ============ GSC Endpoints ============
+
+import gsc
+
+@app.get("/api/seo/overview")
+async def get_seo_overview(days: int = Query(default=28, ge=1, le=90)):
+    """Get GSC overview metrics (Clicks, Impressions, CTR, Position)."""
+    start_str, end_str = gsc.get_date_range(days)
+    
+    # 1. Get Totals (no dimensions)
+    try:
+        totals_rows = gsc.fetch_search_analytics(start_str, end_str, dimensions=[])
+    except HTTPException:
+        # If GSC is not configured, return empty stats gracefully or bubble up error
+        # For the dashboard we might want to fail gracefully if just not configured
+        return {
+            "clicks": 0, "impressions": 0, "ctr": 0, "position": 0, 
+            "history": [], "period": f"{days}d", "status": "not_configured"
+        }
+        
+    totals = totals_rows[0] if totals_rows else {"clicks": 0, "impressions": 0, "ctr": 0, "position": 0}
+
+    # 2. Get Time Series (dimension = date)
+    date_rows = gsc.fetch_search_analytics(start_str, end_str, dimensions=['date'])
+    
+    history = []
+    for row in date_rows:
+        history.append({
+            "date": row['keys'][0],
+            "clicks": row['clicks'],
+            "impressions": row['impressions'],
+            "ctr": row['ctr'],
+            "position": row['position']
+        })
+    
+    # Sort history by date
+    history.sort(key=lambda x: x['date'])
+
+    return {
+        "clicks": totals.get('clicks', 0),
+        "impressions": totals.get('impressions', 0),
+        "ctr": round(totals.get('ctr', 0) * 100, 2), # %
+        "position": round(totals.get('position', 0), 1),
+        "history": history,
+        "period": f"{days}d",
+        "status": "ok"
+    }
+
+@app.get("/api/seo/queries")
+async def get_seo_queries(days: int = Query(default=28), limit: int = 20):
+    """Get top search queries."""
+    start_str, end_str = gsc.get_date_range(days)
+    rows = gsc.fetch_search_analytics(start_str, end_str, dimensions=['query'], row_limit=limit)
+    
+    results = []
+    for row in rows:
+        results.append({
+            "query": row['keys'][0],
+            "clicks": row['clicks'],
+            "impressions": row['impressions'],
+            "ctr": row['ctr'],
+            "position": row['position']
+        })
+        
+    return {"queries": results, "period": f"{days}d"}
+
+@app.get("/api/seo/pages")
+async def get_seo_pages(days: int = Query(default=28), limit: int = 20):
+    """Get top performing pages."""
+    start_str, end_str = gsc.get_date_range(days)
+    rows = gsc.fetch_search_analytics(start_str, end_str, dimensions=['page'], row_limit=limit)
+    
+    results = []
+    for row in rows:
+        results.append({
+            "page": row['keys'][0],
+            "clicks": row['clicks'],
+            "impressions": row['impressions'],
+            "ctr": row['ctr'],
+            "position": row['position']
+        })
+        
+    return {"pages": results, "period": f"{days}d"}
+
+@app.get("/api/seo/sitemaps")
+async def get_seo_sitemaps():
+    """Get sitemaps status."""
+    sitemaps = gsc.get_sitemaps_status()
+    # simplify for frontend
+    results = []
+    for s in sitemaps:
+        results.append({
+            "path": s.get('path'),
+            "lastSubmitted": s.get('lastSubmitted'),
+            "isPending": s.get('isPending'),
+            "isSitemapsIndex": s.get('isSitemapsIndex'),
+            "lastCrawled": s.get('lastDownloaded'),
+            "errors": s.get('errors'),
+            "warnings": s.get('warnings')
+        })
+    return {"sitemaps": results}

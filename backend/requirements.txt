@@ -2,4 +2,5 @@ fastapi
 uvicorn
 python-dotenv
 google-analytics-data
+google-api-python-client
 httpx

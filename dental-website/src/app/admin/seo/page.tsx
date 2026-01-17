@@ -1,24 +1,53 @@
-import { Search } from "lucide-react";
 
-export default function SeoPage() {
+import { Search } from "lucide-react";
+import { getSeoOverview, getSeoQueries, getSeoPages } from "@/lib/gsc";
+import { SeoStatsCards } from "@/components/admin/seo/SeoStatsCards";
+import { PerformanceChart } from "@/components/admin/seo/PerformanceChart";
+import { KeywordsTable } from "@/components/admin/seo/KeywordsTable";
+import { PagesTable } from "@/components/admin/seo/PagesTable";
+
+export const dynamic = 'force-dynamic';
+
+
+export default async function SeoPage({ searchParams }: { searchParams: Promise<{ days?: string }> }) {
+  const resolvedParams = await searchParams;
+  const days = parseInt(resolvedParams.days || "28");
+  
+  // Parallel data fetching
+  const [overview, queries, pages] = await Promise.all([
+    getSeoOverview(days),
+    getSeoQueries(days),
+    getSeoPages(days)
+  ]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
           <Search className="w-8 h-8 text-blue-500" />
-          Análise de SEO
+          Análise de SEO (Google Search Console)
         </h1>
+        {/* Date filter could go here, for now standardized to 28 days via URL */}
       </div>
 
-      <div className="bg-white rounded-2xl p-12 border border-slate-100 shadow-sm text-center">
-        <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Search className="w-8 h-8" />
+      {!overview ? (
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-3">
+           <Search className="w-5 h-5" />
+           <p>Não foi possível carregar os dados. Verifique a configuração do Backend e do Google Search Console.</p>
         </div>
-        <h3 className="text-lg font-bold text-slate-900 mb-2">Em Construção</h3>
-        <p className="text-slate-500 max-w-md mx-auto">
-          A ferramenta de análise de SEO estará disponível em breve. Você poderá monitorar palavras-chave e ranking de páginas.
-        </p>
-      </div>
+      ) : (
+        <>
+          <SeoStatsCards data={overview} />
+          
+          <PerformanceChart data={overview.history} />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <KeywordsTable data={queries?.queries || []} />
+            <PagesTable data={pages?.pages || []} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
+
