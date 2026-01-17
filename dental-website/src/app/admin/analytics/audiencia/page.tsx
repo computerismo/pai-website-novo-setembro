@@ -8,7 +8,6 @@ import {
   Tablet,
   RefreshCw,
   ArrowRight,
-  Chrome,
   Laptop,
   Users
 } from 'lucide-react';
@@ -25,6 +24,7 @@ import {
   Tooltip,
 } from 'recharts';
 import Link from 'next/link';
+import ReactCountryFlag from 'react-country-flag';
 import { 
   getCountries, 
   getBrowsers, 
@@ -50,87 +50,87 @@ interface AudienceData {
   period: string;
 }
 
-// Comprehensive country to emoji flag mapping
-const countryFlags: Record<string, string> = {
+// Country name to ISO 3166-1 alpha-2 code mapping
+const countryToCode: Record<string, string> = {
   // Americas
-  'Brazil': '🇧🇷',
-  'United States': '🇺🇸',
-  'Canada': '🇨🇦',
-  'Mexico': '🇲🇽',
-  'Argentina': '🇦🇷',
-  'Chile': '🇨🇱',
-  'Colombia': '🇨🇴',
-  'Peru': '🇵🇪',
-  'Venezuela': '🇻🇪',
-  'Ecuador': '🇪🇨',
-  'Bolivia': '🇧🇴',
-  'Paraguay': '🇵🇾',
-  'Uruguay': '🇺🇾',
-  'Costa Rica': '🇨🇷',
-  'Panama': '🇵🇦',
-  'Guatemala': '🇬🇹',
-  'Cuba': '🇨🇺',
-  'Dominican Republic': '🇩🇴',
-  'Puerto Rico': '🇵🇷',
+  'Brazil': 'BR',
+  'United States': 'US',
+  'Canada': 'CA',
+  'Mexico': 'MX',
+  'Argentina': 'AR',
+  'Chile': 'CL',
+  'Colombia': 'CO',
+  'Peru': 'PE',
+  'Venezuela': 'VE',
+  'Ecuador': 'EC',
+  'Bolivia': 'BO',
+  'Paraguay': 'PY',
+  'Uruguay': 'UY',
+  'Costa Rica': 'CR',
+  'Panama': 'PA',
+  'Guatemala': 'GT',
+  'Cuba': 'CU',
+  'Dominican Republic': 'DO',
+  'Puerto Rico': 'PR',
   // Europe
-  'Portugal': '🇵🇹',
-  'Spain': '🇪🇸',
-  'France': '🇫🇷',
-  'Germany': '🇩🇪',
-  'Italy': '🇮🇹',
-  'United Kingdom': '🇬🇧',
-  'Netherlands': '🇳🇱',
-  'Belgium': '🇧🇪',
-  'Switzerland': '🇨🇭',
-  'Austria': '🇦🇹',
-  'Poland': '🇵🇱',
-  'Sweden': '🇸🇪',
-  'Norway': '🇳🇴',
-  'Denmark': '🇩🇰',
-  'Finland': '🇫🇮',
-  'Ireland': '🇮🇪',
-  'Greece': '🇬🇷',
-  'Czech Republic': '🇨🇿',
-  'Czechia': '🇨🇿',
-  'Romania': '🇷🇴',
-  'Hungary': '🇭🇺',
-  'Ukraine': '🇺🇦',
-  'Russia': '🇷🇺',
+  'Portugal': 'PT',
+  'Spain': 'ES',
+  'France': 'FR',
+  'Germany': 'DE',
+  'Italy': 'IT',
+  'United Kingdom': 'GB',
+  'Netherlands': 'NL',
+  'Belgium': 'BE',
+  'Switzerland': 'CH',
+  'Austria': 'AT',
+  'Poland': 'PL',
+  'Sweden': 'SE',
+  'Norway': 'NO',
+  'Denmark': 'DK',
+  'Finland': 'FI',
+  'Ireland': 'IE',
+  'Greece': 'GR',
+  'Czech Republic': 'CZ',
+  'Czechia': 'CZ',
+  'Romania': 'RO',
+  'Hungary': 'HU',
+  'Ukraine': 'UA',
+  'Russia': 'RU',
   // Asia & Oceania
-  'Japan': '🇯🇵',
-  'China': '🇨🇳',
-  'South Korea': '🇰🇷',
-  'India': '🇮🇳',
-  'Indonesia': '🇮🇩',
-  'Thailand': '🇹🇭',
-  'Vietnam': '🇻🇳',
-  'Philippines': '🇵🇭',
-  'Malaysia': '🇲🇾',
-  'Singapore': '🇸🇬',
-  'Australia': '🇦🇺',
-  'New Zealand': '🇳🇿',
-  'Taiwan': '🇹🇼',
-  'Hong Kong': '🇭🇰',
+  'Japan': 'JP',
+  'China': 'CN',
+  'South Korea': 'KR',
+  'India': 'IN',
+  'Indonesia': 'ID',
+  'Thailand': 'TH',
+  'Vietnam': 'VN',
+  'Philippines': 'PH',
+  'Malaysia': 'MY',
+  'Singapore': 'SG',
+  'Australia': 'AU',
+  'New Zealand': 'NZ',
+  'Taiwan': 'TW',
+  'Hong Kong': 'HK',
   // Middle East & Africa
-  'Israel': '🇮🇱',
-  'United Arab Emirates': '🇦🇪',
-  'Saudi Arabia': '🇸🇦',
-  'Turkey': '🇹🇷',
-  'South Africa': '🇿🇦',
-  'Egypt': '🇪🇬',
-  'Morocco': '🇲🇦',
-  'Nigeria': '🇳🇬',
-  'Angola': '🇦🇴',
+  'Israel': 'IL',
+  'United Arab Emirates': 'AE',
+  'Saudi Arabia': 'SA',
+  'Turkey': 'TR',
+  'South Africa': 'ZA',
+  'Egypt': 'EG',
+  'Morocco': 'MA',
+  'Nigeria': 'NG',
+  'Angola': 'AO',
 };
 
 /**
- * Get country flag emoji. Returns globe for unknown/not set.
+ * Get ISO country code from country name
  */
-function getCountryFlag(country: string): string {
+function getCountryCode(country: string): string | null {
   if (!country || country === '(not set)' || country === 'not set' || country === 'Unknown') {
-    return '🌍';
+    return null;
   }
-  return countryFlags[country] || '🌍';
+  return countryToCode[country] || null;
 }
 
 /**
@@ -183,7 +183,7 @@ function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart */}
-        <div className="h-[200px]">
+        <div className="h-[200px] flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -203,25 +203,52 @@ function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
           </ResponsiveContainer>
         </div>
         
-        {/* List */}
-        <div className="space-y-3">
-          {data.slice(0, 6).map((country, i) => {
-            const percentage = total > 0 ? ((country.y / total) * 100).toFixed(1) : '0';
-            return (
-              <div key={i} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{getCountryFlag(country.x)}</span>
-                  <span className="text-sm font-medium text-slate-700">{getCountryDisplayName(country.x)}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">{percentage}%</span>
-                  <span className="text-sm font-bold text-slate-900">{country.y}</span>
-                </div>
-              </div>
-            );
-          })}
+        {/* Table */}
+        <div className="overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-100">
+                <th className="text-left py-2 px-1 text-xs font-semibold text-slate-500 uppercase tracking-wider">País</th>
+                <th className="text-right py-2 px-1 text-xs font-semibold text-slate-500 uppercase tracking-wider">Visitantes</th>
+                <th className="text-right py-2 px-1 text-xs font-semibold text-slate-500 uppercase tracking-wider w-20">%</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {data.slice(0, 8).map((country, i) => {
+                const percentage = total > 0 ? ((country.y / total) * 100).toFixed(1) : '0';
+                const countryCode = getCountryCode(country.x);
+                return (
+                  <tr key={i} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-2.5 px-1">
+                      <div className="flex items-center gap-2">
+                        {countryCode ? (
+                          <ReactCountryFlag
+                            countryCode={countryCode}
+                            svg
+                            style={{ width: '1.5em', height: '1.5em' }}
+                            title={country.x}
+                          />
+                        ) : (
+                          <Globe className="w-5 h-5 text-slate-400" />
+                        )}
+                        <span className="font-medium text-slate-800">{getCountryDisplayName(country.x)}</span>
+                      </div>
+                    </td>
+                    <td className="py-2.5 px-1 text-right">
+                      <span className="font-bold text-slate-900">{country.y.toLocaleString('pt-BR')}</span>
+                    </td>
+                    <td className="py-2.5 px-1 text-right">
+                      <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs font-medium">
+                        {percentage}%
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
           {data.length === 0 && (
-            <p className="text-sm text-slate-400 text-center py-4">Nenhum dado disponível</p>
+            <p className="text-sm text-slate-400 text-center py-8">Nenhum dado disponível</p>
           )}
         </div>
       </div>
@@ -230,18 +257,33 @@ function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
 }
 
 // Browsers chart
+import { FaChrome, FaFirefox, FaSafari, FaEdge, FaOpera, FaInternetExplorer } from 'react-icons/fa';
+import { SiSamsung } from 'react-icons/si';
+import { Compass } from 'lucide-react';
+
+// Browser icon mapping
+const browserIcons: Record<string, React.ReactNode> = {
+  'Chrome': <FaChrome className="w-4 h-4" style={{ color: '#4285F4' }} />,
+  'Firefox': <FaFirefox className="w-4 h-4" style={{ color: '#FF7139' }} />,
+  'Safari': <FaSafari className="w-4 h-4" style={{ color: '#006CFF' }} />,
+  'Edge': <FaEdge className="w-4 h-4" style={{ color: '#0078D7' }} />,
+  'Opera': <FaOpera className="w-4 h-4" style={{ color: '#FF1B2D' }} />,
+  'Internet Explorer': <FaInternetExplorer className="w-4 h-4" style={{ color: '#0076D6' }} />,
+  'Samsung Internet': <SiSamsung className="w-4 h-4" style={{ color: '#1428A0' }} />,
+};
+
+function getBrowserIcon(browser: string): React.ReactNode {
+  return browserIcons[browser] || <Compass className="w-4 h-4 text-slate-400" />;
+}
+
 function BrowsersCard({ data }: { data: BrowsersResponse['browsers'] }) {
-  const chartData = data.slice(0, 6).map((item, i) => ({
-    name: item.x,
-    visitors: item.y,
-    fill: COLORS[i % COLORS.length],
-  }));
+  const total = data.reduce((sum, item) => sum + item.y, 0);
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2.5 rounded-xl bg-purple-100 text-purple-600">
-          <Chrome className="w-5 h-5" />
+          <Compass className="w-5 h-5" />
         </div>
         <div>
           <h3 className="text-lg font-semibold text-slate-900">Navegadores</h3>
@@ -249,30 +291,36 @@ function BrowsersCard({ data }: { data: BrowsersResponse['browsers'] }) {
         </div>
       </div>
       
-      <div className="h-[200px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-            <XAxis type="number" fontSize={10} stroke="#94a3b8" tickLine={false} axisLine={false} />
-            <YAxis 
-              type="category" 
-              dataKey="name" 
-              fontSize={10} 
-              stroke="#94a3b8" 
-              tickLine={false} 
-              axisLine={false}
-              width={80}
-            />
-            <Tooltip 
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-            />
-            <Bar dataKey="visitors" radius={[0, 4, 4, 0]} barSize={20}>
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+      {/* Table layout instead of chart */}
+      <div className="space-y-3">
+        {data.slice(0, 6).map((browser, i) => {
+          const percentage = total > 0 ? ((browser.y / total) * 100) : 0;
+          return (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                {getBrowserIcon(browser.x)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-slate-800 truncate">{browser.x}</span>
+                  <span className="text-sm font-bold text-slate-900 ml-2">{browser.y}</span>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${percentage}%`,
+                      backgroundColor: COLORS[i % COLORS.length]
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {data.length === 0 && (
+          <p className="text-sm text-slate-400 text-center py-4">Nenhum dado disponível</p>
+        )}
       </div>
     </div>
   );
@@ -393,7 +441,7 @@ function SummaryCard({
       <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-purple-100">
-            <Chrome className="w-4 h-4 text-purple-600" />
+            <Compass className="w-4 h-4 text-purple-600" />
           </div>
           <div>
             <p className="text-xs text-slate-500">Navegador Top</p>

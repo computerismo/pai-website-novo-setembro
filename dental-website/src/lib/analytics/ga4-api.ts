@@ -112,10 +112,25 @@ export interface BrowsersResponse {
   period: string;
 }
 
+export interface RealtimeCityItem {
+  city: string;
+  country: string;
+  users: number;
+}
+
+export interface RealtimeMinuteItem {
+  minutesAgo: number;
+  users: number;
+}
+
 export interface RealtimeResponse {
   activeVisitors: number;
   urls: Record<string, number>;
   countries: Record<string, number>;
+  cities: RealtimeCityItem[];
+  devices: Record<string, number>;
+  events: Record<string, number>;
+  minutesTrend: RealtimeMinuteItem[];
   timestamp: string;
 }
 
@@ -232,6 +247,10 @@ export async function getAllAnalyticsData(period: string) {
         activeVisitors: 0,
         urls: {},
         countries: {},
+        cities: [],
+        devices: {},
+        events: {},
+        minutesTrend: [],
         timestamp: "",
       })),
     ]);

@@ -478,8 +478,8 @@ async def get_operating_systems(days: int = Query(default=7, ge=1, le=365)):
 @app.get("/api/realtime")
 async def get_realtime():
     """
-    Get realtime data (simplified).
-    Note: GA4 Realtime API has limitations compared to standard Data API.
+    Get comprehensive realtime data.
+    Includes: active users, pages, cities, devices, events, and traffic sources.
     """
     from google.analytics.data_v1beta.types import (
         RunRealtimeReportRequest,
@@ -493,7 +493,7 @@ async def get_realtime():
     client = get_ga_client()
     
     try:
-        # Get active users
+        # Get total active users
         request = RunRealtimeReportRequest(
             property=f"properties/{GA_PROPERTY_ID}",
             metrics=[Metric(name="activeUsers")],
@@ -532,10 +532,74 @@ async def get_realtime():
             users = int(row.metric_values[0].value)
             countries[country] = users
         
+        # Get active users by city (NEW)
+        request_cities = RunRealtimeReportRequest(
+            property=f"properties/{GA_PROPERTY_ID}",
+            dimensions=[Dimension(name="city"), Dimension(name="country")],
+            metrics=[Metric(name="activeUsers")],
+        )
+        response_cities = client.run_realtime_report(request_cities)
+        
+        cities = []
+        for row in response_cities.rows:
+            city = row.dimension_values[0].value
+            country = row.dimension_values[1].value
+            users = int(row.metric_values[0].value)
+            cities.append({"city": city, "country": country, "users": users})
+        
+        # Get active users by device category (NEW)
+        request_devices = RunRealtimeReportRequest(
+            property=f"properties/{GA_PROPERTY_ID}",
+            dimensions=[Dimension(name="deviceCategory")],
+            metrics=[Metric(name="activeUsers")],
+        )
+        response_devices = client.run_realtime_report(request_devices)
+        
+        devices = {}
+        for row in response_devices.rows:
+            device = row.dimension_values[0].value
+            users = int(row.metric_values[0].value)
+            devices[device] = users
+        
+        # Get active events (NEW)
+        request_events = RunRealtimeReportRequest(
+            property=f"properties/{GA_PROPERTY_ID}",
+            dimensions=[Dimension(name="eventName")],
+            metrics=[Metric(name="eventCount")],
+        )
+        response_events = client.run_realtime_report(request_events)
+        
+        events = {}
+        for row in response_events.rows:
+            event = row.dimension_values[0].value
+            count = int(row.metric_values[0].value)
+            events[event] = count
+        
+        # Get traffic by minute (last 30 minutes) (NEW)
+        request_minutes = RunRealtimeReportRequest(
+            property=f"properties/{GA_PROPERTY_ID}",
+            dimensions=[Dimension(name="minutesAgo")],
+            metrics=[Metric(name="activeUsers")],
+        )
+        response_minutes = client.run_realtime_report(request_minutes)
+        
+        minutes_data = []
+        for row in response_minutes.rows:
+            minutes_ago = int(row.dimension_values[0].value)
+            users = int(row.metric_values[0].value)
+            minutes_data.append({"minutesAgo": minutes_ago, "users": users})
+        
+        # Sort by minutesAgo ascending
+        minutes_data.sort(key=lambda x: x["minutesAgo"])
+        
         return {
             "activeVisitors": active_users,
             "urls": pages,
             "countries": countries,
+            "cities": cities,
+            "devices": devices,
+            "events": events,
+            "minutesTrend": minutes_data,
             "timestamp": datetime.now().isoformat()
         }
     
