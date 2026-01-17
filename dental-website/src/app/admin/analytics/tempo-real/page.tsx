@@ -199,12 +199,12 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill={isActiveCountry ? "#dbeafe" : "#f8fafc"}
-                    stroke={isActiveCountry ? "#3b82f6" : "#cbd5e1"}
-                    strokeWidth={isActiveCountry ? 1.5 : 0.5}
+                    fill={isActiveCountry ? "#bfdbfe" : "#f1f5f9"}
+                    stroke={isActiveCountry ? "#2563eb" : "#cbd5e1"}
+                    strokeWidth={isActiveCountry ? 1.5 : 0.8}
                     style={{
                       default: { outline: 'none' },
-                      hover: { fill: isActiveCountry ? '#bfdbfe' : '#f1f5f9', outline: 'none' },
+                      hover: { fill: isActiveCountry ? '#93c5fd' : '#e2e8f0', outline: 'none' },
                       pressed: { outline: 'none' },
                     }}
                   />
@@ -241,9 +241,9 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
                 style={{
                   fontFamily: 'system-ui',
                   fill: '#1e40af',
-                  fontSize: '12px',
-                  fontWeight: '800',
-                  textShadow: '0px 0px 8px rgba(255,255,255,1)',
+                  fontSize: '14px',
+                  fontWeight: '900',
+                  textShadow: '0px 0px 4px rgba(255,255,255,1), 0px 0px 8px rgba(255,255,255,1)',
                 }}
               >
                 {marker.users}
