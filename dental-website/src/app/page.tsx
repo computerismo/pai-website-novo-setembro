@@ -3,6 +3,7 @@
 import { Navigation } from '@/components/shared/Navigation';
 import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
+import { FadeGrid } from '@/components/home/FadeGrid';
 import { useState } from 'react';
 import { 
   Calendar, 
@@ -112,7 +113,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
               <div className="text-center lg:text-left space-y-8">
-                <h1 className="text-4xl lg:text-6xl font-extrabold text-heading-light dark:text-heading-dark leading-tight tracking-tight">
+                <h1 className="text-3xl lg:text-5xl font-extrabold text-heading-light dark:text-heading-dark leading-tight tracking-tight">
                   Alívio para o Bruxismo: <br className="hidden lg:block"/>
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-[#06B6D4]">Recupere o Conforto</span>
                 </h1>
@@ -138,24 +139,7 @@ export default function HomePage() {
               </div>
               <div className="relative lg:h-[600px] w-full hidden lg:flex items-center justify-center">
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-transparent dark:from-blue-900/20 dark:to-transparent rounded-[3rem] transform rotate-3 scale-95 opacity-50"></div>
-                <img 
-                  alt="Consultório odontológico moderno e limpo" 
-                  className="relative rounded-[2.5rem] shadow-2xl object-cover h-full w-full max-w-md lg:max-w-full z-10 transition-transform hover:scale-[1.02] duration-500" 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFNoXxGNVsGYdBgFr4royYiWZ0gvzV-lmYqoZXGIPyOxqyClMFGo1doRaw-8MTvGqt9DYlcOefLbLRHYk_spTDQJ9o_4MBsRBw9yImPuLRzScMnwkxgcMLzH3dQ_GpM5fDS5xwOnybtl0xEh7jLpoMo3uS3sdTtd-jw-lVUg7znh5504l4iX-iED_Cc_J_GTWiSugw5fzbGuql9wb5z7Orun44u7Y9gW5DoBhbpzfL5Ob29PjJ_A06zNQNUgaAw6d2lhQc0ox500A"
-                />
-                {/* Floating "Alívio Imediato" box - commented out for now
-                <div className="absolute -bottom-6 -left-6 lg:bottom-12 lg:-left-12 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-xl z-20 max-w-xs animate-bounce" style={{ animationDuration: '3s' }}>
-                  <div className="flex items-start gap-4">
-                    <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-full text-green-600 dark:text-green-400">
-                      <Smile className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-heading-light dark:text-heading-dark">Alívio Imediato</h4>
-                      <p className="text-sm text-text-light dark:text-text-dark mt-1">Pacientes relatam melhora significativa na primeira semana.</p>
-                    </div>
-                  </div>
-                </div>
-                */}
+                <FadeGrid />
               </div>
             </div>
             <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl -z-10"></div>
