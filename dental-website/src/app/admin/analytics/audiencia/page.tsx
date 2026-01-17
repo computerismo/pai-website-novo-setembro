@@ -138,13 +138,90 @@ function getCountryCode(country: string): string | null {
 }
 
 /**
- * Get display name for country (handles "(not set)")
+ * Get display name for country in Brazilian Portuguese
  */
 function getCountryDisplayName(country: string): string {
   if (!country || country === '(not set)' || country === 'not set') {
     return 'Desconhecido';
   }
-  return country;
+  
+  // Map English country names to Portuguese
+  const countryNamesPT: Record<string, string> = {
+    'Brazil': 'Brasil',
+    'United States': 'Estados Unidos',
+    'Portugal': 'Portugal',
+    'Spain': 'Espanha',
+    'France': 'França',
+    'Germany': 'Alemanha',
+    'Italy': 'Itália',
+    'United Kingdom': 'Reino Unido',
+    'Argentina': 'Argentina',
+    'Mexico': 'México',
+    'Canada': 'Canadá',
+    'Japan': 'Japão',
+    'China': 'China',
+    'Australia': 'Austrália',
+    'India': 'Índia',
+    'Russia': 'Rússia',
+    'Netherlands': 'Países Baixos',
+    'Belgium': 'Bélgica',
+    'Switzerland': 'Suíça',
+    'Poland': 'Polônia',
+    'Chile': 'Chile',
+    'Colombia': 'Colômbia',
+    'Peru': 'Peru',
+    'Uruguay': 'Uruguai',
+    'Paraguay': 'Paraguai',
+    'South Korea': 'Coreia do Sul',
+    'Unknown': 'Desconhecido',
+  };
+  
+  return countryNamesPT[country] || country;
+}
+
+/**
+ * Get display name for city in Brazilian Portuguese
+ */
+function getCityDisplayName(city: string): string {
+  if (!city || city === '(not set)' || city === 'not set') {
+    return 'Desconhecido';
+  }
+  
+  // Map city names to Portuguese (common international cities)
+  const cityNamesPT: Record<string, string> = {
+    'New York': 'Nova York',
+    'Los Angeles': 'Los Angeles',
+    'London': 'Londres',
+    'Paris': 'Paris',
+    'Rome': 'Roma',
+    'Milan': 'Milão',
+    'Madrid': 'Madri',
+    'Barcelona': 'Barcelona',
+    'Berlin': 'Berlim',
+    'Munich': 'Munique',
+    'Vienna': 'Viena',
+    'Prague': 'Praga',
+    'Warsaw': 'Varsóvia',
+    'Moscow': 'Moscou',
+    'Beijing': 'Pequim',
+    'Tokyo': 'Tóquio',
+    'Sydney': 'Sydney',
+    'Melbourne': 'Melbourne',
+    'Buenos Aires': 'Buenos Aires',
+    'Mexico City': 'Cidade do México',
+    'Lisbon': 'Lisboa',
+    'Amsterdam': 'Amsterdã',
+    'Brussels': 'Bruxelas',
+    'Geneva': 'Genebra',
+    'Zurich': 'Zurique',
+    'Dublin': 'Dublin',
+    'Edinburgh': 'Edimburgo',
+    'Cape Town': 'Cidade do Cabo',
+    'Cairo': 'Cairo',
+    'Unknown': 'Desconhecido',
+  };
+  
+  return cityNamesPT[city] || city;
 }
 
 // Device icons
@@ -185,8 +262,8 @@ function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
       <div className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-t-lg border-b border-slate-200">
         <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">País</span>
         <div className="flex items-center gap-4">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-12 text-right">%</span>
           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-16 text-right">Visitas</span>
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-12 text-right">%</span>
         </div>
       </div>
       
@@ -211,8 +288,8 @@ function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
                 <span className="font-medium text-slate-800">{getCountryDisplayName(country.x)}</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-slate-500 w-12 text-right">{percentage}%</span>
                 <span className="text-base font-bold text-slate-900 w-16 text-right">{country.y.toLocaleString('pt-BR')}</span>
+                <span className="text-sm text-slate-500 w-12 text-right">{percentage}%</span>
               </div>
             </div>
           );
@@ -247,8 +324,8 @@ function CitiesCard({ data }: { data: CityItem[] }) {
       <div className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-t-lg border-b border-slate-200">
         <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Cidade</span>
         <div className="flex items-center gap-4">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-12 text-right">%</span>
           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-16 text-right">Visitas</span>
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-12 text-right">%</span>
         </div>
       </div>
       
@@ -270,11 +347,11 @@ function CitiesCard({ data }: { data: CityItem[] }) {
                 ) : (
                   <Globe className="w-4 h-4 text-slate-400" />
                 )}
-                <span className="font-medium text-slate-800">{city.city}</span>
+                <span className="font-medium text-slate-800">{getCityDisplayName(city.city)}</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-slate-500 w-12 text-right">{percentage}%</span>
                 <span className="text-base font-bold text-slate-900 w-16 text-right">{city.visitors.toLocaleString('pt-BR')}</span>
+                <span className="text-sm text-slate-500 w-12 text-right">{percentage}%</span>
               </div>
             </div>
           );
