@@ -166,10 +166,12 @@ function getDeviceLabel(device: string): string {
 // Countries list card (simplified)
 function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
   const total = data.reduce((sum, item) => sum + item.y, 0);
+  // Filter out unknown entries
+  const filteredData = data.filter(c => c.x && c.x !== '(not set)' && c.x !== 'Unknown');
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-5">
         <div className="p-2.5 rounded-xl bg-blue-100 text-blue-600">
           <Globe className="w-5 h-5" />
         </div>
@@ -179,13 +181,23 @@ function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
         </div>
       </div>
       
-      <div className="space-y-3">
-        {data.slice(0, 8).map((country, i) => {
+      {/* Table Header */}
+      <div className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-t-lg border-b border-slate-200">
+        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">País</span>
+        <div className="flex items-center gap-4">
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-12 text-right">%</span>
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-16 text-right">Visitas</span>
+        </div>
+      </div>
+      
+      {/* Table Body */}
+      <div className="divide-y divide-slate-100">
+        {filteredData.slice(0, 8).map((country, i) => {
           const percentage = total > 0 ? ((country.y / total) * 100).toFixed(1) : '0';
           const countryCode = getCountryCode(country.x);
           return (
-            <div key={i} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-              <div className="flex items-center gap-2">
+            <div key={i} className="flex items-center justify-between px-3 py-3 hover:bg-slate-50 transition-colors">
+              <div className="flex items-center gap-3">
                 {countryCode ? (
                   <ReactCountryFlag
                     countryCode={countryCode}
@@ -198,14 +210,14 @@ function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
                 )}
                 <span className="font-medium text-slate-800">{getCountryDisplayName(country.x)}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">{percentage}%</span>
-                <span className="text-sm font-bold text-slate-900">{country.y.toLocaleString('pt-BR')}</span>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-slate-500 w-12 text-right">{percentage}%</span>
+                <span className="text-base font-bold text-slate-900 w-16 text-right">{country.y.toLocaleString('pt-BR')}</span>
               </div>
             </div>
           );
         })}
-        {data.length === 0 && (
+        {filteredData.length === 0 && (
           <p className="text-sm text-slate-400 text-center py-8">Nenhum dado disponível</p>
         )}
       </div>
@@ -216,10 +228,12 @@ function CountriesCard({ data }: { data: CountriesResponse['countries'] }) {
 // Cities list card (NEW)
 function CitiesCard({ data }: { data: CityItem[] }) {
   const total = data.reduce((sum, item) => sum + item.visitors, 0);
+  // Filter out unknown entries
+  const filteredData = data.filter(c => c.city && c.city !== '(not set)' && c.city !== 'Unknown');
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-5">
         <div className="p-2.5 rounded-xl bg-purple-100 text-purple-600">
           <MapPin className="w-5 h-5" />
         </div>
@@ -229,14 +243,23 @@ function CitiesCard({ data }: { data: CityItem[] }) {
         </div>
       </div>
       
-      <div className="space-y-3">
-        {data.slice(0, 8).map((city, i) => {
+      {/* Table Header */}
+      <div className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-t-lg border-b border-slate-200">
+        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Cidade</span>
+        <div className="flex items-center gap-4">
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-12 text-right">%</span>
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider w-16 text-right">Visitas</span>
+        </div>
+      </div>
+      
+      {/* Table Body */}
+      <div className="divide-y divide-slate-100">
+        {filteredData.slice(0, 8).map((city, i) => {
           const percentage = total > 0 ? ((city.visitors / total) * 100).toFixed(1) : '0';
           const countryCode = getCountryCode(city.country);
-          const cityName = city.city === '(not set)' ? 'Desconhecido' : city.city;
           return (
-            <div key={i} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-              <div className="flex items-center gap-2">
+            <div key={i} className="flex items-center justify-between px-3 py-3 hover:bg-slate-50 transition-colors">
+              <div className="flex items-center gap-3">
                 {countryCode ? (
                   <ReactCountryFlag
                     countryCode={countryCode}
@@ -247,16 +270,16 @@ function CitiesCard({ data }: { data: CityItem[] }) {
                 ) : (
                   <Globe className="w-4 h-4 text-slate-400" />
                 )}
-                <span className="font-medium text-slate-800">{cityName}</span>
+                <span className="font-medium text-slate-800">{city.city}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">{percentage}%</span>
-                <span className="text-sm font-bold text-slate-900">{city.visitors.toLocaleString('pt-BR')}</span>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-slate-500 w-12 text-right">{percentage}%</span>
+                <span className="text-base font-bold text-slate-900 w-16 text-right">{city.visitors.toLocaleString('pt-BR')}</span>
               </div>
             </div>
           );
         })}
-        {data.length === 0 && (
+        {filteredData.length === 0 && (
           <p className="text-sm text-slate-400 text-center py-8">Nenhum dado disponível</p>
         )}
       </div>
@@ -357,31 +380,28 @@ function DevicesCard({ data }: { data: DevicesResponse['devices'] }) {
         </div>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         {chartData.map((device, i) => {
           const percentage = total > 0 ? (device.value / total) * 100 : 0;
           return (
-            <div key={i}>
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <div 
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
-                    style={{ backgroundColor: device.color }}
-                  >
-                    {deviceIcons[device.icon] || <Monitor className="w-4 h-4" />}
-                  </div>
-                  <span className="text-sm font-medium text-slate-700">{device.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">{percentage.toFixed(0)}%</span>
-                  <span className="text-sm font-bold text-slate-900">{device.value}</span>
-                </div>
+            <div key={i} className="flex items-center gap-3">
+              <div 
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0"
+                style={{ backgroundColor: device.color }}
+              >
+                {deviceIcons[device.icon] || <Monitor className="w-4 h-4" />}
               </div>
-              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${percentage}%`, backgroundColor: device.color }}
-                />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-slate-800 truncate">{device.name}</span>
+                  <span className="text-sm font-bold text-slate-900 ml-2">{device.value}</span>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${percentage}%`, backgroundColor: device.color }}
+                  />
+                </div>
               </div>
             </div>
           );
@@ -405,7 +425,7 @@ function SummaryCard({
   devices: DevicesResponse['devices'];
 }) {
   const totalVisitors = countries.reduce((sum, c) => sum + c.y, 0);
-  const topCountry = countries[0]?.x || '-';
+  const topCountry = countries[0]?.x ? getCountryDisplayName(countries[0].x) : '-';
   const topBrowser = browsers[0]?.x || '-';
   const topDevice = devices[0] ? getDeviceLabel(devices[0].x) : '-';
 
