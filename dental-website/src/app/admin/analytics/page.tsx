@@ -325,11 +325,36 @@ export default function AnalyticsPage() {
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                 }}
               />
+              {/* Custom Legend with tooltips */}
               <Legend 
                 verticalAlign="top" 
                 height={36}
-                iconType="circle"
-                formatter={(value) => <span className="text-sm text-slate-600">{value}</span>}
+                content={() => (
+                  <div className="flex items-center justify-center gap-6 mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-full bg-blue-500" />
+                      <span className="text-sm text-slate-600">Visualizações</span>
+                      <div className="relative group">
+                        <Info className="w-3.5 h-3.5 text-slate-400 cursor-help hover:text-blue-500 transition-colors" />
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-slate-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-48 text-center z-50 shadow-lg">
+                          Total de páginas carregadas. Cada vez que alguém abre uma página conta como 1.
+                          <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-slate-800" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-full bg-emerald-500" />
+                      <span className="text-sm text-slate-600">Sessões</span>
+                      <div className="relative group">
+                        <Info className="w-3.5 h-3.5 text-slate-400 cursor-help hover:text-emerald-500 transition-colors" />
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-slate-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-48 text-center z-50 shadow-lg">
+                          Períodos de atividade no site. Uma sessão pode ter várias visualizações.
+                          <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-slate-800" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               />
               <Bar
                 dataKey="pageviews"
