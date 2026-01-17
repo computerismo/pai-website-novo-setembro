@@ -64,6 +64,9 @@ app.add_middleware(
 
 _client = None
 _realtime_client = None
+# Simple in-memory cache for realtime data to prevent hitting rate limits
+_realtime_cache = None
+_realtime_cache_expiry = None
 
 def get_ga_client():
     """Lazy initialization of GA4 Data API client."""
@@ -533,6 +536,11 @@ async def get_realtime():
     
     client = get_ga_client()
     
+    # Check cache
+    global _realtime_cache, _realtime_cache_expiry
+    if _realtime_cache and _realtime_cache_expiry and datetime.now() < _realtime_cache_expiry:
+        return _realtime_cache
+
     try:
         # Get total active users
         request = RunRealtimeReportRequest(
@@ -633,7 +641,7 @@ async def get_realtime():
         # Sort by minutesAgo ascending
         minutes_data.sort(key=lambda x: x["minutesAgo"])
         
-        return {
+        result = {
             "activeVisitors": active_users,
             "urls": pages,
             "countries": countries,
@@ -643,6 +651,12 @@ async def get_realtime():
             "minutesTrend": minutes_data,
             "timestamp": datetime.now().isoformat()
         }
+        
+        # Update cache (30 seconds TTL)
+        _realtime_cache = result
+        _realtime_cache_expiry = datetime.now() + timedelta(seconds=30)
+        
+        return result
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Realtime API error: {str(e)}")

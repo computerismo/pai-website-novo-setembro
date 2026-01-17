@@ -280,7 +280,7 @@ function ActivityTrendChart({ data }: { data: Array<{ minutesAgo: number; users:
         </div>
       </div>
       
-      <div className="h-32">
+      <div className="h-32" style={{ minHeight: '128px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
@@ -474,7 +474,7 @@ export default function TempoRealPage() {
 
   useEffect(() => {
     if (!autoRefresh) return;
-    const interval = setInterval(fetchData, 30000);
+    const interval = setInterval(fetchData, 60000);
     return () => clearInterval(interval);
   }, [autoRefresh, fetchData]);
 
