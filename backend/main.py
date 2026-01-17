@@ -4,6 +4,8 @@ Fetches analytics metrics from GA4 for the admin dashboard
 """
 
 import os
+import json
+import tempfile
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, HTTPException, Query
@@ -16,6 +18,31 @@ load_dotenv()
 
 # Configuration
 GA_PROPERTY_ID = os.getenv("GA_PROPERTY_ID")
+
+# Handle Google credentials from environment variable (for cloud deployment)
+def setup_credentials():
+    """
+    Set up Google credentials from environment variable.
+    Supports both file path (local) and JSON string (cloud deployment).
+    """
+    # Check if credentials JSON is provided directly as env var
+    creds_json = os.getenv("GOOGLE_CREDENTIALS_JSON")
+    if creds_json:
+        try:
+            # Write to temp file and set the path
+            creds_data = json.loads(creds_json)
+            temp_file = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False)
+            json.dump(creds_data, temp_file)
+            temp_file.close()
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file.name
+            return True
+        except json.JSONDecodeError as e:
+            print(f"Warning: Failed to parse GOOGLE_CREDENTIALS_JSON: {e}")
+            return False
+    return False
+
+# Try to set up credentials from JSON env var
+setup_credentials()
 
 # Initialize FastAPI app
 app = FastAPI(
