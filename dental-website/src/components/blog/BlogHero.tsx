@@ -18,20 +18,7 @@ export function BlogHero() {
             Conteúdo confiável escrito por profissionais experientes.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-text-light dark:text-text-dark">
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-[#2563EB] rounded-full"></span>
-              Conteúdo Atualizado
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              Aprovado por Especialistas
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-              Baseado em Evidências
-            </span>
-          </div>
+
         </div>
       </div>
     </section>

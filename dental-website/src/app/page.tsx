@@ -251,6 +251,12 @@ export default function HomePage() {
                     Análise de oclusão
                   </li>
                 </ul>
+                <a 
+                  href="/tratamento-bruxismo" 
+                  className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
+                >
+                  Saiba Mais
+                </a>
               </div>
 
               {/* Solution 2 - Placas Miorrelaxantes (Featured) */}
@@ -305,6 +311,12 @@ export default function HomePage() {
                     Laserterapia
                   </li>
                 </ul>
+                <a 
+                  href="/botox-bruxismo" 
+                  className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
+                >
+                  Saiba Mais
+                </a>
               </div>
             </div>
           </div>
@@ -356,23 +368,6 @@ export default function HomePage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-16 lg:py-24 bg-[#F8FAFC] dark:bg-background-dark" id="faq">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-center text-heading-light dark:text-heading-dark mb-12">Perguntas Frequentes</h2>
-            <div className="space-y-4">
-              {faqData.map((faq, index) => (
-                <FAQItem
-                  key={index}
-                  question={faq.question}
-                  answer={faq.answer}
-                  isOpen={openFAQ === index}
-                  onToggle={() => toggleFAQ(index)}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Pre-Footer CTA */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-[#2563EB] opacity-90 dark:opacity-80 z-0"></div>
@@ -398,6 +393,25 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        <section className="py-16 lg:py-24 bg-[#F8FAFC] dark:bg-background-dark" id="faq">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-center text-heading-light dark:text-heading-dark mb-12">Perguntas Frequentes</h2>
+            <div className="space-y-4">
+              {faqData.map((faq, index) => (
+                <FAQItem
+                  key={index}
+                  question={faq.question}
+                  answer={faq.answer}
+                  isOpen={openFAQ === index}
+                  onToggle={() => toggleFAQ(index)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+
 
         <Modal 
           isOpen={isModalOpen} 
