@@ -768,7 +768,7 @@ def geocode_city_cached(city: str, country: str) -> Optional[Dict[str, float]]:
 
 
 class GeocodeBatchRequest(BaseModel):
-    cities: List[Dict[str, str]]  # List of {"city": "...", "country": "..."}
+    cities: List[Dict[str, Any]]  # Changed from str to Any to accept 'users' integer
 
 
 class GeocodedCity(BaseModel):
