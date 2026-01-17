@@ -447,6 +447,28 @@ async def get_countries(days: int = Query(default=7, ge=1, le=365), limit: int =
     return {"countries": countries, "period": f"{days}d"}
 
 
+@app.get("/api/cities")
+async def get_cities(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=20, le=50)):
+    """Get visitors by city with country info for flag display."""
+    from google.analytics.data_v1beta.types import OrderBy
+    
+    results = run_report(
+        dimensions=["city", "country"],
+        metrics=["activeUsers"],
+        days=days,
+        order_bys=[OrderBy(metric=OrderBy.MetricOrderBy(metric_name="activeUsers"), desc=True)],
+        limit=limit
+    )
+    
+    cities = [{
+        "city": r.get("city", "Unknown"),
+        "country": r.get("country", "Unknown"),
+        "visitors": r.get("activeUsers", 0)
+    } for r in results]
+    
+    return {"cities": cities, "period": f"{days}d"}
+
+
 @app.get("/api/browsers")
 async def get_browsers(days: int = Query(default=7, ge=1, le=365)):
     """Get browser breakdown."""

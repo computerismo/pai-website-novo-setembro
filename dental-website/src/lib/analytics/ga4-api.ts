@@ -200,6 +200,27 @@ export async function getCountries(
   });
 }
 
+export interface CityItem {
+  city: string;
+  country: string;
+  visitors: number;
+}
+
+export interface CitiesResponse {
+  cities: CityItem[];
+  period: string;
+}
+
+export async function getCities(
+  period: string,
+  limit = 20
+): Promise<CitiesResponse> {
+  return fetchGA4<CitiesResponse>("/api/cities", {
+    days: periodToDays(period),
+    limit,
+  });
+}
+
 export async function getBrowsers(period: string): Promise<BrowsersResponse> {
   return fetchGA4<BrowsersResponse>("/api/browsers", {
     days: periodToDays(period),

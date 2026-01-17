@@ -330,7 +330,7 @@ export default function AnalyticsPage() {
                 verticalAlign="top" 
                 height={36}
                 content={() => (
-                  <div className="flex items-center justify-center gap-6 mb-2">
+                  <div className="flex items-center justify-start gap-6 mb-2">
                     <div className="flex items-center gap-1.5">
                       <span className="w-3 h-3 rounded-full bg-blue-500" />
                       <span className="text-sm text-slate-600">Visualizações</span>
@@ -363,7 +363,7 @@ export default function AnalyticsPage() {
                 radius={[4, 4, 0, 0]}
                 barSize={20}
               >
-                <LabelList dataKey="pageviews" position="top" fontSize={10} fill="#64748b" />
+                <LabelList dataKey="pageviews" position="top" fontSize={11} fill="#334155" fontWeight={600} />
               </Bar>
               <Bar
                 dataKey="sessions"
@@ -372,7 +372,7 @@ export default function AnalyticsPage() {
                 radius={[4, 4, 0, 0]}
                 barSize={20}
               >
-                <LabelList dataKey="sessions" position="top" fontSize={10} fill="#64748b" />
+                <LabelList dataKey="sessions" position="top" fontSize={11} fill="#334155" fontWeight={600} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
