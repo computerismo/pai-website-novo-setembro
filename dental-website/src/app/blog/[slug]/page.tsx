@@ -158,7 +158,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Twin Cards Intro Section - Full Width Container */}
           <div className="container mx-auto px-4 mb-16">
-            <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+            <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-8 items-stretch">
               {/* Card 1: Image */}
               {post.image && post.image !== "/images/blog/default.jpg" && (
                 <div className="bg-white rounded-3xl border border-gray-200 p-2 shadow-sm h-full min-h-[300px] lg:min-h-[400px] relative overflow-hidden group">
@@ -193,7 +193,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Main Content - Centered Reading Column */}
           <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-4xl mx-auto">
               <BlogPostContent>
                 <div
                   className="prose prose-lg prose-slate max-w-none 
