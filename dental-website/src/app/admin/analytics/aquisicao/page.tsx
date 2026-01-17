@@ -86,17 +86,6 @@ function getReferrerColor(referrer: string): string {
   return '#f59e0b';
 }
 
-// Filter out debug/testing referrers
-function filterDebugReferrers(referrers: Array<{ x: string; y: number }>): Array<{ x: string; y: number }> {
-  const debugDomains = [
-    'tagassistant.google.com',
-    'gtm-msr.appspot.com',
-    'localhost',
-    '127.0.0.1',
-  ];
-  return referrers.filter(r => !debugDomains.some(d => r.x?.includes(d)));
-}
-
 // Data table with progress bars
 function DataTable({ 
   title, 
@@ -118,8 +107,7 @@ function DataTable({
     purple: 'bg-purple-100 text-purple-600',
   };
 
-  // Filter debug referrers and translate names
-  const filteredData = filterDebugReferrers(data);
+  // Data is already filtered by backend
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
@@ -134,8 +122,8 @@ function DataTable({
       </div>
       
       <div className="space-y-4">
-        {filteredData.slice(0, 15).map((item, i) => {
-          const maxValue = filteredData[0]?.y || 1;
+        {data.slice(0, 15).map((item, i) => {
+          const maxValue = data[0]?.y || 1;
           const percentage = (item.y / maxValue) * 100;
           const barColor = getReferrerColor(item.x);
           
@@ -160,7 +148,7 @@ function DataTable({
             </div>
           );
         })}
-        {filteredData.length === 0 && (
+        {data.length === 0 && (
           <p className="text-sm text-slate-400 text-center py-12">Nenhum dado disponível</p>
         )}
       </div>

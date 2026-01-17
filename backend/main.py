@@ -413,18 +413,37 @@ async def get_channels(days: int = Query(default=7, ge=1, le=365)):
 
 @app.get("/api/referrers")
 async def get_referrers(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=15, le=50)):
-    """Get referrer sources."""
+    """Get referrer sources (filtered to remove debug/testing traffic)."""
     from google.analytics.data_v1beta.types import OrderBy
     
+    # Debug/testing domains to filter out
+    debug_domains = [
+        'tagassistant.google.com',
+        'gtm-msr.appspot.com',
+        'localhost',
+        '127.0.0.1',
+    ]
+    
+    # Request more results to account for filtered entries
     results = run_report(
         dimensions=["sessionSource"],
         metrics=["sessions"],
         days=days,
         order_bys=[OrderBy(metric=OrderBy.MetricOrderBy(metric_name="sessions"), desc=True)],
-        limit=limit
+        limit=limit + 10  # Extra buffer for filtering
     )
     
-    referrers = [{"x": r.get("sessionSource", "(direct)"), "y": r.get("sessions", 0)} for r in results]
+    # Filter out debug domains
+    referrers = []
+    for r in results:
+        source = r.get("sessionSource", "(direct)")
+        # Skip debug domains
+        if any(debug in source.lower() for debug in debug_domains):
+            continue
+        referrers.append({"x": source, "y": r.get("sessions", 0)})
+    
+    # Apply original limit after filtering
+    referrers = referrers[:limit]
     
     return {"referrers": referrers, "period": f"{days}d"}
 
