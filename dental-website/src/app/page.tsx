@@ -105,7 +105,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen font-sans">
-      <Navigation />
+      <Navigation onOpenModal={handleOpenModal} />
       
       <main>
         {/* Hero Section */}
@@ -241,16 +241,7 @@ export default function HomePage() {
                 <p className="text-text-light dark:text-text-dark mb-6 text-sm leading-relaxed">
                   Realizamos uma avaliação completa utilizando tecnologia avançada. Nossa análise inclui exame clínico detalhado, avaliação da oclusão e análise muscular.
                 </p>
-                <ul className="space-y-2 mb-8">
-                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
-                    <Check className="text-green-500 w-5 h-5 mr-2" />
-                    Exame clínico digital
-                  </li>
-                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
-                    <Check className="text-green-500 w-5 h-5 mr-2" />
-                    Análise de oclusão
-                  </li>
-                </ul>
+
                 <a 
                   href="/tratamento-bruxismo" 
                   className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
@@ -269,20 +260,7 @@ export default function HomePage() {
                 <p className="text-text-light dark:text-text-dark mb-6 text-sm leading-relaxed">
                   Dispositivos sob medida de alta qualidade e tecnologia digital. Cada placa é ajustada perfeitamente à sua arcada para máximo conforto e proteção.
                 </p>
-                <ul className="space-y-2 mb-8">
-                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
-                    <Check className="text-green-500 w-5 h-5 mr-2" />
-                    Proteção do esmalte
-                  </li>
-                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
-                    <Check className="text-green-500 w-5 h-5 mr-2" />
-                    Relaxamento muscular
-                  </li>
-                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
-                    <Check className="text-green-500 w-5 h-5 mr-2" />
-                    Material de alta durabilidade
-                  </li>
-                </ul>
+
                 <a 
                   href="/placa-miorrelaxante" 
                   className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
@@ -301,16 +279,7 @@ export default function HomePage() {
                 <p className="text-text-light dark:text-text-dark mb-6 text-sm leading-relaxed">
                   Abordagem multidisciplinar incluindo aplicação de toxina botulínica para casos específicos, laserterapia e orientações fisioterapêuticas.
                 </p>
-                <ul className="space-y-2 mb-8">
-                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
-                    <Check className="text-green-500 w-5 h-5 mr-2" />
-                    Toxina Botulínica
-                  </li>
-                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
-                    <Check className="text-green-500 w-5 h-5 mr-2" />
-                    Laserterapia
-                  </li>
-                </ul>
+
                 <a 
                   href="/botox-bruxismo" 
                   className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"

@@ -29,7 +29,7 @@ const navLinks: NavLink[] = [
   { label: "Contato", href: "/contato" },
 ];
 
-export function Navigation() {
+export function Navigation({ onOpenModal }: { onOpenModal?: () => void }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
@@ -101,12 +101,12 @@ export function Navigation() {
               </div>
             ))}
             
-            <a 
-              href="#agendamento"
+            <button 
+              onClick={onOpenModal}
               className="inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-lg shadow-blue-500/30"
             >
               Agendar Consulta
-            </a>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -171,13 +171,16 @@ export function Navigation() {
             </div>
           ))}
           <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
-            <a 
-              href="#agendamento"
+            <button 
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenModal?.();
+              }}
               className="flex items-center justify-center w-full px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-lg shadow-blue-500/30"
             >
               <Calendar className="w-5 h-5 mr-2" />
               Agendar Consulta
-            </a>
+            </button>
           </div>
         </div>
       </div>

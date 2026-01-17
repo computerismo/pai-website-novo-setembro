@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import NextImage from 'next/image';
 
 // Configuration
 // Configuration
@@ -172,16 +173,22 @@ export function FadeGrid() {
           className="relative aspect-square overflow-hidden rounded-xl lg:rounded-2xl bg-gray-100 dark:bg-gray-800"
         >
           <AnimatePresence>
-            <motion.img
+            <motion.div
               key={img.id}
-              src={img.src}
-              alt={img.alt}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 2.5 }}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+              className="absolute inset-0 w-full h-full"
+            >
+              <NextImage
+                src={img.src}
+                alt={img.alt}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 33vw, 15vw"
+              />
+            </motion.div>
           </AnimatePresence>
         </div>
       ))}
