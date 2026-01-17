@@ -1,16 +1,16 @@
 # Railway Configuration for Backend Service
 
 [build]
-# Builder to use (nixpacks or dockerfile)
+# Builder to use
 builder = "dockerfile"
 
 # Path to Dockerfile relative to repo root
 dockerfilePath = "backend/Dockerfile"
 
-[deploy]
-# Start command
-startCommand = "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+# Root directory for the build context
+buildDirectory = "backend"
 
+[deploy]
 # Health check path
 healthcheckPath = "/"
 
