@@ -38,20 +38,20 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
         href={href}
         className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 ${
           active
-            ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-white shadow-lg shadow-blue-500/10"
-            : "text-slate-400 hover:text-white hover:bg-white/5"
+            ? "bg-blue-50 text-[#2563EB]"
+            : "text-slate-600 hover:text-[#2563EB] hover:bg-slate-50"
         }`}
       >
         <div className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
           active 
-            ? "bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/30" 
-            : "bg-slate-700/50 group-hover:bg-slate-600/50"
+            ? "bg-white shadow-sm text-[#2563EB]" 
+            : "bg-slate-100 group-hover:bg-white group-hover:shadow-sm text-slate-500 group-hover:text-[#2563EB]"
         }`}>
-          <Icon className={`w-4 h-4 ${active ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
+          <Icon className="w-4 h-4" />
         </div>
         {label}
         {active && (
-          <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 shadow-lg shadow-blue-400/50 animate-pulse" />
+          <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
         )}
       </Link>
     );
@@ -68,13 +68,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
     children: React.ReactNode;
     basePath: string;
   }) => {
-    // Check if any child route is active to set initial state and highlight parent
     const isChildActive = pathname?.startsWith(basePath);
     const [isOpen, setIsOpen] = useState(isChildActive);
-    
-    // Auto-open if navigated to a child (optional, but good UX)
-    // We update only if we want forced expansion on navigation. 
-    // For now, allow manual toggle, but initialize correctly.
     
     return (
       <div className="space-y-1">
@@ -82,20 +77,20 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           onClick={() => setIsOpen(!isOpen)}
           className={`w-full group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 ${
             isChildActive
-              ? "text-white" // Keep parent highlight subtle or distinct? Let's keep it clean
-              : "text-slate-400 hover:text-white hover:bg-white/5"
+              ? "text-[#2563EB]"
+              : "text-slate-600 hover:text-[#2563EB] hover:bg-slate-50"
           }`}
         >
           <div className={`p-2 rounded-lg mr-3 transition-all duration-300 ${
             isChildActive 
-              ? "bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/30" 
-              : "bg-slate-700/50 group-hover:bg-slate-600/50"
+              ? "bg-white shadow-sm text-[#2563EB]" 
+              : "bg-slate-100 group-hover:bg-white group-hover:shadow-sm text-slate-500 group-hover:text-[#2563EB]"
           }`}>
-            <Icon className={`w-4 h-4 ${isChildActive ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
+            <Icon className="w-4 h-4" />
           </div>
           <span className="flex-1 text-left">{label}</span>
           <ChevronDown 
-            className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180 text-white' : 'text-slate-500'}`} 
+            className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#2563EB]' : 'text-slate-400'}`} 
           />
         </button>
         
@@ -105,7 +100,7 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
           }`}
         >
           <div className="overflow-hidden">
-             <div className="ml-6 mt-1 space-y-1 border-l border-white/10 pl-2">
+             <div className="ml-6 mt-1 space-y-1 border-l border-slate-200 pl-2">
                {children}
              </div>
           </div>
@@ -115,33 +110,33 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-blue-50/30">
+    <div className="min-h-screen bg-slate-50">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/60 z-20 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-slate-900/20 z-20 lg:hidden backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Premium Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 transform transition-transform duration-300 ease-out lg:translate-x-0 shadow-2xl ${
+        className={`fixed inset-y-0 left-0 z-30 w-72 bg-white transform transition-transform duration-300 ease-out lg:translate-x-0 border-r border-slate-200 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo Area */}
-          <div className="flex items-center justify-between h-20 px-6 border-b border-white/5">
+          <div className="flex items-center justify-between h-20 px-6 border-b border-slate-100">
             <Link href="/admin/dashboard" className="flex items-center group">
               <div>
-                <span className="text-xl font-bold text-white tracking-tight">OESP</span>
-                <span className="text-xl font-light text-blue-400">Dental</span>
+                <span className="text-xl font-bold text-slate-900 tracking-tight">OESP</span>
+                <span className="text-xl font-light text-[#2563EB]">Dental</span>
               </div>
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+              className="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -149,16 +144,16 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto sidebar-scrollbar">
-            <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <p className="px-4 mb-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Visão Geral
             </p>
             <NavItem href="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />
             
             <div className="py-3">
-              <div className="border-t border-white/5 mx-2"></div>
+              <div className="border-t border-slate-100 mx-2"></div>
             </div>
             
-            <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <p className="px-4 mb-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Análise Web
             </p>
             <CollapsibleNavItem 
@@ -170,8 +165,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/analytics"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Visão Geral
@@ -180,8 +175,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/analytics/comportamento"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics/comportamento'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Comportamento
@@ -190,8 +185,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/analytics/audiencia"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics/audiencia'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Audiência
@@ -200,8 +195,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/analytics/aquisicao"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics/aquisicao'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Aquisição
@@ -210,8 +205,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/analytics/tempo-real"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/analytics/tempo-real'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Tempo Real
@@ -226,8 +221,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/seo"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/seo'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Visão Geral
@@ -236,8 +231,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/seo/palavras-chave"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/seo/palavras-chave'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Palavras-chave
@@ -246,8 +241,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/seo/conteudo"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/seo/conteudo'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Conteúdo
@@ -256,8 +251,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/seo/tecnico"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/seo/tecnico'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Técnico
@@ -265,19 +260,19 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
             </CollapsibleNavItem>
             
             <div className="py-3">
-              <div className="border-t border-white/5 mx-2"></div>
+              <div className="border-t border-slate-100 mx-2"></div>
             </div>
             
-            <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <p className="px-4 mb-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Conteúdo
             </p>
             <NavItem href="/admin/posts" icon={FileText} label="Posts do Blog" />
 
             <div className="py-3">
-              <div className="border-t border-white/5 mx-2"></div>
+              <div className="border-t border-slate-100 mx-2"></div>
             </div>
 
-            <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <p className="px-4 mb-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Comercial
             </p>
             <CollapsibleNavItem 
@@ -289,8 +284,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/leads?view=list"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/leads' && (!viewParam || viewParam === 'list')
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Lista
@@ -299,8 +294,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 href="/admin/leads?view=kanban"
                 className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
                   pathname === '/admin/leads' && viewParam === 'kanban'
-                    ? 'text-blue-400 bg-blue-500/10 font-medium'
-                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    ? 'text-[#2563EB] bg-blue-50 font-medium'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 Kanban
@@ -308,35 +303,35 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
             </CollapsibleNavItem>
 
             <div className="py-3">
-              <div className="border-t border-white/5 mx-2"></div>
+              <div className="border-t border-slate-100 mx-2"></div>
             </div>
 
-            <p className="px-4 mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <p className="px-4 mb-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Gestão
             </p>
             <NavItem href="/admin/users" icon={Settings} label="Gestão de Usuários" />
           </nav>
 
           {/* User info & logout */}
-          <div className="p-4 border-t border-white/5 bg-slate-900/50">
-            <div className="flex items-center mb-4 p-3 rounded-xl bg-gradient-to-r from-white/5 to-transparent">
+          <div className="p-4 border-t border-slate-200 bg-slate-50/50">
+            <div className="flex items-center mb-4 p-3 rounded-xl bg-white border border-slate-100 shadow-sm">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-blue-500/20">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">
                   {session?.user?.name?.charAt(0) || "A"}
                 </div>
               </div>
               <div className="ml-3 flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">
+                <p className="text-sm font-semibold text-slate-900 truncate">
                   {session?.user?.name || "Admin"}
                 </p>
-                <p className="text-xs text-slate-400 truncate">
+                <p className="text-xs text-slate-500 truncate">
                   {session?.user?.email}
                 </p>
               </div>
             </div>
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="flex items-center w-full px-4 py-2.5 text-sm font-medium text-slate-400 rounded-xl hover:text-white hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-all duration-200"
+              className="flex items-center w-full px-4 py-2.5 text-sm font-medium text-slate-600 rounded-xl hover:text-red-600 hover:bg-red-50 border border-transparent transition-all duration-200"
             >
               <LogOut className="w-4 h-4 mr-3" />
               Sair da Conta
@@ -348,7 +343,7 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
       {/* Main content */}
       <div className="lg:pl-72">
         {/* Top bar */}
-        <header className="bg-white/70 backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-10 shadow-sm">
+        <header className="bg-white/70 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-10 shadow-sm">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -362,7 +357,7 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
               <Link
                 href="/"
                 target="_blank"
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-blue-600 bg-slate-100/80 hover:bg-blue-50 rounded-xl transition-all duration-200"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-[#2563EB] bg-slate-100 hover:bg-blue-50 rounded-xl transition-all duration-200"
               >
                 Ver Site 
                 <span className="text-xs opacity-60">↗</span>
