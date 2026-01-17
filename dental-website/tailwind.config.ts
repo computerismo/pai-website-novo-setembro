@@ -45,6 +45,17 @@ const config: Config = {
           800: '#1e40af',
           900: '#1e3a8a',
         },
+        // Stitch Design Colors
+        "primary-dark": "#1D4ED8",
+        "background-light": "#F8FAFC",
+        "background-dark": "#0F172A",
+        "surface-light": "#FFFFFF",
+        "surface-dark": "#1E293B",
+        "text-light": "#334155",
+        "text-dark": "#CBD5E1",
+        "heading-light": "#1E293B",
+        "heading-dark": "#F1F5F9",
+        "accent": "#06B6D4",
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

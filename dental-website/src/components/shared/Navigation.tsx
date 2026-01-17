@@ -42,15 +42,17 @@ export function Navigation() {
   };
 
   return (
-    <header className="fixed top-4 left-4 right-4 z-50 md:max-w-7xl md:mx-auto">
-      <nav className="bg-white/80 backdrop-blur-xl backdrop-saturate-150 border border-white/40 rounded-2xl shadow-2xl shadow-blue-900/20 px-4 md:px-6 py-3 md:py-4">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
-              {siteConfig.name}
+    <nav className="sticky top-0 z-50 bg-white/90 dark:bg-surface-dark/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 w-full transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-20 items-center">
+          {/* Logo */}
+          <Link href="/" className="flex items-center group">
+            <span className="text-xl font-bold text-heading-light dark:text-heading-dark tracking-tight">
+              OESP - <span className="text-[#2563EB]">Odontologia Especializada</span>
             </span>
           </Link>
 
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <div
@@ -61,7 +63,7 @@ export function Navigation() {
               >
                 {link.children ? (
                   <button
-                    className="flex items-center gap-1 text-slate-800/90 hover:text-primary-600 hover:bg-white/10 rounded-lg px-3 py-2 transition-all duration-300 font-medium"
+                    className="flex items-center gap-1 text-sm font-medium text-text-light dark:text-text-dark hover:text-primary dark:hover:text-primary transition-colors"
                   >
                     {link.label}
                     <ChevronDown className={cn("w-4 h-4 transition-transform", activeDropdown === link.label ? "rotate-180" : "")} />
@@ -69,7 +71,7 @@ export function Navigation() {
                 ) : (
                   <Link
                     href={link.href}
-                    className="text-slate-800/90 hover:text-primary-600 hover:bg-white/10 rounded-lg px-3 py-2 transition-all duration-300 font-medium"
+                    className="text-sm font-medium text-text-light dark:text-text-dark hover:text-primary dark:hover:text-primary transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -83,12 +85,12 @@ export function Navigation() {
                       activeDropdown === link.label && "opacity-100 visible translate-y-0"
                     )}
                   >
-                    <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-white/40 p-2 space-y-1">
+                    <div className="bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 p-2 space-y-1">
                       {link.children.map((child) => (
                         <Link
                           key={child.href}
                           href={child.href}
-                          className="block px-3 py-2 text-sm text-slate-700 hover:text-primary-600 hover:bg-blue-50/50 rounded-lg transition-colors"
+                          className="block px-3 py-2 text-sm text-text-light dark:text-text-dark hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                         >
                           {child.label}
                         </Link>
@@ -98,100 +100,87 @@ export function Navigation() {
                 )}
               </div>
             ))}
+            
+            <a 
+              href="#agendamento"
+              className="inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-lg shadow-blue-500/30"
+            >
+              Agendar Consulta
+            </a>
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
-            {/* <div className="relative p-[2px] bg-gradient-to-r from-blue-500 to-teal-500 rounded-lg">
-              <Button variant="ghost" size="sm" className="bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-white/60 rounded-md" asChild>
-                <a href={`tel:${siteConfig.phone.replace(/\D/g, '')}`} className="flex items-center gap-3">
-                  <Phone className="w-4 h-4 text-blue-600" />
-                  <span className="font-medium">{siteConfig.phone}</span>
-                </a>
-              </Button>
-            </div> */}
-            <Button size="sm" asChild>
-              <a href="#agendamento">
-                <Calendar className="w-4 h-4" />
-                Agendar Consulta
-              </a>
-            </Button>
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <button
+              className="text-text-light dark:text-text-dark hover:text-primary transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
           </div>
-
-          <button
-            className="md:hidden p-2 rounded-lg text-slate-800/90 hover:bg-white/10 transition-all duration-300"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
         </div>
+      </div>
 
-        <div
-          className={cn(
-            "md:hidden fixed top-20 left-4 right-4 z-50",
-            mobileMenuOpen ? "block" : "hidden"
-          )}
-        >
-          <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-white/40 p-4 space-y-2 h-[80vh] overflow-y-auto">
-            {navLinks.map((link) => (
-              <div key={link.label}>
-                {link.children ? (
-                  <div className="space-y-1">
-                    <button
-                      onClick={() => toggleDropdown(link.label)}
-                      className="flex items-center justify-between w-full px-3 py-3 text-base text-slate-800/90 hover:text-primary-600 hover:bg-white/10 rounded-lg transition-all duration-300"
-                    >
-                      {link.label}
-                      <ChevronDown className={cn("w-5 h-5 transition-transform", activeDropdown === link.label ? "rotate-180" : "")} />
-                    </button>
-                    {activeDropdown === link.label && (
-                      <div className="pl-4 space-y-1 border-l-2 border-blue-100 ml-3">
-                        {link.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            className="block px-3 py-2 text-sm text-slate-600 hover:text-primary-600 hover:bg-blue-50/50 rounded-lg transition-colors"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <Link
-                    href={link.href}
-                    className="block px-3 py-3 text-base text-slate-800/90 hover:text-primary-600 hover:bg-white/10 rounded-lg transition-all duration-300"
-                    onClick={() => setMobileMenuOpen(false)}
+      {/* Mobile Menu */}
+      <div
+        className={cn(
+          "md:hidden fixed inset-x-0 top-20 bg-white/95 dark:bg-surface-dark/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out",
+          mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+        )}
+      >
+        <div className="p-4 space-y-2 h-[calc(100vh-5rem)] overflow-y-auto">
+          {navLinks.map((link) => (
+            <div key={link.label}>
+              {link.children ? (
+                <div className="space-y-1">
+                  <button
+                    onClick={() => toggleDropdown(link.label)}
+                    className="flex items-center justify-between w-full px-3 py-3 text-base font-medium text-text-light dark:text-text-dark hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
                   >
                     {link.label}
-                  </Link>
-                )}
-              </div>
-            ))}
-            <div className="pt-4 space-y-3 border-t border-slate-100 mt-4">
-              {/* <div className="relative p-[2px] bg-gradient-to-r from-blue-500 to-teal-500 rounded-lg">
-                <Button variant="ghost" size="md" className="bg-white/90 backdrop-blur-sm text-slate-700 hover:bg-white/70 rounded-md py-4 text-base" fullWidth asChild>
-                  <a href={`tel:${siteConfig.phone.replace(/\D/g, '')}`} className="flex items-center justify-center gap-3">
-                    <Phone className="w-5 h-5 text-blue-600" />
-                    <span className="font-medium">{siteConfig.phone}</span>
-                  </a>
-                </Button>
-              </div> */}
-              <Button size="md" className="py-4 text-base" fullWidth asChild>
-                <a href="#agendamento">
-                  <Calendar className="w-5 h-5" />
-                  Agendar Consulta
-                </a>
-              </Button>
+                    <ChevronDown className={cn("w-5 h-5 transition-transform", activeDropdown === link.label ? "rotate-180" : "")} />
+                  </button>
+                  {activeDropdown === link.label && (
+                    <div className="pl-4 space-y-1 border-l-2 border-blue-100 dark:border-blue-900 ml-3">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className="block px-3 py-2 text-sm text-text-light dark:text-text-dark hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href={link.href}
+                  className="block px-3 py-3 text-base font-medium text-text-light dark:text-text-dark hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              )}
             </div>
+          ))}
+          <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
+            <a 
+              href="#agendamento"
+              className="flex items-center justify-center w-full px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-lg shadow-blue-500/30"
+            >
+              <Calendar className="w-5 h-5 mr-2" />
+              Agendar Consulta
+            </a>
           </div>
         </div>
-      </nav>
-    </header>
+      </div>
+    </nav>
   );
 }

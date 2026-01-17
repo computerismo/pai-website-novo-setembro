@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   Users,
   Eye,
@@ -124,6 +124,48 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
     coordinates: [city.lng, city.lat] as [number, number],
   }));
 
+  // Calculate dynamic map center and zoom
+  const mapConfig = useMemo(() => {
+    if (geocodedCities.length === 0) {
+      return { center: [-20, 10] as [number, number], scale: 120 };
+    }
+
+    if (geocodedCities.length === 1) {
+      const city = geocodedCities[0];
+      return { 
+        center: [city.lng, city.lat] as [number, number], 
+        scale: 800 
+      };
+    }
+
+    // Calculate bounding box
+    const lngs = geocodedCities.map(c => c.lng);
+    const lats = geocodedCities.map(c => c.lat);
+    
+    const minLng = Math.min(...lngs);
+    const maxLng = Math.max(...lngs);
+    const minLat = Math.min(...lats);
+    const maxLat = Math.max(...lats);
+
+    const centerLng = (minLng + maxLng) / 2;
+    const centerLat = (minLat + maxLat) / 2;
+
+    // Calculate spread
+    const deltaLng = maxLng - minLng;
+    const deltaLat = maxLat - minLat;
+    const maxDelta = Math.max(deltaLng, deltaLat);
+
+    // Heuristic for scale (inverse of spread)
+    // Base scale 120 (world), max scale 600 (region)
+    // Buffer factor of 1.5 to keep points away from edges
+    const scale = Math.min(800, Math.max(120, 360 / (maxDelta * 1.5) * 100));
+
+    return {
+      center: [centerLng, centerLat] as [number, number],
+      scale: scale
+    };
+  }, [geocodedCities]);
+
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 overflow-hidden">
       <div className="flex items-center gap-3 mb-4">
@@ -140,8 +182,8 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
         <ComposableMap
           projection="geoMercator"
           projectionConfig={{
-            scale: 120,
-            center: [-20, 10],
+            scale: mapConfig.scale,
+            center: mapConfig.center,
           }}
           style={{ width: '100%', height: '100%' }}
         >

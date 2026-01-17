@@ -1,11 +1,32 @@
 'use client';
 
 import { Navigation } from '@/components/shared/Navigation';
-import { HeroSection } from '@/components/landing/HeroSection';
 import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { 
+  Calendar, 
+  Info, 
+  CheckCircle, 
+  Smile, 
+  AlertCircle, 
+  User, 
+  Brain, 
+  Ear, 
+  Moon, 
+  Search, 
+  Shield, 
+  Flower2, 
+  ShieldCheck, 
+  Sparkles, 
+  ChevronDown, 
+  ChevronUp, 
+  Check,
+  Stethoscope,
+  Phone,
+  Mail,
+  MapPin
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '@/components/ui/Modal';
 import { LeadForm } from '@/components/landing/LeadForm';
@@ -19,17 +40,15 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
   onToggle: () => void;
 }) {
   return (
-    <div className="bg-neutral-50 rounded-xl border border-neutral-200 shadow-md hover:shadow-lg transition-all duration-300">
+    <div className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden group">
       <button
         onClick={onToggle}
-        className="w-full p-6 text-left flex items-center justify-between hover:bg-white transition-colors duration-200"
+        className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200"
       >
-        <h3 className="text-lg font-semibold text-gray-900 pr-4">{question}</h3>
-        {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-blue-600 flex-shrink-0" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-blue-600 flex-shrink-0" />
-        )}
+        <span className="font-medium text-heading-light dark:text-heading-dark flex-1 pr-4">{question}</span>
+        <span className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+          <ChevronDown className="w-5 h-5 text-text-light dark:text-text-dark" />
+        </span>
       </button>
 
       <AnimatePresence>
@@ -41,8 +60,8 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="px-6 pb-6">
-              <p className="text-gray-700 leading-relaxed">{answer}</p>
+            <div className="px-6 pb-6 text-text-light dark:text-text-dark text-sm leading-relaxed border-t border-gray-100 dark:border-gray-700 pt-4">
+              {answer}
             </div>
           </motion.div>
         )}
@@ -67,310 +86,296 @@ export default function HomePage() {
   const faqData = [
     {
       question: "O tratamento para bruxismo dói?",
-      answer: "Não, o tratamento para bruxismo é totalmente indolor. A confecção das placas miorrelaxantes envolve apenas a moldagem dos dentes, sem qualquer desconforto. O uso da placa também é confortável e você se adapta rapidamente."
+      answer: "Não. O tratamento é conservador e não invasivo. A confecção da placa e os exames são indolores. Nos casos de aplicação de toxina botulínica, o desconforto é mínimo e passageiro."
     },
     {
       question: "Quanto tempo dura uma placa de bruxismo?",
-      answer: "Uma placa miorrelaxante bem cuidada pode durar de 2 a 5 anos, dependendo da intensidade do bruxismo e dos cuidados com higienização e armazenamento. Fazemos acompanhamentos regulares para avaliar o estado da placa."
+      answer: "A durabilidade varia conforme a intensidade do bruxismo e os cuidados do paciente, geralmente durando entre 1 a 3 anos. Recomendamos revisões periódicas a cada 6 meses para ajustes e avaliação."
     },
     {
       question: "Placa de bruxismo comprada pronta funciona?",
-      answer: "Não recomendamos placas prontas. Cada pessoa tem uma arcada dentária única, e as placas devem ser personalizadas para garantir eficácia e conforto. Placas mal ajustadas podem até agravar o problema."
+      answer: "Não recomendamos. Placas \"universais\" não se adaptam corretamente à sua anatomia, podendo causar movimentações dentárias indesejadas, piora da dor e desconforto, além de não protegerem adequadamente."
     },
     {
-      question: "O bruxismo tem cura?",
-      answer: "O bruxismo pode ser controlado efetivamente com o tratamento adequado. Embora as causas (como estresse) possam persistir, os sintomas e danos podem ser minimizados ou eliminados com acompanhamento profissional."
-    },
-    {
-      question: "Qual o valor do tratamento para bruxismo?",
-      answer: "O valor varia conforme o tipo de tratamento necessário. Oferecemos uma consulta de avaliação gratuita onde apresentamos um plano personalizado com valores transparentes e opções de pagamento."
-    },
-    {
-      question: "O convênio cobre o tratamento de bruxismo?",
-      answer: "Alguns convênios cobrem parte do tratamento. Nossa equipe pode verificar sua cobertura e auxiliar nos procedimentos para aprovação. Também oferecemos condições especiais para pagamento particular."
+      question: "O bruxismo tem cura definitiva?",
+      answer: "O bruxismo não tem uma cura única definitiva, pois é multifatorial (estresse, ansiedade, oclusão). No entanto, o tratamento oferece controle total dos sintomas e proteção dos dentes, garantindo qualidade de vida normal."
     }
   ];
 
   return (
-    <>
+    <div className="min-h-screen font-sans">
       <Navigation />
+      
       <main>
-        <HeroSection
-          title="Alívio para o Bruxismo: Recupere o Conforto e o Desgaste dos seus Dentes"
-          subtitle="Tratamento Odontológico Especializado"
-          description="Tratamento Odontológico para o ranger e apertar dos dentes. Recupere o seu bem-estar e melhore sua qualidade de vida com tratamentos personalizados."
-          primaryCTA={{
-            text: "Agende sua Consulta",
-            href: "#agendamento"
-          }}
-          secondaryCTA={{
-            text: "Conheça o Tratamento",
-            href: "/tratamento-bruxismo"
-          }}
-          variant="split"
-        />
+        {/* Hero Section */}
+        <header className="relative overflow-hidden pt-12 lg:pt-20 pb-16 lg:pb-24 bg-[#F8FAFC]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+              <div className="text-center lg:text-left space-y-8">
+                <h1 className="text-4xl lg:text-6xl font-extrabold text-heading-light dark:text-heading-dark leading-tight tracking-tight">
+                  Alívio para o Bruxismo: <br className="hidden lg:block"/>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-[#06B6D4]">Recupere o Conforto</span>
+                </h1>
+                <p className="text-lg text-text-light dark:text-text-dark max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                  Tratamento odontológico avançado para o ranger e apertar dos dentes. Recupere o seu bem-estar e melhore sua qualidade de vida com protocolos personalizados e tecnologia de ponta.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <button 
+                    onClick={handleOpenModal}
+                    className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-xl shadow-blue-500/25 hover:-translate-y-1"
+                  >
+                    <Calendar className="mr-2 w-5 h-5" />
+                    Agende sua Consulta
+                  </button>
+                  <a 
+                    href="#tratamento"
+                    className="inline-flex items-center justify-center px-8 py-4 border border-gray-200 dark:border-gray-700 text-base font-medium rounded-xl text-heading-light dark:text-heading-dark bg-white dark:bg-surface-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all hover:-translate-y-1"
+                  >
+                    <Info className="mr-2 w-5 h-5" />
+                    Conheça o Tratamento
+                  </a>
+                </div>
+              </div>
+              <div className="relative lg:h-[600px] w-full hidden lg:flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-transparent dark:from-blue-900/20 dark:to-transparent rounded-[3rem] transform rotate-3 scale-95 opacity-50"></div>
+                <img 
+                  alt="Consultório odontológico moderno e limpo" 
+                  className="relative rounded-[2.5rem] shadow-2xl object-cover h-full w-full max-w-md lg:max-w-full z-10 transition-transform hover:scale-[1.02] duration-500" 
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFNoXxGNVsGYdBgFr4royYiWZ0gvzV-lmYqoZXGIPyOxqyClMFGo1doRaw-8MTvGqt9DYlcOefLbLRHYk_spTDQJ9o_4MBsRBw9yImPuLRzScMnwkxgcMLzH3dQ_GpM5fDS5xwOnybtl0xEh7jLpoMo3uS3sdTtd-jw-lVUg7znh5504l4iX-iED_Cc_J_GTWiSugw5fzbGuql9wb5z7Orun44u7Y9gW5DoBhbpzfL5Ob29PjJ_A06zNQNUgaAw6d2lhQc0ox500A"
+                />
+                {/* Floating "Alívio Imediato" box - commented out for now
+                <div className="absolute -bottom-6 -left-6 lg:bottom-12 lg:-left-12 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-xl z-20 max-w-xs animate-bounce" style={{ animationDuration: '3s' }}>
+                  <div className="flex items-start gap-4">
+                    <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-full text-green-600 dark:text-green-400">
+                      <Smile className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-heading-light dark:text-heading-dark">Alívio Imediato</h4>
+                      <p className="text-sm text-text-light dark:text-text-dark mt-1">Pacientes relatam melhora significativa na primeira semana.</p>
+                    </div>
+                  </div>
+                </div>
+                */}
+              </div>
+            </div>
+            <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl -z-10"></div>
+          </div>
+        </header>
 
         {/* Symptoms Section */}
-        <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-b border-blue-100/50">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
-
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-6">
-                Você Sofre com Bruxismo?
-              </h2>
-              <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-                Principalmente causado pelo estresse e ansiedade, o bruxismo se caracteriza pelo ato de ranger e apertar os dentes, causando dores, desgastes e outros problemas bucais. Na Odontologia Avançada, oferecemos tratamentos modernos para proteger seus dentes e aliviar os sintomas, com atendimento humanizado e equipamentos de última geração.
+        <section className="py-16 lg:py-24 bg-[#FFFFFF] dark:bg-surface-dark relative overflow-hidden" id="sintomas">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <h2 className="text-3xl lg:text-4xl font-bold text-heading-light dark:text-heading-dark mb-6">Você Sofre com Bruxismo?</h2>
+              <p className="text-lg text-text-light dark:text-text-dark">
+                O bruxismo é o ato inconsciente de ranger ou apertar os dentes, frequentemente ligado ao estresse. Identifique os sinais mais comuns.
               </p>
             </div>
-
-            <div className="relative">
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-10 left-10 w-32 h-32 bg-blue-200 rounded-full filter blur-2xl"></div>
-                <div className="absolute bottom-10 right-10 w-32 h-32 bg-teal-200 rounded-full filter blur-2xl"></div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Symptom Cards */}
+              <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                    <AlertCircle className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-heading-light dark:text-heading-dark">Dores de cabeça</h3>
+                </div>
+                <p className="text-sm text-text-light dark:text-text-dark leading-relaxed">Enxaquecas frequentes ao acordar sem motivo aparente, muitas vezes irradiando das têmporas.</p>
               </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 relative mb-12">
-                <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-gradient-to-br from-red-500 to-red-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                      <span className="text-white text-xl">🤕</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-red-700 transition-colors">Dores de cabeça frequentes</h3>
+              <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+                    <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <p className="text-gray-600 leading-relaxed mt-3">Ao acordar, você sente dores de cabeça ou enxaquecas sem motivo aparente?</p>
+                  <h3 className="text-lg font-bold text-heading-light dark:text-heading-dark">Desgaste dentário</h3>
                 </div>
-
-                <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-gradient-to-br from-orange-500 to-orange-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                      <span className="text-white text-xl">🦷</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-orange-700 transition-colors">Desgaste anormal dos dentes</h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed mt-3">Seus dentes estão lascados, fraturados ou com o esmalte desgastado, tornando-se mais sensíveis?</p>
-                </div>
-
-                <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                      <span className="text-white text-xl">😣</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-yellow-700 transition-colors">Dor e sensibilidade na mandíbula</h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed mt-3">Desconforto ao mastigar, falar ou até mesmo em repouso, limitando sua alimentação.</p>
-                </div>
-
-                <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                      <span className="text-white text-xl">😰</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors">Dores nos músculos faciais</h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed mt-3">Tensão e fadiga muscular que podem se estender para o pescoço e ombros.</p>
-                </div>
-
-                <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                      <span className="text-white text-xl">🔓</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors">Problemas na ATM</h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed mt-3">Articulação temporomandibular com estalos, travamentos e limitação de abertura bucal.</p>
-                </div>
-
-                <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 group">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                      <span className="text-white text-xl">😴</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">Distúrbios do sono</h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed mt-3">Sono não reparador, despertares noturnos e cansaço durante o dia, afetando sua disposição.</p>
-                </div>
+                <p className="text-sm text-text-light dark:text-text-dark leading-relaxed">Dentes lascados, fraturados ou com esmalte visivelmente desgastado e sensibilidade aumentada.</p>
               </div>
 
-              {/* Warning Card */}
-              <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 rounded-xl p-6 shadow-lg max-w-4xl mx-auto">
-                <div className="flex items-start gap-4">
-                  <div className="bg-red-500 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-white text-lg">⚠️</span>
+              <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl flex items-center justify-center text-yellow-600 group-hover:scale-110 transition-transform">
+                    <User className="w-5 h-5" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-red-800 mb-2">Atenção:</h3>
-                    <p className="text-red-700 leading-relaxed">
-                      Se não tratado, o bruxismo pode levar a problemas mais graves como fraturas dentárias, perda óssea, disfunções permanentes da ATM e até mesmo alterações estéticas no rosto.
-                    </p>
-                  </div>
+                  <h3 className="text-lg font-bold text-heading-light dark:text-heading-dark">Dor na mandíbula</h3>
                 </div>
+                <p className="text-sm text-text-light dark:text-text-dark leading-relaxed">Desconforto ao mastigar, falar ou rigidez muscular na região da mandíbula ao acordar.</p>
+              </div>
+
+              <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+                    <Brain className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-heading-light dark:text-heading-dark">Dores faciais</h3>
+                </div>
+                <p className="text-sm text-text-light dark:text-text-dark leading-relaxed">Tensão e fadiga nos músculos da face que podem se estender para o pescoço e ombros.</p>
+              </div>
+
+              <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                    <Ear className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-heading-light dark:text-heading-dark">Problemas na ATM</h3>
+                </div>
+                <p className="text-sm text-text-light dark:text-text-dark leading-relaxed">Articulação temporomandibular com estalos, travamentos e limitação de abertura bucal.</p>
+              </div>
+
+              <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
+                    <Moon className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-heading-light dark:text-heading-dark">Distúrbios do sono</h3>
+                </div>
+                <p className="text-sm text-text-light dark:text-text-dark leading-relaxed">Sono não reparador, despertares noturnos e cansaço excessivo durante o dia.</p>
               </div>
             </div>
           </div>
-
-          {/* Bottom Decorative Line */}
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
         </section>
 
         {/* Treatment Section */}
-        <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-t border-blue-100/50">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
-
-          <div className="container mx-auto px-4">
+        <section className="py-16 lg:py-24 bg-[#F8FAFC] dark:bg-background-dark" id="tratamento">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
-                Tratamento Especializado para Bruxismo
-              </h2>
-              <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-                Oferecemos soluções personalizadas e eficazes para o tratamento do bruxismo, devolvendo qualidade de vida e saúde bucal para pacientes de Governador Valadares e região.
+              <span className="text-[#2563EB] font-semibold tracking-wider uppercase text-sm">Nossas Soluções</span>
+              <h2 className="text-3xl lg:text-4xl font-bold text-heading-light dark:text-heading-dark mt-2 mb-6">Tratamento Especializado</h2>
+              <p className="text-text-light dark:text-text-dark max-w-2xl mx-auto">
+                Utilizamos uma abordagem multidisciplinar e tecnologia digital para diagnósticos precisos e tratamentos eficazes.
               </p>
             </div>
-
-            <div className="grid md:grid-cols-3 gap-8 relative">
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-10 left-10 w-32 h-32 bg-blue-200 rounded-full filter blur-2xl"></div>
-                <div className="absolute bottom-10 right-10 w-32 h-32 bg-teal-200 rounded-full filter blur-2xl"></div>
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Solution 1 - Diagnóstico Preciso */}
+              <div className="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600"></div>
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-[#2563EB] mb-6 group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
+                  <Search className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-bold text-heading-light dark:text-heading-dark mb-4">Diagnóstico Preciso</h3>
+                <p className="text-text-light dark:text-text-dark mb-6 text-sm leading-relaxed">
+                  Realizamos uma avaliação completa utilizando tecnologia avançada. Nossa análise inclui exame clínico detalhado, avaliação da oclusão e análise muscular.
+                </p>
+                <ul className="space-y-2 mb-8">
+                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
+                    <Check className="text-green-500 w-5 h-5 mr-2" />
+                    Exame clínico digital
+                  </li>
+                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
+                    <Check className="text-green-500 w-5 h-5 mr-2" />
+                    Análise de oclusão
+                  </li>
+                </ul>
               </div>
 
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-8 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <span className="text-2xl text-white">🔍</span>
+              {/* Solution 2 - Placas Miorrelaxantes (Featured) */}
+              <div className="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-lg ring-1 ring-[#2563EB]/20 relative overflow-hidden group transform lg:-translate-y-4">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#06B6D4] to-[#2563EB]"></div>
+                <div className="w-16 h-16 bg-[#06B6D4]/10 dark:bg-[#06B6D4]/20 rounded-2xl flex items-center justify-center text-[#06B6D4] mb-6 group-hover:bg-[#06B6D4] group-hover:text-white transition-colors">
+                  <Shield className="w-8 h-8" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900 text-center">Diagnóstico Preciso</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  Realizamos uma avaliação completa utilizando tecnologia avançada para identificar as causas do seu bruxismo. Nossa análise inclui exame clínico detalhado, avaliação da oclusão, análise da musculatura facial e, quando necessário, exames complementares para um diagnóstico preciso e personalizado.
+                <h3 className="text-2xl font-bold text-heading-light dark:text-heading-dark mb-4">Placas Miorrelaxantes</h3>
+                <p className="text-text-light dark:text-text-dark mb-6 text-sm leading-relaxed">
+                  Dispositivos sob medida de alta qualidade e tecnologia digital. Cada placa é ajustada perfeitamente à sua arcada para máximo conforto e proteção.
                 </p>
+                <ul className="space-y-2 mb-8">
+                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
+                    <Check className="text-green-500 w-5 h-5 mr-2" />
+                    Proteção do esmalte
+                  </li>
+                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
+                    <Check className="text-green-500 w-5 h-5 mr-2" />
+                    Relaxamento muscular
+                  </li>
+                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
+                    <Check className="text-green-500 w-5 h-5 mr-2" />
+                    Material de alta durabilidade
+                  </li>
+                </ul>
+                <a 
+                  href="/placa-miorrelaxante" 
+                  className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
+                >
+                  Saiba Mais
+                </a>
               </div>
 
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-8 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative">
-                <div className="bg-gradient-to-br from-teal-500 to-teal-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <span className="text-2xl text-white">🛡️</span>
+              {/* Solution 3 - Terapias Complementares */}
+              <div className="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-purple-600"></div>
+                <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center text-purple-600 mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                  <Flower2 className="w-8 h-8" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900 text-center">Placas Miorrelaxantes Personalizadas</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  Confeccionamos placas sob medida usando materiais de alta qualidade e tecnologia digital. Cada placa é única, ajustada perfeitamente à sua arcada dentária, proporcionando máximo conforto e eficácia na proteção dos dentes e relaxamento da musculatura mastigatória.
+                <h3 className="text-2xl font-bold text-heading-light dark:text-heading-dark mb-4">Terapias Complementares</h3>
+                <p className="text-text-light dark:text-text-dark mb-6 text-sm leading-relaxed">
+                  Abordagem multidisciplinar incluindo aplicação de toxina botulínica para casos específicos, laserterapia e orientações fisioterapêuticas.
                 </p>
-              </div>
-
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-8 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative">
-                <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <span className="text-2xl text-white">🤝</span>
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900 text-center">Terapias Complementares</h3>
-                <p className="text-gray-600 leading-relaxed text-center">
-                  Oferecemos abordagem multidisciplinar incluindo aplicação de toxina botulínica para casos específicos, orientações sobre técnicas de relaxamento, mudanças comportamentais e parcerias com fisioterapeutas especializados para um tratamento completo e duradouro.
-                </p>
+                <ul className="space-y-2 mb-8">
+                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
+                    <Check className="text-green-500 w-5 h-5 mr-2" />
+                    Toxina Botulínica
+                  </li>
+                  <li className="flex items-center text-sm text-text-light dark:text-text-dark">
+                    <Check className="text-green-500 w-5 h-5 mr-2" />
+                    Laserterapia
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
         </section>
 
         {/* Benefits Section */}
-        <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-t border-blue-100/50">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
-
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
-                Benefícios do Nosso Tratamento
-              </h2>
-              <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-                Descubra como nosso tratamento especializado para bruxismo em Governador Valadares pode transformar sua qualidade de vida
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10 pointer-events-none">
-                <div className="absolute top-10 left-10 w-32 h-32 bg-green-200 rounded-full filter blur-2xl"></div>
-                <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-200 rounded-full filter blur-2xl"></div>
-              </div>
-
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
-                <div className="flex items-center gap-4">
-                  <div className="bg-gradient-to-br from-green-500 to-green-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                    <span className="text-white text-xl">😌</span>
+        <section className="py-16 bg-white dark:bg-surface-dark border-y border-gray-100 dark:border-gray-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-center text-heading-light dark:text-heading-dark mb-12">Benefícios do Tratamento</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="p-5 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Smile className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">Alívio das Dores</h3>
+                  <h4 className="font-bold text-heading-light dark:text-heading-dark">Alívio da Dor</h4>
                 </div>
-                <p className="text-gray-600 leading-relaxed mt-3">Eliminação das dores de cabeça, musculares e da mandíbula causadas pelo bruxismo.</p>
+                <p className="text-sm text-text-light dark:text-text-dark">Eliminação das dores de cabeça e desconforto muscular facial.</p>
               </div>
-
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
-                <div className="flex items-center gap-4">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                    <span className="text-white text-xl">🛡️</span>
+              <div className="p-5 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors">Proteção Dentária</h3>
+                  <h4 className="font-bold text-heading-light dark:text-heading-dark">Proteção Dentária</h4>
                 </div>
-                <p className="text-gray-600 leading-relaxed mt-3">Prevenção do desgaste dentário e proteção contra fraturas e danos futuros.</p>
+                <p className="text-sm text-text-light dark:text-text-dark">Prevenção efetiva do desgaste e fraturas dos dentes.</p>
               </div>
-
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
-                <div className="flex items-center gap-4">
-                  <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                    <span className="text-white text-xl">😴</span>
+              <div className="p-5 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Moon className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors">Melhor Qualidade do Sono</h3>
+                  <h4 className="font-bold text-heading-light dark:text-heading-dark">Sono Reparador</h4>
                 </div>
-                <p className="text-gray-600 leading-relaxed mt-3">Noites mais tranquilas e sono reparador, com redução dos despertares noturnos.</p>
+                <p className="text-sm text-text-light dark:text-text-dark">Noites mais tranquilas e melhora na qualidade do descanso.</p>
               </div>
-
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
-                <div className="flex items-center gap-4">
-                  <div className="bg-gradient-to-br from-teal-500 to-teal-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                    <span className="text-white text-xl">💆</span>
+              <div className="p-5 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 hover:border-[#2563EB]/30 hover:shadow-md transition-all group">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-9 h-9 rounded-full bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Sparkles className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-teal-700 transition-colors">Redução da Tensão Muscular</h3>
+                  <h4 className="font-bold text-heading-light dark:text-heading-dark">Bem-estar</h4>
                 </div>
-                <p className="text-gray-600 leading-relaxed mt-3">Relaxamento dos músculos faciais, pescoço e ombros, melhorando o bem-estar geral.</p>
-              </div>
-
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
-                <div className="flex items-center gap-4">
-                  <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                    <span className="text-white text-xl">😊</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-yellow-700 transition-colors">Tranquilidade e Confiança</h3>
-                </div>
-                <p className="text-gray-600 leading-relaxed mt-3">Maior autoestima e confiança ao sorrir, sabendo que seus dentes estão protegidos.</p>
-              </div>
-
-              <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-6 shadow-xl hover:shadow-2xl hover:bg-white transition-all duration-300 hover:-translate-y-1 relative group">
-                <div className="flex items-center gap-4">
-                  <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
-                    <span className="text-white text-xl">🌟</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">Melhora da Qualidade de Vida</h3>
-                </div>
-                <p className="text-gray-600 leading-relaxed mt-3">Retorno às atividades diárias sem limitações, com mais disposição e energia.</p>
+                <p className="text-sm text-text-light dark:text-text-dark">Mais disposição, energia e qualidade de vida no seu dia a dia.</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-t border-blue-100/50">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
-
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
-                Perguntas Frequentes
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Tire suas dúvidas sobre o bruxismo e nossos tratamentos em Governador Valadares
-              </p>
-            </div>
-
-            <div className="max-w-4xl mx-auto space-y-4">
+        <section className="py-16 lg:py-24 bg-[#F8FAFC] dark:bg-background-dark" id="faq">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-center text-heading-light dark:text-heading-dark mb-12">Perguntas Frequentes</h2>
+            <div className="space-y-4">
               {faqData.map((faq, index) => (
                 <FAQItem
                   key={index}
@@ -382,50 +387,34 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-
-          {/* Bottom Decorative Line */}
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
         </section>
 
-        {/* Enhanced CTA Section */}
-        <section id="agendamento" className="py-20 bg-gradient-to-br from-sky-700 to-cyan-700 text-white relative overflow-hidden">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl -translate-y-48 translate-x-48"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-300 rounded-full filter blur-3xl translate-y-48 -translate-x-48"></div>
-          </div>
-
-          <div className="container mx-auto px-4 text-center relative">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6">
-                Está sofrendo com bruxismo?
-              </h2>
-
-              <p className="text-xl mb-10 text-blue-100 max-w-2xl mx-auto leading-relaxed">
-                Agende uma avaliação gratuita e descubra o melhor tratamento personalizado para você
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto">
-                <button
-                  onClick={handleOpenModal}
-                  className="bg-gradient-to-r from-blue-500 to-teal-500 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
-                >
-                  Agendar Consulta
-                </button>
-
-                <a
-                  href="/tratamento-bruxismo"
-                  className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-teal-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
-                >
-                  Saiba Mais
-                </a>
-              </div>
-
-
+        {/* Pre-Footer CTA */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-[#2563EB] opacity-90 dark:opacity-80 z-0"></div>
+          <div 
+            className="absolute inset-0 opacity-10 z-0" 
+            style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }}
+          ></div>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10 text-center">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">Está sofrendo com bruxismo?</h2>
+            <p className="text-blue-100 text-lg mb-10 max-w-2xl mx-auto">Se não tratado, o bruxismo pode levar a problemas graves como fraturas dentárias permanentes, perda óssea e disfunções crônicas da ATM.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button 
+                onClick={handleOpenModal}
+                className="px-8 py-4 bg-white text-[#2563EB] font-bold rounded-xl shadow-lg hover:bg-gray-50 transition-colors transform hover:-translate-y-1"
+              >
+                Agendar Consulta Agora
+              </button>
+              <button className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+                <Phone className="w-5 h-5" />
+                Falar no WhatsApp
+              </button>
             </div>
           </div>
-        </section>
-        
+        </div>
+
         <Modal 
           isOpen={isModalOpen} 
           onClose={() => setIsModalOpen(false)}
@@ -441,8 +430,9 @@ export default function HomePage() {
           />
         </Modal>
       </main>
+      
       <Footer />
       <WhatsAppButton />
-    </>
+    </div>
   );
 }

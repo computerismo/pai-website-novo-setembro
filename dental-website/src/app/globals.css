@@ -13,10 +13,10 @@
     overflow-x: hidden;
   }
 
-  /* Soften the white background to reduce glare */
+  /* Match Stitch mockup background */
   body {
-    background-color: #f1f5f9; /* Slate 100 */
-    color: #475569; /* Slate 600 */
+    background-color: #F8FAFC; /* Slate 50 - matches Stitch background-light */
+    color: #334155; /* Slate 500 - matches Stitch mockup */
   }
 
   /* Scroll margin for sticky header */
