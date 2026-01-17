@@ -194,8 +194,8 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
                   key={geo.rsmKey}
                   geography={geo}
                   fill="#e2e8f0"
-                  stroke="#cbd5e1"
-                  strokeWidth={0.5}
+                  stroke="#64748b"
+                  strokeWidth={1.5}
                   style={{
                     default: { outline: 'none' },
                     hover: { fill: '#cbd5e1', outline: 'none' },
@@ -209,11 +209,11 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
           {markers.map((marker, i) => (
             <Marker key={i} coordinates={marker.coordinates}>
               {/* Pulse animation */}
-              <circle r={8 + marker.users * 2} fill="#3b82f6" opacity={0.2}>
+              <circle r={12 + marker.users * 3} fill="#3b82f6" opacity={0.2}>
                 <animate
                   attributeName="r"
-                  from={8 + marker.users * 2}
-                  to={16 + marker.users * 3}
+                  from={12 + marker.users * 3}
+                  to={24 + marker.users * 4}
                   dur="1.5s"
                   repeatCount="indefinite"
                 />
@@ -226,7 +226,7 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
                 />
               </circle>
               {/* Main dot */}
-              <circle r={4 + marker.users} fill="#3b82f6" stroke="#fff" strokeWidth={2} />
+              <circle r={8 + marker.users} fill="#3b82f6" stroke="#fff" strokeWidth={2} />
               {/* User count */}
               <text
                 textAnchor="middle"
