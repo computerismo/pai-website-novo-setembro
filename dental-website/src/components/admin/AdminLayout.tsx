@@ -217,7 +217,52 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
                 Tempo Real
               </Link>
             </CollapsibleNavItem>
-            <NavItem href="/admin/seo" icon={Search} label="Análise de SEO" />
+            <CollapsibleNavItem 
+              icon={Search} 
+              label="Análise de SEO"
+              basePath="/admin/seo"
+            >
+              <Link
+                href="/admin/seo"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/seo'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                Visão Geral
+              </Link>
+              <Link
+                href="/admin/seo/palavras-chave"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/seo/palavras-chave'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                Palavras-chave
+              </Link>
+              <Link
+                href="/admin/seo/conteudo"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/seo/conteudo'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                Conteúdo
+              </Link>
+              <Link
+                href="/admin/seo/tecnico"
+                className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 ${
+                  pathname === '/admin/seo/tecnico'
+                    ? 'text-blue-400 bg-blue-500/10 font-medium'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                Técnico
+              </Link>
+            </CollapsibleNavItem>
             
             <div className="py-3">
               <div className="border-t border-white/5 mx-2"></div>
