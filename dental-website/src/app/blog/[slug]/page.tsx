@@ -147,67 +147,76 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-500 rounded-full filter blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-blue-400 rounded-full filter blur-3xl"></div>
-        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-teal-400 rounded-full filter blur-3xl"></div>
-      </div>
-
+    <div className="min-h-screen bg-[#F8FAFC] relative font-sans">
       <Navigation />
-      <main className="relative">
-        <article className="py-8 pt-36">
-          <div className="container mx-auto px-4">
+      <main className="relative pt-32 lg:pt-40 pb-20">
+        <article>
+          {/* Header Section - Full Width */}
+          <div className="container mx-auto px-4 mb-12">
             <BlogPostHeader post={post} />
+          </div>
 
-            <div className="max-w-4xl mx-auto mt-8">
-              {/* Split Intro Section (Variation C) */}
-              <div className="flex flex-col md:flex-row gap-8 mb-12 items-stretch">
-                {/* Image Side - 4:3 Aspect Ratio */}
-                {post.image && post.image !== "/images/blog/default.jpg" && (
-                  <div className="w-full md:w-1/2 rounded-2xl overflow-hidden shadow-lg border border-gray-100 relative min-h-[300px]">
+          {/* Twin Cards Intro Section - Full Width Container */}
+          <div className="container mx-auto px-4 mb-16">
+            <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+              {/* Card 1: Image */}
+              {post.image && post.image !== "/images/blog/default.jpg" && (
+                <div className="bg-white rounded-3xl border border-gray-200 p-2 shadow-sm h-full min-h-[300px] lg:min-h-[400px] relative overflow-hidden group">
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden">
                     <NextImage
                       src={post.image}
                       alt={post.title}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
                       priority
                     />
                   </div>
-                )}
+                </div>
+              )}
 
-                {/* Intro/Hook Side */}
-                <div className="w-full md:w-1/2 flex flex-col justify-center">
-                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/60 h-full flex items-center shadow-md">
-                    <p className="text-xl md:text-2xl text-slate-600 leading-relaxed font-medium italic">
-                      {/* Note: text-gray-700 (#374151) is research-backed as optimal for reading on white */}
-                      {post.excerpt ||
-                        "Leia abaixo para saber mais sobre este assunto importante."}
-                    </p>
-                  </div>
+              {/* Card 2: Summary / Hook */}
+              <div className="bg-white rounded-3xl border border-gray-200 p-8 lg:p-12 shadow-sm flex flex-col justify-center relative overflow-hidden">
+                {/* Decorative blob like homepage */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                
+                <div className="relative z-10">
+                  <span className="inline-block px-4 py-1.5 rounded-full bg-blue-50 text-[#2563EB] text-sm font-semibold tracking-wide mb-6">
+                    Resumo
+                  </span>
+                  <p className="text-xl lg:text-2xl text-text-light leading-relaxed font-medium">
+                    {post.excerpt || "Leia abaixo para saber mais sobre este assunto importante."}
+                  </p>
                 </div>
               </div>
+            </div>
+          </div>
 
+          {/* Main Content - Centered Reading Column */}
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto">
               <BlogPostContent>
                 <div
-                  className="prose prose-lg max-w-none"
+                  className="prose prose-lg prose-slate max-w-none 
+                  prose-headings:text-heading-light prose-headings:font-bold 
+                  prose-p:text-text-light prose-p:leading-loose
+                  prose-a:text-[#2563EB] prose-a:no-underline hover:prose-a:underline
+                  prose-strong:text-heading-light"
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
               </BlogPostContent>
 
               {/* Post Tags */}
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900">
-                  Tags:
+              <div className="mt-12 pt-8 border-t border-gray-200">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
+                  Tags Relacionadas
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+                      className="inline-flex items-center px-4 py-2 rounded-xl bg-white border border-gray-200 text-text-light text-sm font-medium hover:border-[#2563EB]/50 hover:text-[#2563EB] transition-colors cursor-default"
                     >
-                      {tag}
+                      #{tag}
                     </span>
                   ))}
                 </div>
@@ -215,24 +224,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
               {/* Share Buttons */}
               <div className="mt-8 pt-8 border-t border-gray-200">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900">
-                  Compartilhar:
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
+                  Compartilhar este artigo
                 </h3>
                 <div className="flex flex-wrap gap-3">
-                  <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                    Facebook
-                  </button>
-                  <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                    Twitter
-                  </button>
-                  <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                    WhatsApp
-                  </button>
+                  {['Facebook', 'Twitter', 'WhatsApp'].map((network) => (
+                    <button 
+                      key={network}
+                      className="px-6 py-3 rounded-xl bg-white border border-gray-200 text-heading-light font-medium hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm active:translate-y-0.5"
+                    >
+                      {network}
+                    </button>
+                  ))}
                 </div>
               </div>
 
               {/* Navigation between posts */}
-              <div className="mt-12">
+              <div className="mt-16">
                 <BlogPostNavigation currentSlug={slug} />
               </div>
             </div>
@@ -240,39 +248,39 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </article>
 
         {/* Related Posts */}
-        {relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
-
-        {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-blue-50 via-blue-25 to-teal-50 relative border-t border-blue-100/50">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
-
-          <div className="container mx-auto px-4">
-            <div className="text-center">
-              <div className="inline-block mb-4">
-                <span className="text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full shadow-sm border border-blue-100">
-                  💙 Precisa de Ajuda?
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold mb-4 text-gray-900">
-                Precisa de Ajuda com Bruxismo?
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-                Agende uma consulta gratuita e converse com nossos especialistas
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                  Agendar Consulta
-                </button>
-                <button className="bg-white border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors shadow-sm">
-                  Falar no WhatsApp
-                </button>
-              </div>
+        {relatedPosts.length > 0 && (
+          <div className="mt-24 pt-16 border-t border-gray-200 bg-white">
+            <div className="container mx-auto px-4">
+               <div className="text-center mb-12">
+                  <h2 className="text-3xl font-bold text-heading-light">Continue Lendo</h2>
+               </div>
+               <RelatedPosts posts={relatedPosts} />
             </div>
           </div>
+        )}
 
-          {/* Bottom Decorative Line */}
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
+        {/* CTA Section - Homepage Style */}
+        <section className="mt-24 py-20 relative overflow-hidden">
+           {/* Background similar to homepage CTA */}
+           <div className="absolute inset-0 bg-[#2563EB] z-0"></div>
+           <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10 z-0"></div>
+           
+           <div className="container mx-auto px-4 relative z-10 text-center">
+             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
+               Precisa de Ajuda com Bruxismo?
+             </h2>
+             <p className="text-xl text-blue-100 max-w-2xl mx-auto mb-10">
+               Agende uma consulta gratuita e converse com nossos especialistas para encontrar o melhor tratamento para você.
+             </p>
+             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+               <button className="bg-white text-[#2563EB] px-8 py-4 rounded-xl font-bold shadow-xl hover:bg-blue-50 transition-transform hover:-translate-y-1">
+                 Agendar Consulta
+               </button>
+               <button className="bg-blue-700 text-white border border-blue-500 px-8 py-4 rounded-xl font-bold hover:bg-blue-600 transition-transform hover:-translate-y-1">
+                 Falar no WhatsApp
+               </button>
+             </div>
+           </div>
         </section>
       </main>
       <Footer />
