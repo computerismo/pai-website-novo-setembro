@@ -152,43 +152,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <main className="relative pt-32 lg:pt-40 pb-20">
         <article>
           {/* Header Section - Full Width */}
-          <div className="container mx-auto px-4 mb-12">
-            <BlogPostHeader post={post} />
-          </div>
-
-          {/* Twin Cards Intro Section - Full Width Container */}
-          <div className="container mx-auto px-4 mb-16">
-            <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-8 items-stretch">
-              {/* Card 1: Image */}
-              {post.image && post.image !== "/images/blog/default.jpg" && (
-                <div className="bg-white rounded-3xl border border-gray-200 p-2 shadow-sm h-full min-h-[300px] lg:min-h-[400px] relative overflow-hidden group">
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden">
-                    <NextImage
-                      src={post.image}
-                      alt={post.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      priority
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Card 2: Summary / Hook */}
-              <div className="bg-white rounded-3xl border border-gray-200 p-8 lg:p-12 shadow-sm flex flex-col justify-center relative overflow-hidden">
-                {/* Decorative blob like homepage */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                
-                <div className="relative z-10">
-                  <span className="inline-block px-4 py-1.5 rounded-full bg-blue-50 text-[#2563EB] text-sm font-semibold tracking-wide mb-6">
-                    Resumo
-                  </span>
-                  <p className="text-xl lg:text-2xl text-text-light leading-relaxed font-medium">
-                    {post.excerpt || "Leia abaixo para saber mais sobre este assunto importante."}
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div className="container mx-auto px-4 mb-4">
+            <BlogPostHeader post={post} image={post.image} />
           </div>
 
           {/* Main Content - Centered Reading Column */}
