@@ -49,6 +49,29 @@ function getChannelLabel(channel: string): string {
   return channelConfig[channel]?.label || channel;
 }
 
+// Referrer display name translations
+function getReferrerDisplayName(referrer: string): string {
+  if (!referrer || referrer === '(not set)') return 'Desconhecido';
+  if (referrer === '(direct)') return 'Direto';
+  if (referrer === 'google') return 'Google';
+  if (referrer === 'facebook') return 'Facebook';
+  if (referrer === 'instagram') return 'Instagram';
+  if (referrer === 'twitter') return 'Twitter';
+  if (referrer === 'linkedin') return 'LinkedIn';
+  return referrer;
+}
+
+// Filter out debug/testing referrers
+function filterDebugReferrers(referrers: Array<{ x: string; y: number }>): Array<{ x: string; y: number }> {
+  const debugDomains = [
+    'tagassistant.google.com',
+    'gtm-msr.appspot.com',
+    'localhost',
+    '127.0.0.1',
+  ];
+  return referrers.filter(r => !debugDomains.some(d => r.x?.includes(d)));
+}
+
 // Data table with progress bars
 function DataTable({ 
   title, 
@@ -70,12 +93,8 @@ function DataTable({
     purple: 'bg-purple-100 text-purple-600',
   };
 
-  const barColorMap: Record<string, string> = {
-    blue: 'from-blue-500 to-indigo-500',
-    green: 'from-emerald-500 to-teal-500',
-    orange: 'from-orange-500 to-amber-500',
-    purple: 'from-purple-500 to-pink-500',
-  };
+  // Filter debug referrers and translate names
+  const filteredData = filterDebugReferrers(data);
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
@@ -90,16 +109,17 @@ function DataTable({
       </div>
       
       <div className="space-y-4">
-        {data.slice(0, 15).map((item, i) => {
-          const maxValue = data[0]?.y || 1;
+        {filteredData.slice(0, 15).map((item, i) => {
+          const maxValue = filteredData[0]?.y || 1;
           const percentage = (item.y / maxValue) * 100;
+          const barColor = COLORS[i % COLORS.length];
           
           return (
             <div key={i}>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <span className="text-sm text-slate-700 truncate" title={item.x}>
-                    {item.x || '(direto)'}
+                    {getReferrerDisplayName(item.x)}
                   </span>
                 </div>
                 <span className="text-sm font-semibold text-slate-900 ml-2 shrink-0">
@@ -108,14 +128,14 @@ function DataTable({
               </div>
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div 
-                  className={`h-full bg-gradient-to-r ${barColorMap[iconColor]} rounded-full transition-all duration-500`}
-                  style={{ width: `${percentage}%` }}
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${percentage}%`, backgroundColor: barColor }}
                 />
               </div>
             </div>
           );
         })}
-        {data.length === 0 && (
+        {filteredData.length === 0 && (
           <p className="text-sm text-slate-400 text-center py-12">Nenhum dado disponível</p>
         )}
       </div>
