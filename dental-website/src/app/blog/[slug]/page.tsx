@@ -213,9 +213,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {relatedPosts.length > 0 && (
           <div className="mt-24 pt-16 border-t border-gray-200 bg-white">
             <div className="container mx-auto px-4">
-               <div className="text-center mb-12">
-                  <h2 className="text-3xl font-bold text-heading-light">Continue Lendo</h2>
-               </div>
+
                <RelatedPosts posts={relatedPosts} />
             </div>
           </div>
