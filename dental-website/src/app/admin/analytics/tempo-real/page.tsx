@@ -134,7 +134,7 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
       const city = geocodedCities[0];
       return { 
         center: [city.lng, city.lat] as [number, number], 
-        scale: 800 
+        scale: 2000 
       };
     }
 
@@ -156,9 +156,9 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
     const maxDelta = Math.max(deltaLng, deltaLat);
 
     // Heuristic for scale (inverse of spread)
-    // Base scale 120 (world), max scale 600 (region)
+    // Base scale 120 (world), max scale 2000 (city level)
     // Buffer factor of 1.5 to keep points away from edges
-    const scale = Math.min(800, Math.max(120, 360 / (maxDelta * 1.5) * 100));
+    const scale = Math.min(2000, Math.max(120, 360 / (maxDelta * 1.5) * 100));
 
     return {
       center: [centerLng, centerLat] as [number, number],
@@ -188,32 +188,39 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
           style={{ width: '100%', height: '100%' }}
         >
           <Geographies geography={geoUrl}>
-            {({ geographies }: { geographies: Array<{ rsmKey: string }> }) =>
-              geographies.map((geo) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill="#e2e8f0"
-                  stroke="#64748b"
-                  strokeWidth={1.5}
-                  style={{
-                    default: { outline: 'none' },
-                    hover: { fill: '#cbd5e1', outline: 'none' },
-                    pressed: { outline: 'none' },
-                  }}
-                />
-              ))
+            {({ geographies }: { geographies: Array<{ rsmKey: string; properties: { name: string } }> }) =>
+              geographies.map((geo) => {
+                const isActiveCountry = geocodedCities.some(
+                  c => c.country === geo.properties.name || 
+                       (c.country === 'United States' && geo.properties.name === 'United States of America')
+                );
+
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    fill={isActiveCountry ? "#dbeafe" : "#f8fafc"}
+                    stroke={isActiveCountry ? "#3b82f6" : "#cbd5e1"}
+                    strokeWidth={isActiveCountry ? 1.5 : 0.5}
+                    style={{
+                      default: { outline: 'none' },
+                      hover: { fill: isActiveCountry ? '#bfdbfe' : '#f1f5f9', outline: 'none' },
+                      pressed: { outline: 'none' },
+                    }}
+                  />
+                );
+              })
             }
           </Geographies>
           
           {markers.map((marker, i) => (
             <Marker key={i} coordinates={marker.coordinates}>
               {/* Pulse animation */}
-              <circle r={12 + marker.users * 3} fill="#3b82f6" opacity={0.2}>
+              <circle r={16 + marker.users * 4} fill="#3b82f6" opacity={0.2}>
                 <animate
                   attributeName="r"
-                  from={12 + marker.users * 3}
-                  to={24 + marker.users * 4}
+                  from={16 + marker.users * 4}
+                  to={32 + marker.users * 5}
                   dur="1.5s"
                   repeatCount="indefinite"
                 />
@@ -226,16 +233,17 @@ function WorldMap({ cities, geocodedCities }: { cities: RealtimeCityItem[]; geoc
                 />
               </circle>
               {/* Main dot */}
-              <circle r={8 + marker.users} fill="#3b82f6" stroke="#fff" strokeWidth={2} />
+              <circle r={10 + marker.users} fill="#3b82f6" stroke="#fff" strokeWidth={2.5} />
               {/* User count */}
               <text
                 textAnchor="middle"
-                y={-12}
+                y={-18}
                 style={{
                   fontFamily: 'system-ui',
                   fill: '#1e40af',
-                  fontSize: '10px',
-                  fontWeight: 'bold',
+                  fontSize: '12px',
+                  fontWeight: '800',
+                  textShadow: '0px 0px 8px rgba(255,255,255,1)',
                 }}
               >
                 {marker.users}
