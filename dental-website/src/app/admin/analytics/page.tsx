@@ -27,6 +27,8 @@ import {
   PieChart,
   Pie,
   Cell,
+  Legend,
+  LabelList,
 } from 'recharts';
 import { getAllAnalyticsData, type StatsResponse, type MetricItem, type TopPageItem } from '@/lib/analytics/ga4-api';
 
@@ -323,20 +325,30 @@ export default function AnalyticsPage() {
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                 }}
               />
+              <Legend 
+                verticalAlign="top" 
+                height={36}
+                iconType="circle"
+                formatter={(value) => <span className="text-sm text-slate-600">{value}</span>}
+              />
               <Bar
                 dataKey="pageviews"
                 name="Visualizações"
                 fill="#3b82f6"
                 radius={[4, 4, 0, 0]}
                 barSize={20}
-              />
+              >
+                <LabelList dataKey="pageviews" position="top" fontSize={10} fill="#64748b" />
+              </Bar>
               <Bar
                 dataKey="sessions"
                 name="Sessões"
                 fill="#10b981"
                 radius={[4, 4, 0, 0]}
                 barSize={20}
-              />
+              >
+                <LabelList dataKey="sessions" position="top" fontSize={10} fill="#64748b" />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -381,19 +393,55 @@ export default function AnalyticsPage() {
           </div>
           <div className="space-y-3">
             {data?.channels?.slice(0, 5).map((channel, i) => {
-              const channelNames: Record<string, string> = {
-                'Direct': 'Direto',
-                'Organic Search': 'Busca Orgânica',
-                'Referral': 'Referência',
-                'Organic Social': 'Redes Sociais',
-                'Email': 'Email',
-                'Paid Search': 'Busca Paga',
+              const channelInfo: Record<string, { name: string; tooltip: string }> = {
+                'Direct': { 
+                  name: 'Direto', 
+                  tooltip: 'Visitantes que digitaram seu site diretamente no navegador' 
+                },
+                'Organic Search': { 
+                  name: 'Busca Orgânica', 
+                  tooltip: 'Visitantes vindos de buscas no Google, Bing, etc.' 
+                },
+                'Referral': { 
+                  name: 'Referência', 
+                  tooltip: 'Visitantes vindos de links em outros sites' 
+                },
+                'Organic Social': { 
+                  name: 'Redes Sociais', 
+                  tooltip: 'Visitantes vindos de posts não pagos em redes sociais' 
+                },
+                'Email': { 
+                  name: 'Email', 
+                  tooltip: 'Visitantes vindos de campanhas de email marketing' 
+                },
+                'Paid Search': { 
+                  name: 'Busca Paga', 
+                  tooltip: 'Visitantes vindos de anúncios pagos no Google Ads' 
+                },
+                'Unassigned': { 
+                  name: 'Desconhecido', 
+                  tooltip: 'Tráfego que não pôde ser categorizado (falta UTM ou referência bloqueada)' 
+                },
+                'Paid Social': { 
+                  name: 'Redes Sociais Pagas', 
+                  tooltip: 'Visitantes vindos de anúncios pagos em redes sociais' 
+                },
               };
+              const info = channelInfo[channel.x] || { name: channel.x, tooltip: 'Fonte de tráfego' };
               return (
                 <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-100 border border-slate-200 hover:border-emerald-300 transition-colors group">
-                  <span className="text-sm font-medium text-slate-700 capitalize truncate flex-1">
-                    {channelNames[channel.x] || channel.x}
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                    <span className="text-sm font-medium text-slate-700 truncate">
+                      {info.name}
+                    </span>
+                    <div className="relative group/tooltip">
+                      <Info className="w-3.5 h-3.5 text-slate-400 cursor-help hover:text-emerald-500 transition-colors shrink-0" />
+                      <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-slate-800 text-white text-xs rounded-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 w-48 text-center z-50 shadow-lg">
+                        {info.tooltip}
+                        <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-slate-800" />
+                      </div>
+                    </div>
+                  </div>
                   <span className="px-2 py-1 bg-white rounded-md text-xs font-bold text-emerald-600 shadow-sm border border-slate-100 group-hover:border-emerald-100">
                     {channel.y.toLocaleString('pt-BR')}
                   </span>
@@ -414,43 +462,37 @@ export default function AnalyticsPage() {
           </div>
           
           {deviceData.length > 0 ? (
-            <div className="flex items-center justify-center">
-              <div className="w-40 h-40">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={deviceData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={40}
-                      outerRadius={60}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {deviceData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="ml-4 space-y-2">
-                {deviceData.map((device, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: device.color }}
-                    />
-                    <span className="text-sm text-slate-600 capitalize flex items-center gap-1">
-                      {deviceIcons[device.name.toLowerCase()] || <Monitor className="w-4 h-4" />}
-                      {device.name === 'desktop' ? 'Computador' : device.name === 'mobile' ? 'Móvel' : device.name}
-                    </span>
-                    <span className="text-sm font-medium text-slate-900">
-                      {device.value}
-                    </span>
+            <div className="space-y-4">
+              {deviceData.map((device, i) => {
+                const total = deviceData.reduce((acc, d) => acc + d.value, 0);
+                const percentage = total > 0 ? (device.value / total) * 100 : 0;
+                const label = device.name === 'desktop' ? 'Computador' : device.name === 'mobile' ? 'Móvel' : device.name === 'tablet' ? 'Tablet' : device.name;
+                return (
+                  <div key={i}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
+                          style={{ backgroundColor: device.color }}
+                        >
+                          {deviceIcons[device.name.toLowerCase()] || <Monitor className="w-4 h-4" />}
+                        </div>
+                        <span className="text-sm font-medium text-slate-700">{label}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-400">{percentage.toFixed(0)}%</span>
+                        <span className="text-sm font-bold text-slate-900">{device.value}</span>
+                      </div>
+                    </div>
+                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${percentage}%`, backgroundColor: device.color }}
+                      />
+                    </div>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           ) : (
             <p className="text-sm text-slate-400 text-center py-8">Nenhum dado disponível</p>
