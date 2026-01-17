@@ -2,19 +2,16 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { 
-  Activity,
   Users,
   Eye,
   Globe,
   RefreshCw,
   ArrowRight,
-  Zap,
   Radio,
   MapPin,
   Monitor,
   Smartphone,
   Tablet,
-  MousePointer,
 } from 'lucide-react';
 import Link from 'next/link';
 import ReactCountryFlag from 'react-country-flag';
@@ -26,6 +23,12 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Marker,
+} from 'react-simple-maps';
 import { getRealtime, type RealtimeResponse, type RealtimeCityItem } from '@/lib/analytics/ga4-api';
 
 // Country code mapping for flags
@@ -34,7 +37,41 @@ const countryToCode: Record<string, string> = {
   'Argentina': 'AR', 'Chile': 'CL', 'Colombia': 'CO', 'Peru': 'PE',
   'Portugal': 'PT', 'Spain': 'ES', 'France': 'FR', 'Germany': 'DE',
   'Italy': 'IT', 'United Kingdom': 'GB', 'Poland': 'PL', 'Japan': 'JP',
-  'Australia': 'AU', 'India': 'IN', 'China': 'CN',
+  'Australia': 'AU', 'India': 'IN', 'China': 'CN', 'Russia': 'RU',
+  'Netherlands': 'NL', 'Belgium': 'BE', 'Switzerland': 'CH',
+};
+
+// City coordinates for map placement
+const cityCoordinates: Record<string, [number, number]> = {
+  // Brazil
+  'Sao Paulo': [-46.63, -23.55], 'São Paulo': [-46.63, -23.55],
+  'Rio de Janeiro': [-43.17, -22.91],
+  'Belo Horizonte': [-43.94, -19.92],
+  'Brasilia': [-47.93, -15.78], 'Brasília': [-47.93, -15.78],
+  'Salvador': [-38.51, -12.97],
+  'Curitiba': [-49.27, -25.42],
+  'Porto Alegre': [-51.23, -30.03],
+  'Recife': [-34.88, -8.05],
+  'Fortaleza': [-38.52, -3.72],
+  // USA
+  'New York': [-74.01, 40.71],
+  'Los Angeles': [-118.24, 34.05],
+  'Chicago': [-87.63, 41.88],
+  'Miami': [-80.19, 25.76],
+  'San Francisco': [-122.42, 37.77],
+  // Europe
+  'London': [-0.12, 51.51],
+  'Paris': [2.35, 48.86],
+  'Berlin': [13.41, 52.52],
+  'Madrid': [-3.70, 40.42],
+  'Rome': [12.50, 41.90],
+  'Lisbon': [-9.14, 38.72], 'Lisboa': [-9.14, 38.72],
+  'Amsterdam': [4.90, 52.37],
+  // Other
+  'Tokyo': [139.69, 35.69],
+  'Sydney': [151.21, -33.87],
+  'Buenos Aires': [-58.38, -34.60],
+  'Mexico City': [-99.13, 19.43],
 };
 
 function getCountryCode(country: string): string | null {
@@ -56,12 +93,12 @@ function formatPagePath(path: string): string {
 
 // Device icons
 const deviceIcons: Record<string, React.ReactNode> = {
-  desktop: <Monitor className="w-5 h-5" />,
-  mobile: <Smartphone className="w-5 h-5" />,
-  tablet: <Tablet className="w-5 h-5" />,
+  desktop: <Monitor className="w-4 h-4" />,
+  mobile: <Smartphone className="w-4 h-4" />,
+  tablet: <Tablet className="w-4 h-4" />,
 };
 
-// Stats card
+// Stats card (matching other analytics pages styling)
 function RealtimeStatCard({ 
   title, value, icon: Icon, color, pulse = false
 }: { 
@@ -71,24 +108,24 @@ function RealtimeStatCard({
   color: string;
   pulse?: boolean;
 }) {
-  const colorClasses: Record<string, { bg: string; icon: string; text: string }> = {
-    green: { bg: 'bg-emerald-50', icon: 'bg-emerald-500', text: 'text-emerald-600' },
-    blue: { bg: 'bg-blue-50', icon: 'bg-blue-500', text: 'text-blue-600' },
-    purple: { bg: 'bg-purple-50', icon: 'bg-purple-500', text: 'text-purple-600' },
-    orange: { bg: 'bg-orange-50', icon: 'bg-orange-500', text: 'text-orange-600' },
+  const colorClasses: Record<string, { iconBg: string; iconText: string }> = {
+    green: { iconBg: 'bg-emerald-100', iconText: 'text-emerald-600' },
+    blue: { iconBg: 'bg-blue-100', iconText: 'text-blue-600' },
+    purple: { iconBg: 'bg-purple-100', iconText: 'text-purple-600' },
+    orange: { iconBg: 'bg-orange-100', iconText: 'text-orange-600' },
   };
   const colors = colorClasses[color] || colorClasses.blue;
 
   return (
-    <div className={`${colors.bg} rounded-2xl p-6`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className={`text-sm font-medium ${colors.text}`}>{title}</p>
-          <p className="text-4xl font-bold text-slate-900 mt-2">{value.toLocaleString('pt-BR')}</p>
+    <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className={`p-2 rounded-lg ${colors.iconBg} relative`}>
+          <Icon className={`w-4 h-4 ${colors.iconText}`} />
+          {pulse && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" />}
         </div>
-        <div className={`w-14 h-14 rounded-2xl ${colors.icon} flex items-center justify-center relative`}>
-          <Icon className="w-7 h-7 text-white" />
-          {pulse && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping" />}
+        <div>
+          <p className="text-xs text-slate-500">{title}</p>
+          <p className="text-lg font-bold text-slate-900">{value.toLocaleString('pt-BR')}</p>
         </div>
       </div>
     </div>
@@ -98,73 +135,229 @@ function RealtimeStatCard({
 // Live indicator
 function LiveIndicator() {
   return (
-    <div className="flex items-center gap-2 px-4 py-2 bg-red-50 rounded-full border border-red-100">
-      <span className="relative flex h-3 w-3">
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 rounded-full">
+      <span className="relative flex h-2.5 w-2.5">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
       </span>
-      <span className="text-sm font-semibold text-red-600">AO VIVO</span>
+      <span className="text-xs font-semibold text-red-600 uppercase tracking-wide">Ao Vivo</span>
     </div>
   );
 }
 
-// Timestamp display
-function LastUpdate({ timestamp }: { timestamp: string }) {
-  const [timeAgo, setTimeAgo] = useState('');
-  
-  useEffect(() => {
-    if (!timestamp) return;
-    const date = new Date(timestamp);
-    setTimeAgo(date.toLocaleTimeString('pt-BR'));
-  }, [timestamp]);
+// World Map Component
+const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+
+function WorldMap({ cities }: { cities: RealtimeCityItem[] }) {
+  // Get coordinates for cities
+  const markers = cities
+    .filter(city => city.city && city.city !== '(not set)')
+    .map(city => {
+      const coords = cityCoordinates[city.city];
+      if (!coords) return null;
+      return {
+        name: city.city,
+        country: city.country,
+        users: city.users,
+        coordinates: coords,
+      };
+    })
+    .filter(Boolean) as Array<{ name: string; country: string; users: number; coordinates: [number, number] }>;
 
   return (
-    <div className="px-4 py-2 bg-slate-100 rounded-full">
-      <span className="text-sm text-slate-600">Lesti: {timeAgo}</span>
+    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 overflow-hidden">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2.5 rounded-xl bg-blue-100 text-blue-600">
+          <Globe className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Mapa de Visitantes</h3>
+          <p className="text-sm text-slate-500">Localização dos usuários ativos</p>
+        </div>
+      </div>
+      
+      <div className="relative bg-slate-50 rounded-xl overflow-hidden" style={{ height: '320px' }}>
+        <ComposableMap
+          projection="geoMercator"
+          projectionConfig={{
+            scale: 120,
+            center: [-20, 10],
+          }}
+          style={{ width: '100%', height: '100%' }}
+        >
+          <Geographies geography={geoUrl}>
+            {({ geographies }: { geographies: Array<{ rsmKey: string }> }) =>
+              geographies.map((geo) => (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  fill="#e2e8f0"
+                  stroke="#cbd5e1"
+                  strokeWidth={0.5}
+                  style={{
+                    default: { outline: 'none' },
+                    hover: { fill: '#cbd5e1', outline: 'none' },
+                    pressed: { outline: 'none' },
+                  }}
+                />
+              ))
+            }
+          </Geographies>
+          
+          {markers.map((marker, i) => (
+            <Marker key={i} coordinates={marker.coordinates}>
+              {/* Pulse animation */}
+              <circle r={8 + marker.users * 2} fill="#3b82f6" opacity={0.2}>
+                <animate
+                  attributeName="r"
+                  from={8 + marker.users * 2}
+                  to={16 + marker.users * 3}
+                  dur="1.5s"
+                  repeatCount="indefinite"
+                />
+                <animate
+                  attributeName="opacity"
+                  from={0.3}
+                  to={0}
+                  dur="1.5s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+              {/* Main dot */}
+              <circle r={4 + marker.users} fill="#3b82f6" stroke="#fff" strokeWidth={2} />
+              {/* User count */}
+              <text
+                textAnchor="middle"
+                y={-12}
+                style={{
+                  fontFamily: 'system-ui',
+                  fill: '#1e40af',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                }}
+              >
+                {marker.users}
+              </text>
+            </Marker>
+          ))}
+        </ComposableMap>
+        
+        {markers.length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-sm text-slate-400">Nenhum usuário ativo no momento</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Cities List
+function CitiesList({ cities }: { cities: RealtimeCityItem[] }) {
+  const filteredCities = cities
+    .filter(c => c.city && c.city !== '(not set)')
+    .sort((a, b) => b.users - a.users)
+    .slice(0, 8);
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 h-full">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2.5 rounded-xl bg-purple-100 text-purple-600">
+          <MapPin className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Cidades Ativas</h3>
+          <p className="text-sm text-slate-500">Últimos 30 minutos</p>
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        {filteredCities.map((city, i) => {
+          const countryCode = getCountryCode(city.country);
+          return (
+            <div key={i} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+              <div className="flex items-center gap-2">
+                {countryCode ? (
+                  <ReactCountryFlag countryCode={countryCode} svg style={{ width: '1.2em', height: '1.2em' }} />
+                ) : (
+                  <Globe className="w-4 h-4 text-slate-400" />
+                )}
+                <span className="text-sm font-medium text-slate-700">{city.city}</span>
+              </div>
+              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold">{city.users}</span>
+            </div>
+          );
+        })}
+        {filteredCities.length === 0 && (
+          <p className="text-sm text-slate-400 text-center py-4">Nenhuma cidade detectada</p>
+        )}
+      </div>
     </div>
   );
 }
 
 // 30-minute trend chart
 function ActivityTrendChart({ data }: { data: Array<{ minutesAgo: number; users: number }> }) {
-  // Fill gaps and reverse for correct display (0 = now on the right)
-  const chartData = Array.from({ length: 30 }, (_, i) => {
+  // Fill in missing minutes and sort data
+  const chartData = [];
+  for (let i = 30; i >= 0; i--) {
     const found = data.find(d => d.minutesAgo === i);
-    return { minute: 30 - i, users: found?.users || 0 };
-  }).reverse();
+    chartData.push({
+      minute: i === 0 ? 'Agora' : `-${i}m`,
+      users: found?.users || 0,
+    });
+  }
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-blue-100 text-blue-600">
-          <Activity className="w-5 h-5" />
+        <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-600">
+          <Radio className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Atividade em Tempo Real</h3>
-          <p className="text-sm text-slate-500">Últimos 30 minutos</p>
+          <h3 className="text-lg font-semibold text-slate-900">Atividade (Últimos 30 min)</h3>
+          <p className="text-sm text-slate-500">Usuários por minuto</p>
         </div>
       </div>
-      <div className="h-[150px]">
+      
+      <div className="h-32">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <XAxis dataKey="minute" hide />
-            <YAxis hide />
+            <XAxis 
+              dataKey="minute" 
+              tick={{ fontSize: 10, fill: '#94a3b8' }} 
+              tickLine={false}
+              axisLine={false}
+              interval={5}
+            />
+            <YAxis 
+              tick={{ fontSize: 10, fill: '#94a3b8' }} 
+              tickLine={false}
+              axisLine={false}
+              allowDecimals={false}
+            />
             <Tooltip 
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+              contentStyle={{ 
+                backgroundColor: '#1e293b', 
+                border: 'none', 
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '12px',
+              }}
               formatter={(value) => [`${value ?? 0} usuários`, 'Ativos']}
-              labelFormatter={(label) => `${label} min atrás`}
             />
             <Area 
               type="monotone" 
               dataKey="users" 
-              stroke="#3b82f6" 
+              stroke="#10b981" 
               strokeWidth={2}
+              fillOpacity={1} 
               fill="url(#colorUsers)" 
             />
           </AreaChart>
@@ -180,10 +373,12 @@ function ActivePagesCard({ pages }: { pages: Record<string, number> }) {
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
   
+  const total = sortedPages.reduce((sum, [, count]) => sum + count, 0);
+
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-600">
+        <div className="p-2.5 rounded-xl bg-blue-100 text-blue-600">
           <Eye className="w-5 h-5" />
         </div>
         <div>
@@ -191,18 +386,25 @@ function ActivePagesCard({ pages }: { pages: Record<string, number> }) {
           <p className="text-sm text-slate-500">Sendo visualizadas agora</p>
         </div>
       </div>
+      
       <div className="space-y-3">
-        {sortedPages.map(([page, users], i) => (
-          <div key={i} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-            <div className="flex items-center gap-3">
-              <span className="w-6 h-6 rounded bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center">
-                {users}
-              </span>
-              <span className="text-sm text-slate-700">{formatPagePath(page)}</span>
+        {sortedPages.map(([page, count], i) => {
+          const percentage = total > 0 ? (count / total) * 100 : 0;
+          return (
+            <div key={i}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-slate-700 truncate">{formatPagePath(page)}</span>
+                <span className="text-sm font-bold text-slate-900 ml-2">{count}</span>
+              </div>
+              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
             </div>
-            <ArrowRight className="w-4 h-4 text-slate-300" />
-          </div>
-        ))}
+          );
+        })}
         {sortedPages.length === 0 && (
           <p className="text-sm text-slate-400 text-center py-4">Nenhuma página ativa</p>
         )}
@@ -211,91 +413,54 @@ function ActivePagesCard({ pages }: { pages: Record<string, number> }) {
   );
 }
 
-// Cities card (NEW)
-function CitiesCard({ cities }: { cities: RealtimeCityItem[] }) {
-  const sortedCities = cities.sort((a, b) => b.users - a.users).slice(0, 6);
-  
-  return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-purple-100 text-purple-600">
-          <MapPin className="w-5 h-5" />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-slate-900">Visitantes por Cidade</h3>
-          <p className="text-sm text-slate-500">Localização em tempo real</p>
-        </div>
-      </div>
-      <div className="space-y-3">
-        {sortedCities.map((item, i) => {
-          const code = getCountryCode(item.country);
-          return (
-            <div key={i} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-              <div className="flex items-center gap-3">
-                {code ? (
-                  <ReactCountryFlag countryCode={code} svg style={{ width: '1.2em', height: '1.2em' }} />
-                ) : (
-                  <Globe className="w-4 h-4 text-slate-400" />
-                )}
-                <div>
-                  <span className="text-sm font-medium text-slate-800">
-                    {item.city === '(not set)' ? 'Desconhecido' : item.city}
-                  </span>
-                  <span className="text-xs text-slate-400 ml-1">{item.country}</span>
-                </div>
-              </div>
-              <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-bold">{item.users}</span>
-            </div>
-          );
-        })}
-        {sortedCities.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-4">Nenhuma cidade detectada</p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Devices card (NEW)
+// Devices card
 function DevicesCard({ devices }: { devices: Record<string, number> }) {
-  const total = Object.values(devices).reduce((a, b) => a + b, 0);
-  const sortedDevices = Object.entries(devices).sort(([, a], [, b]) => b - a);
+  const COLORS = ['#3b82f6', '#10b981', '#f59e0b'];
+  const sortedDevices = Object.entries(devices)
+    .sort(([, a], [, b]) => b - a);
   
-  const deviceColors: Record<string, string> = {
-    desktop: 'bg-blue-500',
-    mobile: 'bg-emerald-500',
-    tablet: 'bg-orange-500',
+  const total = sortedDevices.reduce((sum, [, count]) => sum + count, 0);
+  
+  const deviceLabels: Record<string, string> = {
+    desktop: 'Computador',
+    mobile: 'Móvel',
+    tablet: 'Tablet',
   };
-  
+
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-blue-100 text-blue-600">
+        <div className="p-2.5 rounded-xl bg-orange-100 text-orange-600">
           <Monitor className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Dispositivos Ativos</h3>
-          <p className="text-sm text-slate-500">Tipo de dispositivo</p>
+          <h3 className="text-lg font-semibold text-slate-900">Dispositivos</h3>
+          <p className="text-sm text-slate-500">Como estão acessando</p>
         </div>
       </div>
-      <div className="space-y-4">
-        {sortedDevices.map(([device, users]) => {
-          const percentage = total > 0 ? (users / total) * 100 : 0;
-          const label = device === 'desktop' ? 'Computador' : device === 'mobile' ? 'Móvel' : 'Tablet';
+      
+      <div className="space-y-3">
+        {sortedDevices.map(([device, count], i) => {
+          const percentage = total > 0 ? (count / total) * 100 : 0;
           return (
-            <div key={device}>
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
-                  {deviceIcons[device] || <Monitor className="w-5 h-5" />}
-                  <span className="text-sm font-medium text-slate-700">{label}</span>
-                </div>
-                <span className="text-sm font-bold text-slate-900">{users}</span>
+            <div key={i} className="flex items-center gap-3">
+              <div 
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0"
+                style={{ backgroundColor: COLORS[i % COLORS.length] }}
+              >
+                {deviceIcons[device.toLowerCase()] || <Monitor className="w-4 h-4" />}
               </div>
-              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full rounded-full ${deviceColors[device] || 'bg-slate-500'}`}
-                  style={{ width: `${percentage}%` }}
-                />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-slate-800">{deviceLabels[device.toLowerCase()] || device}</span>
+                  <span className="text-sm font-bold text-slate-900 ml-2">{count}</span>
+                </div>
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${percentage}%`, backgroundColor: COLORS[i % COLORS.length] }}
+                  />
+                </div>
               </div>
             </div>
           );
@@ -308,60 +473,24 @@ function DevicesCard({ devices }: { devices: Record<string, number> }) {
   );
 }
 
-// Events card (NEW)
-function EventsCard({ events }: { events: Record<string, number> }) {
-  // Filter out page_view and other internal events
-  const relevantEvents = Object.entries(events)
-    .filter(([name]) => !['page_view', 'session_start', 'first_visit', 'user_engagement'].includes(name))
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 5);
-  
-  return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-orange-100 text-orange-600">
-          <MousePointer className="w-5 h-5" />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-slate-900">Eventos em Tempo Real</h3>
-          <p className="text-sm text-slate-500">Ações dos visitantes</p>
-        </div>
-      </div>
-      <div className="space-y-3">
-        {relevantEvents.map(([event, count], i) => {
-          const label = event.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-          return (
-            <div key={i} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-              <div className="flex items-center gap-3">
-                <Zap className="w-4 h-4 text-orange-500" />
-                <span className="text-sm text-slate-700">{label}</span>
-              </div>
-              <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-bold">{count}</span>
-            </div>
-          );
-        })}
-        {relevantEvents.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-4">Nenhum evento detectado</p>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // Main page
 export default function TempoRealPage() {
   const [data, setData] = useState<RealtimeResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<string>('');
   const [autoRefresh, setAutoRefresh] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
+      setLoading(true);
       const result = await getRealtime();
       setData(result);
+      setLastUpdate(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      console.error('Error fetching realtime data:', err);
+      setError('Erro ao carregar dados em tempo real');
     } finally {
       setLoading(false);
     }
@@ -369,64 +498,82 @@ export default function TempoRealPage() {
 
   useEffect(() => {
     fetchData();
-    
-    if (autoRefresh) {
-      const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
-      return () => clearInterval(interval);
-    }
-  }, [fetchData, autoRefresh]);
+  }, [fetchData]);
 
-  if (loading && !data) {
-    return (
-      <div className="min-h-[400px] flex flex-col items-center justify-center">
-        <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mb-4" />
-        <p className="text-slate-500">Carregando dados em tempo real...</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
+  }, [autoRefresh, fetchData]);
+
+  const activePages = Object.keys(data?.urls || {}).length;
+  const activeCountries = Object.keys(data?.countries || {}).length;
+  const activeDevices = Object.keys(data?.devices || {}).length;
 
   if (error) {
     return (
-      <div className="min-h-[400px] flex flex-col items-center justify-center bg-white rounded-2xl border-2 border-dashed border-red-200 p-8">
-        <h2 className="text-xl font-bold text-slate-900 mb-2">Erro ao carregar dados</h2>
-        <p className="text-slate-500 text-center max-w-md mb-4">{error}</p>
-        <button
-          onClick={fetchData}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
-        >
-          <RefreshCw className="w-4 h-4" />
-          Tentar novamente
-        </button>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+            <p className="text-red-600">{error}</p>
+            <button 
+              onClick={fetchData}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Tentar Novamente
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const activePages = data?.urls ? Object.keys(data.urls).length : 0;
-  const activeCountries = data?.countries ? Object.keys(data.countries).length : 0;
-
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
-            <Link href="/admin/analytics" className="hover:text-blue-600">Análise</Link>
+            <Link href="/admin/analytics" className="hover:text-blue-600 transition-colors">
+              Análise de Tráfego
+            </Link>
             <ArrowRight className="w-3 h-3" />
-            <span className="text-slate-900 font-medium">Tempo Real</span>
+            <span className="text-slate-700 font-medium">Tempo Real</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Monitoramento ao Vivo</h1>
-          <p className="text-slate-500">O que está acontecendo no seu site</p>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold text-slate-900">Tempo Real</h1>
+            <LiveIndicator />
+          </div>
+          <p className="text-sm text-slate-500 mt-1">
+            Última atualização: {lastUpdate}
+          </p>
         </div>
+        
         <div className="flex items-center gap-3">
-          <LiveIndicator />
-          <LastUpdate timestamp={data?.timestamp || ''} />
+          <button
+            onClick={() => setAutoRefresh(!autoRefresh)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              autoRefresh 
+                ? 'bg-emerald-100 text-emerald-700' 
+                : 'bg-slate-100 text-slate-600'
+            }`}
+          >
+            Auto: {autoRefresh ? 'ON' : 'OFF'}
+          </button>
+          <button
+            onClick={fetchData}
+            disabled={loading}
+            className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-5 h-5 text-slate-600 ${loading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
       </div>
 
-      {/* Main Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <RealtimeStatCard 
-          title="Visitantes Agora" 
+          title="Usuários Agora" 
           value={data?.activeVisitors || 0} 
           icon={Users} 
           color="green"
@@ -444,36 +591,31 @@ export default function TempoRealPage() {
           icon={Globe} 
           color="orange" 
         />
+        <RealtimeStatCard 
+          title="Dispositivos" 
+          value={activeDevices} 
+          icon={Monitor} 
+          color="purple" 
+        />
       </div>
 
-      {/* Activity Trend Chart */}
+      {/* Map and Cities */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <WorldMap cities={data?.cities || []} />
+        </div>
+        <div className="lg:col-span-1">
+          <CitiesList cities={data?.cities || []} />
+        </div>
+      </div>
+
+      {/* Activity Trend */}
       <ActivityTrendChart data={data?.minutesTrend || []} />
 
-      {/* Cards Grid */}
+      {/* Pages and Devices */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ActivePagesCard pages={data?.urls || {}} />
-        <CitiesCard cities={data?.cities || []} />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DevicesCard devices={data?.devices || {}} />
-        <EventsCard events={data?.events || {}} />
-      </div>
-
-      {/* Auto-refresh toggle */}
-      <div className="flex items-center justify-center gap-3 text-sm text-slate-500">
-        <Radio className={`w-4 h-4 ${autoRefresh ? 'text-emerald-500' : 'text-slate-400'}`} />
-        <span>Atualização automática a cada 30s</span>
-        <button
-          onClick={() => setAutoRefresh(!autoRefresh)}
-          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-            autoRefresh 
-              ? 'bg-emerald-100 text-emerald-700' 
-              : 'bg-slate-100 text-slate-600'
-          }`}
-        >
-          {autoRefresh ? 'Ativado' : 'Desativado'}
-        </button>
       </div>
     </div>
   );
