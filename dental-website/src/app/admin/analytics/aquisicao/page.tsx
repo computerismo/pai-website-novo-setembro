@@ -61,6 +61,31 @@ function getReferrerDisplayName(referrer: string): string {
   return referrer;
 }
 
+// Semantic colors for referrers (matching channel colors)
+function getReferrerColor(referrer: string): string {
+  const lowerRef = referrer?.toLowerCase() || '';
+  
+  // Direct traffic - Blue (like Direct channel)
+  if (lowerRef === '(direct)' || !referrer) return '#3b82f6';
+  
+  // Search engines - Green (like Organic Search channel)
+  if (lowerRef === 'google' || lowerRef.includes('bing') || lowerRef.includes('yahoo') || 
+      lowerRef.includes('duckduckgo') || lowerRef.includes('baidu')) return '#10b981';
+  
+  // Social media - Pink (like Organic Social channel)
+  if (lowerRef === 'facebook' || lowerRef.includes('facebook') ||
+      lowerRef === 'instagram' || lowerRef.includes('instagram') ||
+      lowerRef === 'twitter' || lowerRef.includes('twitter') ||
+      lowerRef === 'linkedin' || lowerRef.includes('linkedin') ||
+      lowerRef.includes('tiktok') || lowerRef.includes('pinterest')) return '#ec4899';
+  
+  // Unknown/Not set - Gray (like Unassigned channel)
+  if (lowerRef === '(not set)' || lowerRef === 'not set') return '#94a3b8';
+  
+  // Other referrals - Orange (like Referral channel)
+  return '#f59e0b';
+}
+
 // Filter out debug/testing referrers
 function filterDebugReferrers(referrers: Array<{ x: string; y: number }>): Array<{ x: string; y: number }> {
   const debugDomains = [
@@ -112,7 +137,7 @@ function DataTable({
         {filteredData.slice(0, 15).map((item, i) => {
           const maxValue = filteredData[0]?.y || 1;
           const percentage = (item.y / maxValue) * 100;
-          const barColor = COLORS[i % COLORS.length];
+          const barColor = getReferrerColor(item.x);
           
           return (
             <div key={i}>
