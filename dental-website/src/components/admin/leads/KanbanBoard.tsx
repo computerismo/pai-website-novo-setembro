@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -152,6 +152,11 @@ function Column({ id, title, leads, onLeadClick, config }: { id: string, title: 
 export function KanbanBoard({ leads: initialLeads, onLeadClick }: { leads: Lead[], onLeadClick: (lead: Lead) => void }) {
   const [leads, setLeads] = useState(initialLeads);
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  // Sync leads when props change (e.g., after deletion)
+  useEffect(() => {
+    setLeads(initialLeads);
+  }, [initialLeads]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
