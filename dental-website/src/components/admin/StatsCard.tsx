@@ -44,7 +44,7 @@ export default function StatsCard({
   const config = colorConfig[color];
   
   return (
-    <div className="group relative bg-white rounded-2xl border border-slate-200/60 p-6 hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+    <div className="group relative bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
       {/* Subtle gradient background on hover */}
       <div className={`absolute inset-0 ${config.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
       
@@ -67,8 +67,8 @@ export default function StatsCard({
             </p>
           )}
         </div>
-        <div className={`p-3.5 rounded-xl bg-gradient-to-br ${config.gradient} shadow-lg ${config.glow}`}>
-          <Icon className="w-5 h-5 text-white" strokeWidth={2.5} />
+        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorConfig[color].gradient} flex items-center justify-center shadow-lg ${config.glow}`}>
+          <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />
         </div>
       </div>
     </div>

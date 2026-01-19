@@ -23,7 +23,7 @@ export function ConversionFunnel({ stages }: ConversionFunnelProps) {
   const total = stages.length > 0 ? stages[0].count : 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-lg transition-shadow duration-300">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg shadow-purple-500/25">

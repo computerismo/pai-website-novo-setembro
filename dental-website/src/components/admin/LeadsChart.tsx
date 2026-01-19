@@ -22,7 +22,7 @@ export function LeadsChart({ data }: LeadsChartProps) {
   const avgLeads = data.length > 0 ? (totalLeads / data.length).toFixed(1) : 0;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+    <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>

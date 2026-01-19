@@ -171,7 +171,7 @@ export default async function DashboardPage() {
         <ConversionFunnel stages={funnelStages} />
 
         {/* Recent Leads */}
-        <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+        <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
           <div className="p-6 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-900 tracking-tight">
