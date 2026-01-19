@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, Phone, Calendar, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { siteConfig } from "@/lib/constants/site";
 import { cn } from "@/lib/utils/cn";
@@ -126,64 +127,79 @@ export function Navigation({ onOpenModal }: { onOpenModal?: () => void }) {
       </div>
 
       {/* Mobile Menu */}
-      <div
-        className={cn(
-          "md:hidden fixed inset-x-0 top-20 bg-white/95 dark:bg-surface-dark/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out",
-          mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
-        )}
-      >
-        <div className="p-4 space-y-2 h-[calc(100vh-5rem)] overflow-y-auto">
-          {navLinks.map((link) => (
-            <div key={link.label}>
-              {link.children ? (
-                <div className="space-y-1">
-                  <button
-                    onClick={() => toggleDropdown(link.label)}
-                    className="flex items-center justify-between w-full px-3 py-3 text-base font-medium text-text-light dark:text-text-dark hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
-                  >
-                    {link.label}
-                    <ChevronDown className={cn("w-5 h-5 transition-transform", activeDropdown === link.label ? "rotate-180" : "")} />
-                  </button>
-                  {activeDropdown === link.label && (
-                    <div className="pl-4 space-y-1 border-l-2 border-blue-100 dark:border-blue-900 ml-3">
-                      {link.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className="block px-3 py-2 text-sm text-text-light dark:text-text-dark hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="md:hidden fixed inset-x-0 top-20 bg-white/95 dark:bg-surface-dark/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800"
+          >
+            <div className="p-4 space-y-2 h-[calc(100vh-5rem)] overflow-y-auto">
+              {navLinks.map((link) => (
+                <div key={link.label}>
+                  {link.children ? (
+                    <div className="space-y-1">
+                      <button
+                        onClick={() => toggleDropdown(link.label)}
+                        className="flex items-center justify-between w-full px-3 py-3 text-base font-medium text-text-light dark:text-text-dark hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
+                      >
+                        {link.label}
+                        <ChevronDown className={cn("w-5 h-5 transition-transform", activeDropdown === link.label ? "rotate-180" : "")} />
+                      </button>
+                      <AnimatePresence>
+                        {activeDropdown === link.label && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="pl-4 space-y-1 border-l-2 border-blue-100 dark:border-blue-900 ml-3">
+                              {link.children.map((child) => (
+                                <Link
+                                  key={child.href}
+                                  href={child.href}
+                                  className="block px-3 py-2 text-sm text-text-light dark:text-text-dark hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                                  onClick={() => setMobileMenuOpen(false)}
+                                >
+                                  {child.label}
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="block px-3 py-3 text-base font-medium text-text-light dark:text-text-dark hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
                   )}
                 </div>
-              ) : (
-                <Link
-                  href={link.href}
-                  className="block px-3 py-3 text-base font-medium text-text-light dark:text-text-dark hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all"
-                  onClick={() => setMobileMenuOpen(false)}
+              ))}
+              <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
+                <button 
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenModal?.();
+                  }}
+                  className="flex items-center justify-center w-full px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-lg shadow-blue-500/30"
                 >
-                  {link.label}
-                </Link>
-              )}
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Agendar Consulta
+                </button>
+              </div>
             </div>
-          ))}
-          <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
-            <button 
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenModal?.();
-              }}
-              className="flex items-center justify-center w-full px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-lg shadow-blue-500/30"
-            >
-              <Calendar className="w-5 h-5 mr-2" />
-              Agendar Consulta
-            </button>
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

@@ -23,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={cn(
             'flex w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm',
             'placeholder:text-gray-400',
-            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+            'focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent focus:shadow-[0_0_0_4px_rgba(37,99,235,0.1)]',
             'disabled:cursor-not-allowed disabled:opacity-50',
             error && 'border-red-500 focus:ring-red-500',
             className

@@ -15,7 +15,7 @@
 
   /* Match Stitch mockup background */
   body {
-    background-color: #F8FAFC; /* Slate 50 - matches Stitch background-light */
+    background-color: #f8fafc; /* Slate 50 - matches Stitch background-light */
     color: #334155; /* Slate 500 - matches Stitch mockup */
   }
 
@@ -194,7 +194,18 @@
 
   /* Tables */
   .blog-content table {
-    @apply w-full mb-8 border-collapse border border-gray-200 rounded-lg overflow-hidden;
+    @apply w-full mb-8 border-collapse border border-gray-200 rounded-lg;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 768px) {
+    .blog-content table {
+      display: table;
+      white-space: normal;
+      overflow-x: visible;
+    }
   }
 
   .blog-content th {

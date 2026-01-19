@@ -166,7 +166,7 @@ export function FadeGrid() {
   if (!isClient) return null; // Prevent hydration mismatch with random generation
 
   return (
-    <div className="grid grid-cols-3 gap-2 lg:gap-4 w-full h-full p-2 lg:p-4 bg-white dark:bg-card-dark rounded-[2.5rem] shadow-2xl overflow-hidden">
+    <div className="grid grid-cols-3 gap-2 lg:gap-4 w-full h-full p-2 lg:p-4 bg-white dark:bg-card-dark rounded-2xl md:rounded-3xl lg:rounded-[2.5rem] shadow-2xl overflow-hidden">
       {active.map((img, index) => (
         <div
           key={index}

@@ -137,8 +137,8 @@ export default function HomePage() {
                   </a>
                 </div>
               </div>
-              <div className="relative lg:h-[600px] w-full hidden lg:flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-transparent dark:from-blue-900/20 dark:to-transparent rounded-[3rem] transform rotate-3 scale-95 opacity-50"></div>
+              <div className="relative w-full max-w-[320px] md:max-w-md lg:max-w-full aspect-square lg:h-[600px] lg:w-auto hidden lg:flex items-center justify-center mt-8 lg:mt-0 mx-auto">
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-transparent dark:from-blue-900/20 dark:to-transparent rounded-[2rem] lg:rounded-[3rem] transform rotate-3 scale-95 opacity-50"></div>
                 <FadeGrid />
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function HomePage() {
                 Utilizamos uma abordagem multidisciplinar e tecnologia digital para diagnósticos precisos e tratamentos eficazes.
               </p>
             </div>
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {/* Solution 1 - Diagnóstico Preciso */}
               <div className="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600"></div>
@@ -270,7 +270,7 @@ export default function HomePage() {
               </div>
 
               {/* Solution 3 - Terapias Complementares */}
-              <div className="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
+              <div className="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group md:col-span-2 md:w-[calc(50%-0.75rem)] md:mx-auto lg:col-span-1 lg:w-auto lg:mx-0">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-purple-600"></div>
                 <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center text-purple-600 mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                   <Flower2 className="w-8 h-8" />

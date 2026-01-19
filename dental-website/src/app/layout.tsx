@@ -5,11 +5,13 @@ import { siteConfig } from '@/lib/constants/site';
 import UmamiAnalytics from '@/components/UmamiAnalytics';
 // 1. Importamos o componente do Google aqui
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { BackToTop } from '@/components/shared/BackToTop';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const crimsonPro = Crimson_Pro({
   subsets: ['latin'],
   variable: '--font-crimson-pro',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -59,6 +61,7 @@ export default function RootLayout({
         {children}
         
         <GoogleAnalytics gaId="G-GS7RKWN2ML" />
+        <BackToTop />
       </body>
     </html>
   );
