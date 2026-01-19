@@ -1,5 +1,7 @@
 import { useState, useTransition, useEffect } from 'react';
 import { X, MessageCircle, Calendar, Phone, Mail, Loader2, Send, StickyNote, User, Trash2, UserCheck, ExternalLink } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
@@ -14,6 +16,7 @@ interface LeadDetailsSidebarProps {
 }
 
 export function LeadDetailsSidebar({ lead, isOpen, onClose }: LeadDetailsSidebarProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [newNote, setNewNote] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -77,6 +80,7 @@ export function LeadDetailsSidebar({ lead, isOpen, onClose }: LeadDetailsSidebar
         const res = await deleteLead(lead.id);
         if (res?.success) {
             onClose();
+            router.refresh(); // Refresh server components to remove lead from list
         }
         setIsDeleting(false);
     });
