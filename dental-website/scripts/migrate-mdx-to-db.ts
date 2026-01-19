@@ -35,6 +35,14 @@ interface MDXPost {
 }
 
 async function main() {
+  // Check for FORCE_MIGRATION environment variable
+  if (process.env.FORCE_MIGRATION !== 'true') {
+    console.log('⚠️  Migration skipped.');
+    console.log('To run the migration, set FORCE_MIGRATION=true environment variable.');
+    console.log('Example: FORCE_MIGRATION=true npx tsx scripts/migrate-mdx-to-db.ts\n');
+    return;
+  }
+
   console.log('🚀 Starting MDX to Database migration...\n');
 
   // Create default admin user if doesn't exist
