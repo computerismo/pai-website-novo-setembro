@@ -250,8 +250,8 @@ export default function HomePage() {
                 </a>
               </div>
 
-              {/* Solution 2 - Placas Miorrelaxantes (Featured) */}
-              <div className="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-lg ring-1 ring-[#2563EB]/20 relative overflow-hidden group transform lg:-translate-y-4">
+              {/* Solution 2 - Placas Miorrelaxantes (Standardized) */}
+              <div className="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#06B6D4] to-[#2563EB]"></div>
                 <div className="w-16 h-16 bg-[#06B6D4]/10 dark:bg-[#06B6D4]/20 rounded-2xl flex items-center justify-center text-[#06B6D4] mb-6 group-hover:bg-[#06B6D4] group-hover:text-white transition-colors">
                   <Shield className="w-8 h-8" />
