@@ -104,7 +104,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen font-sans">
+    <div className="min-h-screen font-sans w-full max-w-[100vw] overflow-x-hidden">
       <Navigation onOpenModal={handleOpenModal} />
       
       <main>
