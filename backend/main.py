@@ -798,6 +798,7 @@ async def geocode_cities(request: GeocodeBatchRequest):
     """Batch geocode cities for map display."""
     results = []
     
+    cache_updated = False
     for item in request.cities:
         city = item.get("city", "")
         country = item.get("country", "")
@@ -815,8 +816,7 @@ async def geocode_cities(request: GeocodeBatchRequest):
             # Geocode and cache
             coords = geocode_city_cached(city, country)
             geocoding_cache[cache_key] = coords
-            # Save updated cache
-            save_cache(geocoding_cache)
+            cache_updated = True
         
         if coords:
             results.append({
@@ -827,6 +827,10 @@ async def geocode_cities(request: GeocodeBatchRequest):
                 "users": users,
             })
     
+    # Save updated cache once if any changes were made
+    if cache_updated:
+        save_cache(geocoding_cache)
+
     return {"cities": results}
 
 
