@@ -2,6 +2,7 @@
 import { Search, TrendingUp } from "lucide-react";
 import { getSeoQueries } from "@/lib/gsc";
 import { KeywordsTable } from "@/components/admin/seo/KeywordsTable";
+import { SeoDateFilter } from "@/components/admin/seo/SeoDateFilter";
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +15,7 @@ export default async function SeoKeywordsPage({ searchParams }: { searchParams: 
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
              <Search className="w-8 h-8 text-blue-500" />
@@ -22,6 +23,7 @@ export default async function SeoKeywordsPage({ searchParams }: { searchParams: 
            </h1>
            <p className="text-slate-500 mt-1">Termos que geram tráfego para seu site (Top 100)</p>
         </div>
+        <SeoDateFilter />
       </div>
 
       <div className="grid grid-cols-1 gap-6">

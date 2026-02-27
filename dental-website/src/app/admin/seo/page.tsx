@@ -5,6 +5,7 @@ import { SeoStatsCards } from "@/components/admin/seo/SeoStatsCards";
 import { PerformanceChart } from "@/components/admin/seo/PerformanceChart";
 import { KeywordsTable } from "@/components/admin/seo/KeywordsTable";
 import { PagesTable } from "@/components/admin/seo/PagesTable";
+import { SeoDateFilter } from "@/components/admin/seo/SeoDateFilter";
 
 export const dynamic = 'force-dynamic';
 
@@ -22,12 +23,12 @@ export default async function SeoPage({ searchParams }: { searchParams: Promise<
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
           <Search className="w-8 h-8 text-blue-500" />
           Análise de SEO (Google Search Console)
         </h1>
-        {/* Date filter could go here, for now standardized to 28 days via URL */}
+        <SeoDateFilter />
       </div>
 
       {!overview ? (
