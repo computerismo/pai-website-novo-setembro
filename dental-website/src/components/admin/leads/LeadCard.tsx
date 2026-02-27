@@ -14,7 +14,7 @@ import {
   User,
   Clock
 } from 'lucide-react';
-import { updateLeadStatus, updateLeadNotes } from '@/app/actions/leads';
+import { updateLeadStatus, addLeadNote } from '@/app/actions/leads';
 import { Button } from '@/components/ui/Button';
 
 type Lead = {
@@ -63,11 +63,12 @@ export function LeadCard({ lead, onSelect, isSelected = false, onToggleSelect }:
   };
 
   const handleSaveNotes = () => {
+    if (!notes.trim()) return;
     startTransition(async () => {
       const formData = new FormData();
       formData.append('id', lead.id);
-      formData.append('notes', notes);
-      await updateLeadNotes(formData);
+      formData.append('note', notes);
+      await addLeadNote(formData);
       setIsEditingNotes(false);
     });
   };

@@ -11,11 +11,6 @@ const updateStatusSchema = z.object({
   status: z.enum(['new', 'contacted', 'qualified', 'converted']),
 });
 
-const updateNotesSchema = z.object({
-  id: z.string(),
-  notes: z.string(),
-});
-
 export async function updateLeadStatus(formData: FormData) {
   const id = formData.get('id') as string;
   const status = formData.get('status') as string;
@@ -58,11 +53,6 @@ export async function updateLeadStatus(formData: FormData) {
     console.error('Error updating lead status:', error);
     return { success: false, message: 'Erro ao atualizar status' };
   }
-}
-
-// Deprecated: Use addLeadNote instead (for migration support)
-export async function updateLeadNotes(formData: FormData) {
-  return addLeadNote(formData);
 }
 
 const addNoteSchema = z.object({
