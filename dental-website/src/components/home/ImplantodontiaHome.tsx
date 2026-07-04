@@ -68,16 +68,16 @@ function FAQItem({ id, question, answer, isOpen, onToggle }: {
 }
 
 const benefits = [
-  { icon: Smile, title: 'Conforto ao mastigar', text: 'O planejamento busca recuperar função e segurança para as atividades do dia a dia.' },
-  { icon: Sparkles, title: 'Sorriso mais harmônico', text: 'A reabilitação considera proporções, aparência e integração com os dentes naturais.' },
-  { icon: ShieldCheck, title: 'Planejamento individual', text: 'Cada indicação é definida após avaliação clínica, exames e conversa sobre suas necessidades.' },
-  { icon: HeartHandshake, title: 'Acompanhamento próximo', text: 'Você recebe orientações em cada etapa e cuidados para a manutenção do tratamento.' },
+  { icon: Smile, title: 'Conforto ao Mastigar', text: 'O planejamento busca recuperar função e segurança para as atividades do dia a dia.' },
+  { icon: Sparkles, title: 'Sorriso mais Harmônico', text: 'A reabilitação considera proporções, aparência e integração com os dentes naturais.' },
+  { icon: ShieldCheck, title: 'Planejamento Individual', text: 'Cada indicação é definida após avaliação clínica, exames e conversa sobre suas necessidades.' },
+  { icon: HeartHandshake, title: 'Acompanhamento Próximo', text: 'Você recebe orientações em cada etapa e cuidados para a manutenção do tratamento.' },
 ];
 
 const possibilities = [
-  { icon: CheckCircle, title: 'Implante unitário', text: 'Uma possibilidade para substituir um dente ausente sem apoiar a restauração nos dentes vizinhos.' },
-  { icon: Smile, title: 'Prótese sobre implantes', text: 'Alternativa para reabilitar mais de um dente, conforme a condição bucal e o planejamento profissional.' },
-  { icon: ShieldCheck, title: 'Estabilização de prótese', text: 'Em casos selecionados, implantes podem contribuir para uma prótese com melhor retenção e conforto.' },
+  { icon: CheckCircle, title: 'Implante Unitário', text: 'Uma possibilidade para substituir um dente ausente sem apoiar a restauração nos dentes vizinhos.' },
+  { icon: Smile, title: 'Prótese sobre Implantes', text: 'Alternativa para reabilitar mais de um dente, conforme a condição bucal e o planejamento profissional.' },
+  { icon: ShieldCheck, title: 'Estabilização de Prótese', text: 'Em casos selecionados, implantes podem contribuir para uma prótese com melhor retenção e conforto.' },
 ];
 
 const stages = [
@@ -180,8 +180,13 @@ export default function ImplantodontiaHome() {
               {possibilities.map(({ icon: Icon, title, text }, index) => (
                 <div key={title} className={`bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group ${index === 2 ? 'md:col-span-2 md:w-[calc(50%-0.75rem)] md:mx-auto lg:col-span-1 lg:w-auto lg:mx-0' : ''}`}>
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#06B6D4] to-[#2563EB]" />
-                  <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-[#2563EB] mb-6 group-hover:bg-[#2563EB] group-hover:text-white transition-colors"><Icon className="w-8 h-8" /></div>
-                  <h3 className="text-2xl font-bold text-heading-light dark:text-heading-dark mb-4">{title}</h3><p className="text-text-light dark:text-text-dark text-sm leading-relaxed">{text}</p>
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-[#2563EB] shrink-0 group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
+                      <Icon className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-heading-light dark:text-heading-dark">{title}</h3>
+                  </div>
+                  <p className="text-text-light dark:text-text-dark text-sm leading-relaxed">{text}</p>
                 </div>
               ))}
             </div>

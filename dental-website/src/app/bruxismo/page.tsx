@@ -3,12 +3,11 @@
 import { Navigation } from '@/components/shared/Navigation';
 import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
-import { FadeGrid } from '@/components/home/FadeGrid';
+import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import {
   Calendar,
   Info,
-  CheckCircle,
   Smile,
   AlertCircle,
   User,
@@ -22,11 +21,7 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  Check,
-  Stethoscope,
-  Phone,
-  Mail,
-  MapPin
+  Phone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Modal } from '@/components/ui/Modal';
@@ -109,42 +104,42 @@ export default function HomePage() {
 
       <main>
         {/* Hero Section */}
-        <header className="relative overflow-hidden pt-12 lg:pt-20 pb-16 lg:pb-24 bg-[#F8FAFC]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-              <div className="text-center lg:text-left space-y-8">
-                <h1 className="text-3xl lg:text-5xl font-extrabold text-heading-light dark:text-heading-dark leading-tight tracking-tight">
-                  Alívio para o Bruxismo: <br className="hidden lg:block"/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-[#06B6D4]">Recupere o Conforto</span>
-                </h1>
-                <p className="text-lg text-text-light dark:text-text-dark max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                  Tratamento odontológico avançado para o ranger e apertar dos dentes. Recupere o seu bem-estar e melhore sua qualidade de vida com protocolos personalizados e tecnologia de ponta.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <button
-                    onClick={handleOpenModal}
-                    className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-xl shadow-blue-500/25 hover:-translate-y-1"
-                  >
-                    <Calendar className="mr-2 w-5 h-5" />
-                    Agende sua Consulta
-                  </button>
-                  <a
-                    href="#tratamento"
-                    className="inline-flex items-center justify-center px-8 py-4 border border-gray-200 dark:border-gray-700 text-base font-medium rounded-xl text-heading-light dark:text-heading-dark bg-white dark:bg-surface-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all hover:-translate-y-1"
-                  >
-                    <Info className="mr-2 w-5 h-5" />
+        <section className="bg-gradient-to-br from-slate-50 via-white to-blue-50 py-20 pt-32 relative overflow-hidden">
+          <div className="container mx-auto px-4 relative">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                Alívio para o Bruxismo com <br className="hidden md:block" />
+                <span className="text-blue-600">Tratamento Especializado</span>
+              </h1>
+              <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+                Diagnóstico preciso e tratamento odontológico personalizado para controlar o ranger e apertar dos dentes,
+                aliviar as dores musculares e proteger sua estrutura dentária em Governador Valadares.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20"
+                  onClick={handleOpenModal}
+                >
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Agendar Avaliação
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-slate-300 text-slate-700 hover:bg-white"
+                  asChild
+                >
+                  <a href="#tratamento">
+                    <Info className="w-5 h-5 mr-2" />
                     Conheça o Tratamento
                   </a>
-                </div>
-              </div>
-              <div className="relative w-full max-w-[320px] md:max-w-md lg:max-w-full aspect-square lg:h-[600px] lg:w-auto hidden lg:flex items-center justify-center mt-8 lg:mt-0 mx-auto">
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-transparent dark:from-blue-900/20 dark:to-transparent rounded-[2rem] lg:rounded-[3rem] transform rotate-3 scale-95 opacity-50"></div>
-                <FadeGrid />
+                </Button>
               </div>
             </div>
-            <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl -z-10"></div>
           </div>
-        </header>
+        </section>
 
         {/* Symptoms Section */}
         <section className="py-16 lg:py-24 bg-[#FFFFFF] dark:bg-surface-dark relative overflow-hidden" id="sintomas">

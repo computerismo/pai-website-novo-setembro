@@ -18,10 +18,10 @@ const navLinks: NavLink[] = [
   { label: "Início", href: "/" },
   { label: "Sobre", href: "/sobre" },
   {
-    label: "Tratamentos",
+    label: "Bruxismo",
     href: "#",
     children: [
-      { label: "Visão Geral do Bruxismo", href: "/bruxismo" },
+      { label: "Sobre o Bruxismo", href: "/bruxismo" },
       { label: "Botox para Bruxismo", href: "/bruxismo/botox-bruxismo" },
       { label: "Placa Miorrelaxante", href: "/bruxismo/placa-miorrelaxante" },
       { label: "Tratamento de Bruxismo", href: "/bruxismo/tratamento-bruxismo" },
@@ -102,8 +102,8 @@ export function Navigation({ onOpenModal }: { onOpenModal?: () => void }) {
                 )}
               </div>
             ))}
-            
-            <button 
+
+            <button
               onClick={onOpenModal}
               className="inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-lg shadow-blue-500/30"
             >
@@ -186,7 +186,7 @@ export function Navigation({ onOpenModal }: { onOpenModal?: () => void }) {
                 </div>
               ))}
               <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
-                <button 
+                <button
                   onClick={() => {
                     setMobileMenuOpen(false);
                     onOpenModal?.();
