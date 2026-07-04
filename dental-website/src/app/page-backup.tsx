@@ -117,14 +117,14 @@ export default function HomePage() {
                   description: "Dispositivo personalizado para aliviar tensão muscular e proteger seus dentes",
                   icon: Shield,
                   color: "from-blue-500 to-cyan-500",
-                  href: "/placa-miorrelaxante"
+                  href: "/bruxismo/placa-miorrelaxante"
                 },
                 {
                   title: "Toxina Botulínica",
                   description: "Aplicação terapêutica para redução eficaz do bruxismo e dores",
                   icon: Stethoscope,
                   color: "from-purple-500 to-pink-500",
-                  href: "/botox-bruxismo"
+                  href: "/bruxismo/botox-bruxismo"
                 },
                 {
                   title: "Diagnóstico",
@@ -138,7 +138,7 @@ export default function HomePage() {
                   description: "Monitoramento contínuo para garantir os melhores resultados",
                   icon: Clock,
                   color: "from-orange-500 to-red-500",
-                  href: "/tratamento-bruxismo"
+                  href: "/bruxismo/tratamento-bruxismo"
                 }
               ].map((treatment, index) => {
                 const IconComponent = treatment.icon;

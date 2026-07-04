@@ -21,9 +21,10 @@ const navLinks: NavLink[] = [
     label: "Tratamentos",
     href: "#",
     children: [
-      { label: "Botox para Bruxismo", href: "/botox-bruxismo" },
-      { label: "Placa Miorrelaxante", href: "/placa-miorrelaxante" },
-      { label: "Tratamento de Bruxismo", href: "/tratamento-bruxismo" },
+      { label: "Visão Geral do Bruxismo", href: "/bruxismo" },
+      { label: "Botox para Bruxismo", href: "/bruxismo/botox-bruxismo" },
+      { label: "Placa Miorrelaxante", href: "/bruxismo/placa-miorrelaxante" },
+      { label: "Tratamento de Bruxismo", href: "/bruxismo/tratamento-bruxismo" },
     ],
   },
   { label: "Blog", href: "/blog" },

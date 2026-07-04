@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  keywords: ['dentista', 'bruxismo', 'placa dental', 'tratamento', 'odontologia'],
+  keywords: ['dentista', 'implantodontia', 'implantes dentários', 'bruxismo', 'placa dental', 'tratamento', 'odontologia'],
   authors: [{ name: siteConfig.name }],
   creator: siteConfig.name,
   openGraph: {

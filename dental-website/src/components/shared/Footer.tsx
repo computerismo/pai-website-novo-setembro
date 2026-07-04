@@ -56,17 +56,17 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#sintomas" className="hover:text-[#2563EB] transition-colors">
+                <Link href="/bruxismo#sintomas" className="hover:text-[#2563EB] transition-colors">
                   Sintomas
                 </Link>
               </li>
               <li>
-                <Link href="/#tratamento" className="hover:text-[#2563EB] transition-colors">
+                <Link href="/bruxismo#tratamento" className="hover:text-[#2563EB] transition-colors">
                   Tratamentos
                 </Link>
               </li>
               <li>
-                <Link href="/#faq" className="hover:text-[#2563EB] transition-colors">
+                <Link href="/bruxismo#faq" className="hover:text-[#2563EB] transition-colors">
                   Dúvidas Frequentes
                 </Link>
               </li>

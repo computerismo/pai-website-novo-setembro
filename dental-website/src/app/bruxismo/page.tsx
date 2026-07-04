@@ -243,7 +243,7 @@ export default function HomePage() {
                 </p>
 
                 <a 
-                  href="/tratamento-bruxismo" 
+                  href="/bruxismo/tratamento-bruxismo"
                   className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
                 >
                   Saiba Mais
@@ -262,7 +262,7 @@ export default function HomePage() {
                 </p>
 
                 <a 
-                  href="/placa-miorrelaxante" 
+                  href="/bruxismo/placa-miorrelaxante"
                   className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
                 >
                   Saiba Mais
@@ -281,7 +281,7 @@ export default function HomePage() {
                 </p>
 
                 <a 
-                  href="/botox-bruxismo" 
+                  href="/bruxismo/botox-bruxismo"
                   className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
                 >
                   Saiba Mais

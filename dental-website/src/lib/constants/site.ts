@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: 'Odontologia Especializada',
-  description: 'Especialistas em tratamento de bruxismo e disfunções temporomandibulares',
+  description: 'Especialistas em implantodontia, implantes dentários, tratamento de bruxismo e disfunções temporomandibulares',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://exemplo.com.br',
   phone: '(33) 99810-7802',
   whatsapp: '5533998107802',

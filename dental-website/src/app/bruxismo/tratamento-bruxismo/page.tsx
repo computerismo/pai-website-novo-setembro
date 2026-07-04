@@ -121,7 +121,7 @@ export default function TratamentoBruxismoPage() {
                   impede o contato entre os dentes e induz o relaxamento muscular durante o sono.
                 </p>
                 <Button variant="outline" className="w-full justify-between group" asChild>
-                  <a href="/placa-miorrelaxante">
+                  <a href="/bruxismo/placa-miorrelaxante">
                     Saiba mais sobre a Placa
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </a>
@@ -139,7 +139,7 @@ export default function TratamentoBruxismoPage() {
                   involuntária, aliviando a tensão e preservando a estrutura óssea e dental.
                 </p>
                 <Button variant="outline" className="w-full justify-between group" asChild>
-                  <a href="/botox-bruxismo">
+                  <a href="/bruxismo/botox-bruxismo">
                      Saiba mais sobre o Botox Terapêutico
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </a>

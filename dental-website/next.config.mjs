@@ -7,6 +7,25 @@ import remarkGfm from 'remark-gfm';
 const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
+  async redirects() {
+    return [
+      {
+        source: '/tratamento-bruxismo',
+        destination: '/bruxismo/tratamento-bruxismo',
+        permanent: true,
+      },
+      {
+        source: '/placa-miorrelaxante',
+        destination: '/bruxismo/placa-miorrelaxante',
+        permanent: true,
+      },
+      {
+        source: '/botox-bruxismo',
+        destination: '/bruxismo/botox-bruxismo',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
