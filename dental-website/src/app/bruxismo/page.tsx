@@ -5,23 +5,23 @@ import { Footer } from '@/components/shared/Footer';
 import { WhatsAppButton } from '@/components/shared/WhatsAppButton';
 import { FadeGrid } from '@/components/home/FadeGrid';
 import { useState } from 'react';
-import { 
-  Calendar, 
-  Info, 
-  CheckCircle, 
-  Smile, 
-  AlertCircle, 
-  User, 
-  Brain, 
-  Ear, 
-  Moon, 
-  Search, 
-  Shield, 
-  Flower2, 
-  ShieldCheck, 
-  Sparkles, 
-  ChevronDown, 
-  ChevronUp, 
+import {
+  Calendar,
+  Info,
+  CheckCircle,
+  Smile,
+  AlertCircle,
+  User,
+  Brain,
+  Ear,
+  Moon,
+  Search,
+  Shield,
+  Flower2,
+  ShieldCheck,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
   Check,
   Stethoscope,
   Phone,
@@ -106,7 +106,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen font-sans w-full max-w-[100vw] overflow-x-hidden">
       <Navigation onOpenModal={handleOpenModal} />
-      
+
       <main>
         {/* Hero Section */}
         <header className="relative overflow-hidden pt-12 lg:pt-20 pb-16 lg:pb-24 bg-[#F8FAFC]">
@@ -121,14 +121,14 @@ export default function HomePage() {
                   Tratamento odontológico avançado para o ranger e apertar dos dentes. Recupere o seu bem-estar e melhore sua qualidade de vida com protocolos personalizados e tecnologia de ponta.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <button 
+                  <button
                     onClick={handleOpenModal}
                     className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-xl text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-all shadow-xl shadow-blue-500/25 hover:-translate-y-1"
                   >
                     <Calendar className="mr-2 w-5 h-5" />
                     Agende sua Consulta
                   </button>
-                  <a 
+                  <a
                     href="#tratamento"
                     className="inline-flex items-center justify-center px-8 py-4 border border-gray-200 dark:border-gray-700 text-base font-medium rounded-xl text-heading-light dark:text-heading-dark bg-white dark:bg-surface-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all hover:-translate-y-1"
                   >
@@ -242,7 +242,7 @@ export default function HomePage() {
                   Realizamos uma avaliação completa utilizando tecnologia avançada. Nossa análise inclui exame clínico detalhado, avaliação da oclusão e análise muscular.
                 </p>
 
-                <a 
+                <a
                   href="/bruxismo/tratamento-bruxismo"
                   className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
                 >
@@ -261,7 +261,7 @@ export default function HomePage() {
                   Dispositivos sob medida de alta qualidade e tecnologia digital. Cada placa é ajustada perfeitamente à sua arcada para máximo conforto e proteção.
                 </p>
 
-                <a 
+                <a
                   href="/bruxismo/placa-miorrelaxante"
                   className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
                 >
@@ -280,7 +280,7 @@ export default function HomePage() {
                   Abordagem multidisciplinar incluindo aplicação de toxina botulínica para casos específicos, laserterapia e orientações fisioterapêuticas.
                 </p>
 
-                <a 
+                <a
                   href="/bruxismo/botox-bruxismo"
                   className="block w-full py-3 text-center rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium transition-colors"
                 >
@@ -340,16 +340,16 @@ export default function HomePage() {
         {/* Pre-Footer CTA */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-[#2563EB] opacity-90 dark:opacity-80 z-0"></div>
-          <div 
-            className="absolute inset-0 opacity-10 z-0" 
+          <div
+            className="absolute inset-0 opacity-10 z-0"
             style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }}
           ></div>
-          
+
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10 text-center">
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">Está sofrendo com bruxismo?</h2>
             <p className="text-blue-100 text-lg mb-10 max-w-2xl mx-auto">Se não tratado, o bruxismo pode levar a problemas graves como fraturas dentárias permanentes, perda óssea e disfunções crônicas da ATM.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
+              <button
                 onClick={handleOpenModal}
                 className="px-8 py-4 bg-white text-[#2563EB] font-bold rounded-xl shadow-lg hover:bg-gray-50 transition-colors transform hover:-translate-y-1"
               >
@@ -382,22 +382,22 @@ export default function HomePage() {
 
 
 
-        <Modal 
-          isOpen={isModalOpen} 
+        <Modal
+          isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           title="Agendar Diagnóstico"
         >
           <p className="text-sm text-gray-500 mb-4">
             Preencha seus dados abaixo e nossa equipe entrará em contato para agendar sua avaliação.
           </p>
-          <LeadForm 
+          <LeadForm
             source="homepage"
             isInModal={true}
             onSuccess={() => setTimeout(() => setIsModalOpen(false), 3000)}
           />
         </Modal>
       </main>
-      
+
       <Footer />
       <WhatsAppButton />
     </div>
