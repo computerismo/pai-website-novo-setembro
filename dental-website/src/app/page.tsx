@@ -23,7 +23,8 @@ import { Modal } from '@/components/ui/Modal';
 import { LeadForm } from '@/components/landing/LeadForm';
 import { trackFormModalOpen } from '@/lib/analytics/gtag';
 
-function FAQItem({ question, answer, isOpen, onToggle }: {
+function FAQItem({ id, question, answer, isOpen, onToggle }: {
+  id: string;
   question: string;
   answer: string;
   isOpen: boolean;
@@ -32,9 +33,11 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
   return (
     <div className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden group">
       <button
+        id={`${id}-button`}
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
+        aria-controls={`${id}-panel`}
         className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200"
       >
         <span className="font-medium text-heading-light dark:text-heading-dark flex-1 pr-4">{question}</span>
@@ -45,6 +48,9 @@ function FAQItem({ question, answer, isOpen, onToggle }: {
       <AnimatePresence>
         {isOpen ? (
           <motion.div
+            id={`${id}-panel`}
+            role="region"
+            aria-labelledby={`${id}-button`}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -82,10 +88,14 @@ const stages = [
 ];
 
 const faqData = [
-  { question: 'Quem pode fazer implante dentário?', answer: 'A indicação depende da saúde geral, das condições da boca e da disponibilidade óssea. Uma avaliação clínica, acompanhada dos exames necessários, é o caminho para entender se o tratamento é adequado para você.' },
-  { question: 'O tratamento com implantes dói?', answer: 'O procedimento é realizado com anestesia local e o conforto é acompanhado pela equipe. No pós-operatório, a experiência varia de pessoa para pessoa e são fornecidas orientações específicas para a recuperação.' },
-  { question: 'Quanto tempo leva o tratamento?', answer: 'O prazo varia conforme a quantidade de implantes, a cicatrização e a necessidade de procedimentos complementares. Depois da avaliação, o profissional apresenta uma estimativa compatível com o seu caso.' },
-  { question: 'Como cuidar de um implante dentário?', answer: 'A higiene diária cuidadosa e as consultas periódicas são essenciais. A equipe orienta o uso de escova, fio ou outros recursos de higiene de acordo com a prótese instalada.' },
+  { id: 'faq-candidatos-implante', question: 'Quem pode fazer implante dentário?', answer: 'A indicação depende da saúde geral, das condições da boca e da disponibilidade óssea. Uma avaliação clínica, acompanhada dos exames necessários, é o caminho para entender se o tratamento é adequado para você.' },
+  { id: 'faq-conforto-procedimento', question: 'O tratamento com implantes dói?', answer: 'O procedimento é realizado com anestesia local e o conforto é acompanhado pela equipe. No pós-operatório, a experiência varia de pessoa para pessoa e são fornecidas orientações específicas para a recuperação.' },
+  { id: 'faq-duracao-tratamento', question: 'Quanto tempo leva o tratamento?', answer: 'O prazo varia conforme a quantidade de implantes, a cicatrização e a necessidade de procedimentos complementares. Depois da avaliação, o profissional apresenta uma estimativa compatível com o seu caso.' },
+  { id: 'faq-cuidados-implante', question: 'Como cuidar de um implante dentário?', answer: 'A higiene diária cuidadosa e as consultas periódicas são essenciais. A equipe orienta o uso de escova, fio ou outros recursos de higiene de acordo com a prótese instalada.' },
+];
+
+const implantodontiaTreatmentOptions = [
+  { value: 'implantodontia', label: 'Implantodontia' },
 ];
 
 export default function HomePage() {
@@ -101,7 +111,7 @@ export default function HomePage() {
     <div className="min-h-screen font-sans w-full max-w-[100vw] overflow-x-hidden">
       <Navigation onOpenModal={handleOpenModal} />
       <main>
-        <header className="relative overflow-hidden pt-12 lg:pt-20 pb-16 lg:pb-24 bg-[#F8FAFC]">
+        <header className="relative overflow-hidden pt-12 lg:pt-20 pb-16 lg:pb-24 bg-[#F8FAFC] dark:bg-background-dark">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
               <div className="text-center lg:text-left space-y-8">
@@ -126,7 +136,7 @@ export default function HomePage() {
                 <FadeGrid />
               </div>
             </div>
-            <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl -z-10" />
+            <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-blue-50 dark:bg-blue-900/20 rounded-full blur-3xl -z-10" />
           </div>
         </header>
 
@@ -195,7 +205,7 @@ export default function HomePage() {
         <section className="py-16 lg:py-24 bg-[#F8FAFC] dark:bg-background-dark" id="faq">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-center text-heading-light dark:text-heading-dark mb-12">Perguntas frequentes</h2>
-            <div className="space-y-4">{faqData.map((faq, index) => <FAQItem key={faq.question} {...faq} isOpen={openFAQ === index} onToggle={() => setOpenFAQ(openFAQ === index ? null : index)} />)}</div>
+            <div className="space-y-4">{faqData.map((faq, index) => <FAQItem key={faq.id} {...faq} isOpen={openFAQ === index} onToggle={() => setOpenFAQ(openFAQ === index ? null : index)} />)}</div>
           </div>
         </section>
 
@@ -211,7 +221,7 @@ export default function HomePage() {
 
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Agendar avaliação de implantodontia">
           <p className="text-sm text-gray-500 mb-4">Preencha seus dados e nossa equipe entrará em contato para combinar sua avaliação.</p>
-          <LeadForm campaignId="implantodontia-homepage" source="implantodontia-homepage" isInModal={true} onSuccess={() => setTimeout(() => setIsModalOpen(false), 3000)} />
+          <LeadForm campaignId="implantodontia-homepage" source="implantodontia-homepage" treatmentOptions={implantodontiaTreatmentOptions} defaultTreatment="implantodontia" isInModal={true} onSuccess={() => setTimeout(() => setIsModalOpen(false), 3000)} />
         </Modal>
       </main>
       <Footer />

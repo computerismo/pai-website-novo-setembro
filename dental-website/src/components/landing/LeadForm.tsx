@@ -30,9 +30,18 @@ interface LeadFormProps {
   source?: string;
   onSuccess?: () => void;
   isInModal?: boolean;
+  treatmentOptions?: Array<{ value: string; label: string }>;
+  defaultTreatment?: string;
 }
 
-export function LeadForm({ campaignId, source = 'website', onSuccess, isInModal = false }: LeadFormProps) {
+export function LeadForm({
+  campaignId,
+  source = 'website',
+  onSuccess,
+  isInModal = false,
+  treatmentOptions: configuredTreatmentOptions,
+  defaultTreatment,
+}: LeadFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const { utmParams } = useUTMParams();
@@ -52,6 +61,9 @@ export function LeadForm({ campaignId, source = 'website', onSuccess, isInModal 
     reset,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      treatment: defaultTreatment,
+    },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -107,6 +119,8 @@ export function LeadForm({ campaignId, source = 'website', onSuccess, isInModal 
     { value: 'outros', label: 'Outros Tratamentos' },
   ];
 
+  const availableTreatmentOptions = configuredTreatmentOptions ?? treatmentOptions;
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {submitSuccess && (
@@ -142,7 +156,7 @@ export function LeadForm({ campaignId, source = 'website', onSuccess, isInModal 
 
         <Select
           label="Tratamento de interesse"
-          options={treatmentOptions}
+          options={availableTreatmentOptions}
           error={errors.treatment?.message}
           {...register('treatment')}
         />
