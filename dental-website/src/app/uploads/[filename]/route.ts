@@ -1,45 +1,36 @@
+import { readFile } from "node:fs/promises";
+import { NextRequest, NextResponse } from "next/server";
+import path from "node:path";
+import { isSafeUploadFilename } from "@/lib/security/image-upload";
 
-import { NextRequest, NextResponse } from 'next/server';
-import path from 'path';
-import { readFile } from 'fs/promises';
-import { existsSync } from 'fs';
+const MIME_TYPES: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".png": "image/png",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+};
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ filename: string }> }
 ) {
   const { filename } = await params;
-  
-  // Security check: ensure no directory traversal
-  const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '');
-  
-  // Construct path using same logic as upload route
-  const filePath = path.join(process.cwd(), 'public', 'uploads', sanitizedFilename);
+  if (!isSafeUploadFilename(filename)) return new NextResponse("File not found", { status: 404 });
 
-  if (!existsSync(filePath)) {
-    return new NextResponse('File not found', { status: 404 });
-  }
+  const uploadDir = path.resolve(process.cwd(), "public", "uploads");
+  const filePath = path.resolve(uploadDir, filename);
+  if (path.dirname(filePath) !== uploadDir) return new NextResponse("File not found", { status: 404 });
 
   try {
-    const fileBuffer = await readFile(filePath);
-    
-    // Determine content type
-    const ext = path.extname(sanitizedFilename).toLowerCase();
-    let contentType = 'application/octet-stream';
-    if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
-    if (ext === '.png') contentType = 'image/png';
-    if (ext === '.gif') contentType = 'image/gif';
-    if (ext === '.webp') contentType = 'image/webp';
-    if (ext === '.svg') contentType = 'image/svg+xml';
-
-    return new NextResponse(new Uint8Array(fileBuffer), {
+    const file = await readFile(filePath);
+    return new NextResponse(new Uint8Array(file), {
       headers: {
-        'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
+        "Content-Type": MIME_TYPES[path.extname(filename)],
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
-  } catch (error) {
-    console.error('Error serving file:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+  } catch {
+    return new NextResponse("File not found", { status: 404 });
   }
 }

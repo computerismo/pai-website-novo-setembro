@@ -1,80 +1,87 @@
 'use server';
 
 import { prisma } from '@/lib/db';
-import { revalidatePath } from 'next/cache';
+import { authorizeServerAction } from '@/lib/security/authorization';
+import { toCsv } from '@/lib/security/csv';
+import { z } from 'zod';
 
-import { auth } from '@/lib/auth';
+const historySchema = z.object({
+  leadId: z.string().min(1).max(128),
+  action: z.string().trim().min(1).max(50),
+  description: z.string().trim().min(1).max(500),
+});
 
 export async function logLeadHistory(leadId: string, action: string, description: string) {
+  const actor = await authorizeServerAction('leads');
+  if (!actor) return { success: false };
+  const parsed = historySchema.safeParse({ leadId, action, description });
+  if (!parsed.success) return { success: false };
+
   try {
-    const session = await auth();
     await prisma.leadHistory.create({
       data: {
-        leadId,
-        action,
-        description,
-        userId: session?.user?.id,
-        createdBy: session?.user?.name || 'System',
+        leadId: parsed.data.leadId,
+        action: parsed.data.action,
+        description: parsed.data.description,
+        userId: actor.id,
+        createdBy: actor.name || 'Admin',
       },
     });
-    // No revalidatePath here as this is usually called by other actions
-  } catch (error) {
-    console.error('Error logging lead history:', error);
-    // Don't throw, just log error so main action doesn't fail
+    return { success: true };
+  } catch {
+    console.error('lead_history_write_failed');
+    return { success: false };
   }
 }
 
 export async function exportLeadsToCSV() {
+  const actor = await authorizeServerAction('leads');
+  if (!actor) return { success: false, message: 'Não autorizado' };
+
   try {
     const leads = await prisma.lead.findMany({
       orderBy: { createdAt: 'desc' },
-      include: {
-        history: {
-            orderBy: { createdAt: 'desc' },
-            take: 1
-        } // Include latest history if needed, or just basic data
-      }
+      take: 10_000,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        treatment: true,
+        message: true,
+        status: true,
+        notes: true,
+        createdAt: true,
+        utmSource: true,
+        utmMedium: true,
+        utmCampaign: true,
+      },
     });
 
-    // Helper to escape CSV fields
-    const escape = (text: string | null) => {
-      if (!text) return '';
-      // If contains quotes, commas, or newlines, wrap in quotes and escape internal quotes
-      if (/[",\n]/.test(text)) {
-        return `"${text.replace(/"/g, '""')}"`;
-      }
-      return text;
-    };
+    const csv = toCsv(
+      [
+        'ID', 'Nome', 'Email', 'Telefone', 'Tratamento', 'Mensagem',
+        'Status', 'Notas', 'Data Criação', 'UTM Source', 'UTM Medium', 'UTM Campaign',
+      ],
+      leads.map((lead) => [
+        lead.id,
+        lead.name,
+        lead.email,
+        lead.phone,
+        lead.treatment,
+        lead.message,
+        lead.status,
+        lead.notes,
+        lead.createdAt,
+        lead.utmSource,
+        lead.utmMedium,
+        lead.utmCampaign,
+      ])
+    );
 
-    const headers = [
-      'ID', 'Nome', 'Email', 'Telefone', 'Tratamento', 'Mensagem', 
-      'Status', 'Notas', 'Data Criação', 
-      'UTM Source', 'UTM Medium', 'UTM Campaign'
-    ];
-
-    const rows = leads.map(lead => [
-      lead.id,
-      escape(lead.name),
-      escape(lead.email),
-      escape(lead.phone),
-      escape(lead.treatment),
-      escape(lead.message),
-      escape(lead.status),
-      escape(lead.notes),
-      lead.createdAt.toISOString(),
-      escape(lead.utmSource),
-      escape(lead.utmMedium),
-      escape(lead.utmCampaign),
-    ]);
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
-
-    return { success: true, csv: csvContent };
-  } catch (error) {
-    console.error('Error exporting leads:', error);
+    return { success: true, csv };
+  } catch {
+    console.error('lead_export_failed');
     return { success: false, message: 'Erro ao gerar CSV' };
   }
 }

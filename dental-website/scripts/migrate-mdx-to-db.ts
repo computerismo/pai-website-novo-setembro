@@ -17,6 +17,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import { sanitizePostHtml } from '../src/lib/security/post-html';
 
 const prisma = new PrismaClient();
 
@@ -45,25 +46,12 @@ async function main() {
 
   console.log('🚀 Starting MDX to Database migration...\n');
 
-  // Create default admin user if doesn't exist
-  let adminUser = await prisma.user.findFirst({
+  const adminUser = await prisma.user.findFirst({
     where: { role: 'admin' },
+    select: { id: true },
   });
-
   if (!adminUser) {
-    console.log('Creating default admin user...');
-    const bcrypt = require('bcryptjs');
-    const hashedPassword = await bcrypt.hash('admin123', 10);
-
-    adminUser = await prisma.user.create({
-      data: {
-        email: 'admin@clinica.com',
-        password: hashedPassword,
-        name: 'Admin',
-        role: 'admin',
-      },
-    });
-    console.log('✅ Admin user created: admin@clinica.com / admin123\n');
+    throw new Error('No administrator account exists. Run the explicit one-time admin bootstrap first.');
   }
 
   // Read all MDX files
@@ -80,7 +68,7 @@ async function main() {
     const post = frontmatter as MDXPost;
     post.content = content;
 
-    console.log(`📝 Migrating: ${post.title}`);
+    console.log('migrating_post');
 
     try {
       // Create or get tags
@@ -97,7 +85,7 @@ async function main() {
               slug: slugify(tagName),
             },
           });
-          console.log(`  ✅ Created tag: ${tagName}`);
+          console.log('content_tag_created');
         }
 
         tagRecords.push({ id: tag.id });
@@ -112,7 +100,7 @@ async function main() {
         update: {
           title: post.title,
           excerpt: post.excerpt,
-          content: htmlContent,
+          content: sanitizePostHtml(htmlContent),
           featuredImage: post.image,
           status: 'published',
           publishedAt: new Date(post.date),
@@ -128,7 +116,7 @@ async function main() {
           title: post.title,
           slug: post.slug,
           excerpt: post.excerpt,
-          content: htmlContent,
+          content: sanitizePostHtml(htmlContent),
           featuredImage: post.image,
           status: 'published',
           publishedAt: new Date(post.date),
@@ -143,7 +131,7 @@ async function main() {
 
       console.log(`  ✅ Post migrated successfully\n`);
     } catch (error) {
-      console.error(`  ❌ Error migrating post: ${error}\n`);
+      console.error('post_migration_failed');
     }
   }
 
@@ -168,7 +156,7 @@ function slugify(text: string): string {
 
 main()
   .catch((e) => {
-    console.error('Fatal error:', e);
+    console.error('content_migration_failed');
     process.exit(1);
   })
   .finally(async () => {

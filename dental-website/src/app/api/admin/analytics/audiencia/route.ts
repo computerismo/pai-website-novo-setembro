@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { authorizeApi } from "@/lib/security/authorization";
 import { umamiClient } from "@/lib/umami";
 
 export const dynamic = "force-dynamic";
@@ -14,10 +14,8 @@ const periodMap: Record<PeriodKey, number> = {
 };
 
 export async function GET(request: Request) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const access = await authorizeApi("analytics");
+  if (!access.ok) return access.response;
 
   if (!umamiClient.isConfigured()) {
     return NextResponse.json(
@@ -30,7 +28,8 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const period = (searchParams.get("period") || "7d") as PeriodKey;
+  const candidate = searchParams.get("period") || "7d";
+  const period: PeriodKey = candidate in periodMap ? candidate as PeriodKey : "7d";
 
   const endAt = Date.now();
   const startAt = endAt - (periodMap[period] || periodMap["7d"]);
@@ -64,14 +63,11 @@ export async function GET(request: Request) {
       startAt,
       endAt,
     });
-  } catch (error) {
-    console.error("Failed to fetch audience analytics:", error);
+  } catch {
+    console.error("umami_audience_fetch_failed");
     return NextResponse.json(
-      {
-        error: "Failed to fetch analytics",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
+      { error: "Failed to fetch analytics" },
+      { status: 502 }
     );
   }
 }

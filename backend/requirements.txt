@@ -4,3 +4,4 @@ python-dotenv
 google-analytics-data
 google-api-python-client
 httpx
+google-auth-httplib2

@@ -3,7 +3,7 @@ import { z } from "zod";
 // Password validation: min 8 chars, at least 1 letter and 1 number
 const passwordValidation = z
   .string()
-  .min(8, "Senha deve ter no mínimo 8 caracteres")
+  .min(12, "Senha deve ter no mínimo 8 caracteres")
   .regex(/[a-zA-Z]/, "Senha deve conter pelo menos uma letra")
   .regex(/[0-9]/, "Senha deve conter pelo menos um número");
 
@@ -61,7 +61,7 @@ export const apiCreateUserSchema = z.object({
   name: z.string().min(2, "Nome deve ter no mínimo 2 caracteres"),
   email: z.string().email("Email inválido"),
   password: passwordValidation,
-  role: z.enum(userRoles),
+  role: z.enum(userRoles).default("viewer"),
 });
 
 // Schema for API update
@@ -69,5 +69,5 @@ export const apiUpdateUserSchema = z.object({
   name: z.string().min(2, "Nome deve ter no mínimo 2 caracteres"),
   email: z.string().email("Email inválido"),
   password: passwordValidation.optional().or(z.literal("")),
-  role: z.enum(userRoles),
+  role: z.enum(userRoles).default("viewer"),
 });

@@ -1,27 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { apiUpdateUserSchema } from "@/lib/validations/userSchemas";
+import { authorizeApi } from "@/lib/security/authorization";
+import { readJsonBody, RequestBodyError } from "@/lib/security/request-body";
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// GET /api/admin/users/[id] - Get single user
-export async function GET(request: NextRequest, { params }: RouteParams) {
+const idSchema = z.string().min(1).max(128);
+
+export async function GET(_request: NextRequest, { params }: RouteParams) {
+  const access = await authorizeApi("users");
+  if (!access.ok) return access.response;
+
+  const parsedId = idSchema.safeParse((await params).id);
+  if (!parsedId.success) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
   try {
-    const session = await auth();
-    const { id } = await params;
-
-    if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-    }
-
     const user = await prisma.user.findUnique({
-      where: { id },
+      where: { id: parsedId.data },
       select: {
         id: true,
         name: true,
@@ -32,152 +34,82 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         image: true,
       },
     });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "Usuário não encontrado" },
-        { status: 404 }
-      );
-    }
-
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
     return NextResponse.json(user);
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    return NextResponse.json(
-      { error: "Erro ao buscar usuário" },
-      { status: 500 }
-    );
+  } catch {
+    console.error("admin_user_read_failed");
+    return NextResponse.json({ error: "Unable to read user" }, { status: 500 });
   }
 }
 
-// PUT /api/admin/users/[id] - Update user
 export async function PUT(request: NextRequest, { params }: RouteParams) {
+  const access = await authorizeApi("users");
+  if (!access.ok) return access.response;
+
+  const parsedId = idSchema.safeParse((await params).id);
+  if (!parsedId.success) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
   try {
-    const session = await auth();
-    const { id } = await params;
-
-    if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-    }
-
-    const body = await request.json();
+    const body = await readJsonBody<unknown>(request, 16 * 1024);
     const validation = apiUpdateUserSchema.safeParse(body);
-
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Dados inválidos", details: validation.error.flatten() },
+        { error: "Invalid user data", details: validation.error.flatten() },
         { status: 400 }
       );
     }
 
+    const existingUser = await prisma.user.findUnique({ where: { id: parsedId.data } });
+    if (!existingUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
     const { name, email, password, role } = validation.data;
-
-    // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { id },
-    });
-
-    if (!existingUser) {
-      return NextResponse.json(
-        { error: "Usuário não encontrado" },
-        { status: 404 }
-      );
-    }
-
-    // Check if email is being changed and if new email already exists
     if (email !== existingUser.email) {
-      const emailExists = await prisma.user.findUnique({
-        where: { email },
-      });
-
+      const emailExists = await prisma.user.findUnique({ where: { email }, select: { id: true } });
       if (emailExists) {
-        return NextResponse.json(
-          { error: "Este email já está cadastrado" },
-          { status: 409 }
-        );
+        return NextResponse.json({ error: "Unable to update user" }, { status: 409 });
       }
     }
 
-    // Prepare update data
-    const updateData: {
-      name: string;
-      email: string;
-      role: string;
-      password?: string;
-    } = {
+    const updateData: { name: string; email: string; role: string; password?: string } = {
       name,
       email,
       role,
     };
-
-    // Only update password if provided
-    if (password && password.length > 0) {
-      updateData.password = await bcrypt.hash(password, 10);
-    }
+    if (password) updateData.password = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.update({
-      where: { id },
+      where: { id: parsedId.data },
       data: updateData,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: { id: true, name: true, email: true, role: true, createdAt: true, updatedAt: true },
     });
-
     return NextResponse.json(user);
   } catch (error) {
-    console.error("Error updating user:", error);
-    return NextResponse.json(
-      { error: "Erro ao atualizar usuário" },
-      { status: 500 }
-    );
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    console.error("admin_user_update_failed");
+    return NextResponse.json({ error: "Unable to update user" }, { status: 500 });
   }
 }
 
-// DELETE /api/admin/users/[id] - Delete user
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+  const access = await authorizeApi("users");
+  if (!access.ok) return access.response;
+
+  const parsedId = idSchema.safeParse((await params).id);
+  if (!parsedId.success) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  if (access.user.id === parsedId.data) {
+    return NextResponse.json({ error: "You cannot delete your own account" }, { status: 403 });
+  }
+
   try {
-    const session = await auth();
-    const { id } = await params;
+    const existingUser = await prisma.user.findUnique({ where: { id: parsedId.data }, select: { id: true } });
+    if (!existingUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-    }
-
-    // Self-delete protection
-    if (session.user.id === id) {
-      return NextResponse.json(
-        { error: "Você não pode excluir sua própria conta" },
-        { status: 403 }
-      );
-    }
-
-    // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { id },
-    });
-
-    if (!existingUser) {
-      return NextResponse.json(
-        { error: "Usuário não encontrado" },
-        { status: 404 }
-      );
-    }
-
-    await prisma.user.delete({
-      where: { id },
-    });
-
-    return NextResponse.json({ message: "Usuário excluído com sucesso" });
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    return NextResponse.json(
-      { error: "Erro ao excluir usuário" },
-      { status: 500 }
-    );
+    await prisma.user.delete({ where: { id: parsedId.data } });
+    return NextResponse.json({ message: "User deleted" });
+  } catch {
+    console.error("admin_user_delete_failed");
+    return NextResponse.json({ error: "Unable to delete user" }, { status: 500 });
   }
 }

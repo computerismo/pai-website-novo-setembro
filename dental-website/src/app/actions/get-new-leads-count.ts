@@ -1,16 +1,26 @@
 'use server';
 
 import { prisma } from '@/lib/db';
+import { authorizeServerAction } from '@/lib/security/authorization';
+import { z } from 'zod';
 
 export async function getNewLeadsCount(sinceTimestamp?: string) {
+  const actor = await authorizeServerAction('leads');
+  if (!actor) {
+    return { success: false, count: 0, recentLeads: [] };
+  }
+
+  const parsedTimestamp = sinceTimestamp === undefined
+    ? undefined
+    : z.string().datetime().safeParse(sinceTimestamp);
+  if (parsedTimestamp && !parsedTimestamp.success) {
+    return { success: false, count: 0, recentLeads: [] };
+  }
+
   try {
-    const where: any = {};
-    
-    if (sinceTimestamp) {
-      where.createdAt = {
-        gt: new Date(sinceTimestamp),
-      };
-    }
+    const where = parsedTimestamp?.success
+      ? { createdAt: { gt: new Date(parsedTimestamp.data) } }
+      : {};
 
     const count = await prisma.lead.count({ where });
     
@@ -33,8 +43,8 @@ export async function getNewLeadsCount(sinceTimestamp?: string) {
       count,
       recentLeads,
     };
-  } catch (error) {
-    console.error('Error getting new leads count:', error);
+  } catch {
+    console.error('lead_count_fetch_failed');
     return {
       success: false,
       count: 0,

@@ -6,59 +6,54 @@ export interface UTMParams {
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
-  utm_term?: string;
-  utm_content?: string;
-  gclid?: string;
-  fbclid?: string;
+}
+
+const STORAGE_KEY = 'utm_params';
+const ATTRIBUTION_KEYS = ['utm_source', 'utm_medium', 'utm_campaign'] as const;
+
+function cleanAttribution(value: unknown): UTMParams {
+  if (!value || typeof value !== 'object') return {};
+  const source = value as Record<string, unknown>;
+  const cleaned: UTMParams = {};
+
+  for (const key of ATTRIBUTION_KEYS) {
+    const item = source[key];
+    if (typeof item === 'string' && item.trim()) cleaned[key] = item.trim().slice(0, 100);
+  }
+  return cleaned;
 }
 
 export function useUTMParams() {
   const [utmParams, setUtmParams] = useState<UTMParams>({});
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    // Captura parâmetros UTM da URL
     const searchParams = new URLSearchParams(window.location.search);
-    const params: UTMParams = {
-      utm_source: searchParams.get('utm_source') || undefined,
-      utm_medium: searchParams.get('utm_medium') || undefined,
-      utm_campaign: searchParams.get('utm_campaign') || undefined,
-      utm_term: searchParams.get('utm_term') || undefined,
-      utm_content: searchParams.get('utm_content') || undefined,
-      gclid: searchParams.get('gclid') || undefined,
-      fbclid: searchParams.get('fbclid') || undefined,
-    };
+    const fromUrl = cleanAttribution({
+      utm_source: searchParams.get('utm_source'),
+      utm_medium: searchParams.get('utm_medium'),
+      utm_campaign: searchParams.get('utm_campaign'),
+    });
 
-    // Remove parâmetros undefined para não poluir o localStorage
-    const cleanParams = Object.fromEntries(
-      Object.entries(params).filter(([_, value]) => value !== undefined)
-    );
-
-    if (Object.keys(cleanParams).length > 0) {
-      // Salva no localStorage para persistir durante a sessão
-      localStorage.setItem('utm_params', JSON.stringify(cleanParams));
-      setUtmParams(cleanParams);
-    } else {
-      // Se não há parâmetros na URL, tenta recuperar do localStorage
-      const savedParams = localStorage.getItem('utm_params');
-      if (savedParams) {
-        try {
-          setUtmParams(JSON.parse(savedParams));
-        } catch (error) {
-          console.warn('Erro ao parsear UTM params do localStorage:', error);
-        }
+    try {
+      const savedValue = localStorage.getItem(STORAGE_KEY);
+      const saved = savedValue ? cleanAttribution(JSON.parse(savedValue)) : {};
+      const attribution = Object.keys(fromUrl).length > 0 ? fromUrl : saved;
+      if (Object.keys(attribution).length > 0) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(attribution));
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
       }
+      setUtmParams(attribution);
+    } catch {
+      setUtmParams(fromUrl);
     }
   }, []);
 
-  // Função para limpar os parâmetros UTM
   const clearUTMParams = () => {
-    localStorage.removeItem('utm_params');
+    localStorage.removeItem(STORAGE_KEY);
     setUtmParams({});
   };
 
-  // Função para converter os parâmetros em query string
   const getUTMQueryString = () => {
     const params = new URLSearchParams();
     Object.entries(utmParams).forEach(([key, value]) => {

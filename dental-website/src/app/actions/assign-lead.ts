@@ -2,117 +2,113 @@
 
 import { prisma } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
-import { auth } from '@/lib/auth';
+import { z } from 'zod';
 import { logLeadHistory } from './lead-history';
+import { authorizeServerAction } from '@/lib/security/authorization';
+
+const idSchema = z.string().min(1).max(128);
+const idListSchema = z.array(idSchema).min(1).max(100);
+const leadStatusSchema = z.enum(['new', 'contacted', 'qualified', 'converted']);
 
 export async function assignLead(leadId: string, assignedToId: string | null) {
-  try {
-    const session = await auth();
-    
-    // Get previous assignment for logging
-    const previousLead = await prisma.lead.findUnique({
-      where: { id: leadId },
-      include: { assignedTo: { select: { name: true } } },
-    });
+  const actor = await authorizeServerAction('leads');
+  if (!actor) return { success: false, message: 'Não autorizado' };
 
-    // Get new assignee name if assigning
-    let newAssigneeName = 'Ninguém';
-    if (assignedToId) {
-      const newAssignee = await prisma.user.findUnique({
-        where: { id: assignedToId },
-        select: { name: true },
+  const parsedLeadId = idSchema.safeParse(leadId);
+  const parsedAssignee = assignedToId === null ? null : idSchema.safeParse(assignedToId);
+  if (!parsedLeadId.success || (parsedAssignee && !parsedAssignee.success)) {
+    return { success: false, message: 'Dados inválidos' };
+  }
+
+  try {
+    if (parsedAssignee?.success) {
+      const assigneeExists = await prisma.user.findUnique({
+        where: { id: parsedAssignee.data },
+        select: { id: true },
       });
-      newAssigneeName = newAssignee?.name || 'Desconhecido';
+      if (!assigneeExists) return { success: false, message: 'Dados inválidos' };
     }
 
-    // Update the lead
     await prisma.lead.update({
-      where: { id: leadId },
+      where: { id: parsedLeadId.data },
       data: {
-        assignedToId: assignedToId || null,
-        assignedAt: assignedToId ? new Date() : null,
+        assignedToId: parsedAssignee?.success ? parsedAssignee.data : null,
+        assignedAt: parsedAssignee?.success ? new Date() : null,
       },
     });
 
-    // Log the change
-    const previousName = previousLead?.assignedTo?.name || 'Ninguém';
-    if (previousName !== newAssigneeName) {
-      await logLeadHistory(
-        leadId,
-        'ATRIBUIÇÃO',
-        `Lead atribuído de "${previousName}" para "${newAssigneeName}"`
-      );
-    }
-
+    await logLeadHistory(parsedLeadId.data, 'ASSIGNMENT_CHANGED', 'Lead assignment updated');
     revalidatePath('/admin/leads');
     return { success: true, message: 'Lead atribuído com sucesso' };
-  } catch (error) {
-    console.error('Error assigning lead:', error);
+  } catch {
+    console.error('lead_assignment_failed');
     return { success: false, message: 'Erro ao atribuir lead' };
   }
 }
 
 export async function getUsers() {
+  const actor = await authorizeServerAction('leads');
+  if (!actor) return { success: false, users: [] };
+
   try {
     const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
+      select: { id: true, name: true, email: true },
       orderBy: { name: 'asc' },
     });
     return { success: true, users };
-  } catch (error) {
-    console.error('Error fetching users:', error);
+  } catch {
+    console.error('lead_assignees_fetch_failed');
     return { success: false, users: [] };
   }
 }
 
-// Bulk actions
 export async function bulkUpdateLeadStatus(leadIds: string[], status: string) {
+  const actor = await authorizeServerAction('leads');
+  if (!actor) return { success: false, message: 'Não autorizado' };
+  const parsedIds = idListSchema.safeParse(leadIds);
+  const parsedStatus = leadStatusSchema.safeParse(status);
+  if (!parsedIds.success || !parsedStatus.success) {
+    return { success: false, message: 'Dados inválidos' };
+  }
+
   try {
-    const session = await auth();
-    
+    const existing = await prisma.lead.findMany({
+      where: { id: { in: parsedIds.data } },
+      select: { id: true, status: true },
+    });
     await prisma.lead.updateMany({
-      where: { id: { in: leadIds } },
-      data: { status },
+      where: { id: { in: existing.map((lead) => lead.id) } },
+      data: { status: parsedStatus.data },
     });
 
-    // Log history for each lead
-    const statusMap: Record<string, string> = {
-      new: 'Novo',
-      contacted: 'Contactado',
-      qualified: 'Qualificado',
-      converted: 'Convertido',
-    };
-
-    for (const leadId of leadIds) {
-      await logLeadHistory(
-        leadId,
-        'ALTERAÇÃO_DE_STATUS_EM_LOTE',
-        `Status alterado para "${statusMap[status] || status}" (ação em lote)`
-      );
+    for (const lead of existing) {
+      if (lead.status !== parsedStatus.data) {
+        await logLeadHistory(lead.id, 'STATUS_CHANGE', 'Lead status updated in bulk');
+      }
     }
 
     revalidatePath('/admin/leads');
-    return { success: true, message: `${leadIds.length} leads atualizados` };
-  } catch (error) {
-    console.error('Error bulk updating leads:', error);
+    return { success: true, message: `${existing.length} leads atualizados` };
+  } catch {
+    console.error('lead_bulk_status_update_failed');
     return { success: false, message: 'Erro ao atualizar leads' };
   }
 }
 
 export async function bulkDeleteLeads(leadIds: string[]) {
-  try {
-    await prisma.lead.deleteMany({
-      where: { id: { in: leadIds } },
-    });
+  const actor = await authorizeServerAction('leads');
+  if (!actor) return { success: false, message: 'Não autorizado' };
+  const parsedIds = idListSchema.safeParse(leadIds);
+  if (!parsedIds.success) return { success: false, message: 'Dados inválidos' };
 
+  try {
+    const result = await prisma.lead.deleteMany({
+      where: { id: { in: parsedIds.data } },
+    });
     revalidatePath('/admin/leads');
-    return { success: true, message: `${leadIds.length} leads excluídos` };
-  } catch (error) {
-    console.error('Error bulk deleting leads:', error);
+    return { success: true, message: `${result.count} leads excluídos` };
+  } catch {
+    console.error('lead_bulk_delete_failed');
     return { success: false, message: 'Erro ao excluir leads' };
   }
 }

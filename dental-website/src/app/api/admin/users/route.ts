@@ -1,22 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { apiCreateUserSchema } from "@/lib/validations/userSchemas";
+import { authorizeApi } from "@/lib/security/authorization";
+import { readJsonBody, RequestBodyError } from "@/lib/security/request-body";
 import bcrypt from "bcryptjs";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-// GET /api/admin/users - List all users
 export async function GET() {
   try {
-    const session = await auth();
-
-    if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Não autorizado" },
-        { status: 401 }
-      );
-    }
+    const access = await authorizeApi("users");
+    if (!access.ok) return access.response;
 
     const users = await prisma.user.findMany({
       select: {
@@ -28,84 +22,49 @@ export async function GET() {
         updatedAt: true,
         image: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: { createdAt: "desc" },
+      take: 200,
     });
 
     return NextResponse.json(users);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    return NextResponse.json(
-      { error: "Erro ao buscar usuários" },
-      { status: 500 }
-    );
+  } catch {
+    console.error("admin_user_list_failed");
+    return NextResponse.json({ error: "Unable to list users" }, { status: 500 });
   }
 }
 
-// POST /api/admin/users - Create a new user
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
+    const access = await authorizeApi("users");
+    if (!access.ok) return access.response;
 
-    if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Não autorizado" },
-        { status: 401 }
-      );
-    }
-
-    const body = await request.json();
+    const body = await readJsonBody<unknown>(request, 16 * 1024);
     const validation = apiCreateUserSchema.safeParse(body);
-
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Dados inválidos", details: validation.error.flatten() },
+        { error: "Invalid user data", details: validation.error.flatten() },
         { status: 400 }
       );
     }
 
     const { name, email, password, role } = validation.data;
-
-    // Check if email already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
+    const existingUser = await prisma.user.findUnique({ where: { email }, select: { id: true } });
     if (existingUser) {
-      return NextResponse.json(
-        { error: "Este email já está cadastrado" },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: "Unable to create user" }, { status: 409 });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
+    const hashedPassword = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        role,
-        emailVerified: new Date(),
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      },
+      data: { name, email, password: hashedPassword, role, emailVerified: new Date() },
+      select: { id: true, name: true, email: true, role: true, createdAt: true },
     });
 
     return NextResponse.json(user, { status: 201 });
   } catch (error) {
-    console.error("Error creating user:", error);
-    return NextResponse.json(
-      { error: "Erro ao criar usuário" },
-      { status: 500 }
-    );
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    console.error("admin_user_create_failed");
+    return NextResponse.json({ error: "Unable to create user" }, { status: 500 });
   }
 }

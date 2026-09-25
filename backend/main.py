@@ -6,12 +6,16 @@ Fetches analytics metrics from GA4 for the admin dashboard
 import os
 import json
 import tempfile
+from collections import deque
 from datetime import datetime, timedelta
+from hmac import compare_digest
+from time import monotonic
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # Load environment variables
 load_dotenv()
@@ -36,8 +40,8 @@ def setup_credentials():
             temp_file.close()
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file.name
             return True
-        except json.JSONDecodeError as e:
-            print(f"Warning: Failed to parse GOOGLE_CREDENTIALS_JSON: {e}")
+        except json.JSONDecodeError:
+            print("google_credentials_invalid_json")
             return False
     return False
 
@@ -51,14 +55,56 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS Configuration
+FRONTEND_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("FRONTEND_ORIGINS", "").split(",")
+    if origin.strip() and origin.strip() != "*"
+]
+
+# CORS is defense in depth. API requests still require the server-to-server token.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=FRONTEND_ORIGINS,
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+
+_api_request_times: deque[float] = deque()
+_API_REQUEST_LIMIT = 120
+_API_REQUEST_WINDOW_SECONDS = 60
+_MAX_API_BODY_BYTES = 64 * 1024
+
+
+@app.middleware("http")
+async def protect_analytics_api(request: Request, call_next):
+    if not request.url.path.startswith("/api/") or request.method == "OPTIONS":
+        return await call_next(request)
+
+    expected_token = os.getenv("ANALYTICS_API_TOKEN")
+    if not expected_token or len(expected_token) < 32:
+        return JSONResponse({"detail": "Analytics service unavailable"}, status_code=503)
+
+    supplied_token = request.headers.get("authorization", "")
+    expected_header = f"Bearer {expected_token}"
+    if not compare_digest(supplied_token, expected_header):
+        return JSONResponse({"detail": "Unauthorized"}, status_code=401)
+
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        if not content_length.isdigit():
+            return JSONResponse({"detail": "Invalid request"}, status_code=400)
+        if int(content_length) > _MAX_API_BODY_BYTES:
+            return JSONResponse({"detail": "Request body too large"}, status_code=413)
+
+    now = monotonic()
+    while _api_request_times and now - _api_request_times[0] >= _API_REQUEST_WINDOW_SECONDS:
+        _api_request_times.popleft()
+    if len(_api_request_times) >= _API_REQUEST_LIMIT:
+        return JSONResponse({"detail": "Too many requests"}, status_code=429)
+    _api_request_times.append(now)
+
+    return await call_next(request)
 
 # ============ Lazy Client Initialization ============
 
@@ -75,10 +121,10 @@ def get_ga_client():
         try:
             from google.analytics.data_v1beta import BetaAnalyticsDataClient
             _client = BetaAnalyticsDataClient()
-        except Exception as e:
+        except Exception:
             raise HTTPException(
-                status_code=500, 
-                detail=f"Failed to initialize GA4 client: {str(e)}"
+                status_code=502,
+                detail="Analytics provider unavailable"
             )
     return _client
 
@@ -123,7 +169,7 @@ def run_report(
         "date_ranges": [DateRange(start_date=start_date, end_date=end_date)],
         "dimensions": [Dimension(name=d) for d in dimensions] if dimensions else [],
         "metrics": [Metric(name=m) for m in metrics],
-        "limit": limit,
+        "limit": max(1, min(limit, 1000)),
     }
     
     if dimension_filter:
@@ -134,7 +180,7 @@ def run_report(
     
     try:
         request = RunReportRequest(**request_params)
-        response = client.run_report(request)
+        response = client.run_report(request, timeout=15.0)
         
         results = []
         for row in response.rows:
@@ -151,8 +197,10 @@ def run_report(
             results.append(row_data)
         
         return results
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"GA4 API error: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=502, detail="Analytics provider unavailable")
 
 
 def run_aggregate_report(metrics: List[str], days: int, exclude_admin: bool = True) -> Dict[str, Any]:
@@ -209,7 +257,7 @@ def run_aggregate_report(metrics: List[str], days: int, exclude_admin: bool = Tr
     
     try:
         request = RunReportRequest(**request_params)
-        response = client.run_report(request)
+        response = client.run_report(request, timeout=15.0)
         
         result = {}
         if response.rows:
@@ -224,8 +272,10 @@ def run_aggregate_report(metrics: List[str], days: int, exclude_admin: bool = Tr
                 result[met] = 0
         
         return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"GA4 API error: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=502, detail="Analytics provider unavailable")
 
 
 # ============ Response Models ============
@@ -353,7 +403,7 @@ async def get_pageviews_series(days: int = Query(default=7, ge=1, le=365)):
 
 
 @app.get("/api/top-pages")
-async def get_top_pages(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=10, le=50)):
+async def get_top_pages(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=10, ge=1, le=50)):
     """Get top pages by pageviews."""
     from google.analytics.data_v1beta.types import OrderBy
     
@@ -415,7 +465,7 @@ async def get_channels(days: int = Query(default=7, ge=1, le=365)):
 
 
 @app.get("/api/referrers")
-async def get_referrers(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=15, le=50)):
+async def get_referrers(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=15, ge=1, le=50)):
     """Get referrer sources (filtered to remove debug/testing traffic)."""
     from google.analytics.data_v1beta.types import OrderBy
     
@@ -452,7 +502,7 @@ async def get_referrers(days: int = Query(default=7, ge=1, le=365), limit: int =
 
 
 @app.get("/api/countries")
-async def get_countries(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=20, le=50)):
+async def get_countries(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=20, ge=1, le=50)):
     """Get visitors by country."""
     from google.analytics.data_v1beta.types import OrderBy
     
@@ -470,7 +520,7 @@ async def get_countries(days: int = Query(default=7, ge=1, le=365), limit: int =
 
 
 @app.get("/api/cities")
-async def get_cities(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=20, le=50)):
+async def get_cities(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=20, ge=1, le=50)):
     """Get visitors by city with country info for flag display."""
     from google.analytics.data_v1beta.types import OrderBy
     
@@ -547,7 +597,7 @@ async def get_realtime():
             property=f"properties/{GA_PROPERTY_ID}",
             metrics=[Metric(name="activeUsers")],
         )
-        response = client.run_realtime_report(request)
+        response = client.run_realtime_report(request, timeout=10.0)
         
         active_users = 0
         if response.rows:
@@ -558,8 +608,9 @@ async def get_realtime():
             property=f"properties/{GA_PROPERTY_ID}",
             dimensions=[Dimension(name="unifiedScreenName")],
             metrics=[Metric(name="activeUsers")],
+            limit=50,
         )
-        response_pages = client.run_realtime_report(request_pages)
+        response_pages = client.run_realtime_report(request_pages, timeout=10.0)
         
         pages = {}
         for row in response_pages.rows:
@@ -572,8 +623,9 @@ async def get_realtime():
             property=f"properties/{GA_PROPERTY_ID}",
             dimensions=[Dimension(name="country")],
             metrics=[Metric(name="activeUsers")],
+            limit=50,
         )
-        response_countries = client.run_realtime_report(request_countries)
+        response_countries = client.run_realtime_report(request_countries, timeout=10.0)
         
         countries = {}
         for row in response_countries.rows:
@@ -586,8 +638,9 @@ async def get_realtime():
             property=f"properties/{GA_PROPERTY_ID}",
             dimensions=[Dimension(name="city"), Dimension(name="country")],
             metrics=[Metric(name="activeUsers")],
+            limit=50,
         )
-        response_cities = client.run_realtime_report(request_cities)
+        response_cities = client.run_realtime_report(request_cities, timeout=10.0)
         
         cities = []
         for row in response_cities.rows:
@@ -601,8 +654,9 @@ async def get_realtime():
             property=f"properties/{GA_PROPERTY_ID}",
             dimensions=[Dimension(name="deviceCategory")],
             metrics=[Metric(name="activeUsers")],
+            limit=50,
         )
-        response_devices = client.run_realtime_report(request_devices)
+        response_devices = client.run_realtime_report(request_devices, timeout=10.0)
         
         devices = {}
         for row in response_devices.rows:
@@ -615,8 +669,9 @@ async def get_realtime():
             property=f"properties/{GA_PROPERTY_ID}",
             dimensions=[Dimension(name="eventName")],
             metrics=[Metric(name="eventCount")],
+            limit=50,
         )
-        response_events = client.run_realtime_report(request_events)
+        response_events = client.run_realtime_report(request_events, timeout=10.0)
         
         events = {}
         for row in response_events.rows:
@@ -629,8 +684,9 @@ async def get_realtime():
             property=f"properties/{GA_PROPERTY_ID}",
             dimensions=[Dimension(name="minutesAgo")],
             metrics=[Metric(name="activeUsers")],
+            limit=50,
         )
-        response_minutes = client.run_realtime_report(request_minutes)
+        response_minutes = client.run_realtime_report(request_minutes, timeout=10.0)
         
         minutes_data = []
         for row in response_minutes.rows:
@@ -658,8 +714,10 @@ async def get_realtime():
         
         return result
     
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Realtime API error: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=502, detail="Analytics provider unavailable")
 
 
 @app.get("/api/events")
@@ -681,7 +739,7 @@ async def get_events(days: int = Query(default=7, ge=1, le=365)):
 
 
 @app.get("/api/landing-pages")
-async def get_landing_pages(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=10, le=50)):
+async def get_landing_pages(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=10, ge=1, le=50)):
     """Get entry/landing pages."""
     from google.analytics.data_v1beta.types import OrderBy
     
@@ -706,7 +764,7 @@ async def get_landing_pages(days: int = Query(default=7, ge=1, le=365), limit: i
 
 
 @app.get("/api/exit-pages")
-async def get_exit_pages(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=10, le=50)):
+async def get_exit_pages(days: int = Query(default=7, ge=1, le=365), limit: int = Query(default=10, ge=1, le=50)):
     """Get exit pages (pages where users leave). Note: Using pagePath with exits metric."""
     from google.analytics.data_v1beta.types import OrderBy
     
@@ -739,16 +797,16 @@ def load_cache() -> Dict[str, Optional[Dict[str, float]]]:
         try:
             with open(CACHE_FILE, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except Exception as e:
-            print(f"Error loading cache: {e}")
+        except Exception:
+            print("geocoding_cache_load_failed")
     return {}
 
 def save_cache(cache: Dict[str, Optional[Dict[str, float]]]):
     try:
         with open(CACHE_FILE, 'w', encoding='utf-8') as f:
             json.dump(cache, f, indent=2)
-    except Exception as e:
-        print(f"Error saving cache: {e}")
+    except Exception:
+        print("geocoding_cache_save_failed")
 
 geocoding_cache: Dict[str, Optional[Dict[str, float]]] = load_cache()
 
@@ -765,7 +823,7 @@ def geocode_city_cached(city: str, country: str) -> Optional[Dict[str, float]]:
                 "limit": 1,
             },
             headers={"User-Agent": "PAI-Dental-Analytics/1.0 (ferramenta interna de analise)"},
-            timeout=5.0,
+            timeout=2.0,
         )
         response.raise_for_status()
         data = response.json()
@@ -776,13 +834,19 @@ def geocode_city_cached(city: str, country: str) -> Optional[Dict[str, float]]:
                 "lng": float(data[0]["lon"]),
             }
         return None
-    except Exception as e:
-        print(f"Geocoding error for {city}: {e}")
+    except Exception:
+        print("geocoding_provider_unavailable")
         return None
 
 
+class GeocodeCityInput(BaseModel):
+    city: str = Field(max_length=100)
+    country: str = Field(default="", max_length=100)
+    users: int = Field(default=0, ge=0, le=1_000_000_000)
+
+
 class GeocodeBatchRequest(BaseModel):
-    cities: List[Dict[str, Any]]  # Changed from str to Any to accept 'users' integer
+    cities: List[GeocodeCityInput] = Field(max_length=20)
 
 
 class GeocodedCity(BaseModel):
@@ -802,7 +866,9 @@ async def geocode_cities(request: GeocodeBatchRequest):
     for item in request.cities:
         city = item.get("city", "")
         country = item.get("country", "")
-        users = item.get("users", 0)
+        users = item.users
+        city = item.city
+        country = item.country
         
         # Skip invalid cities
         if not city or city == "(not set)":
@@ -889,7 +955,7 @@ async def get_seo_overview(days: int = Query(default=28, ge=1, le=90)):
     }
 
 @app.get("/api/seo/queries")
-async def get_seo_queries(days: int = Query(default=28), limit: int = 20):
+async def get_seo_queries(days: int = Query(default=28, ge=1, le=90), limit: int = Query(default=20, ge=1, le=100)):
     """Get top search queries."""
     start_str, end_str = gsc.get_date_range(days)
     rows = gsc.fetch_search_analytics(start_str, end_str, dimensions=['query'], row_limit=limit)
@@ -907,7 +973,7 @@ async def get_seo_queries(days: int = Query(default=28), limit: int = 20):
     return {"queries": results, "period": f"{days}d"}
 
 @app.get("/api/seo/pages")
-async def get_seo_pages(days: int = Query(default=28), limit: int = 20):
+async def get_seo_pages(days: int = Query(default=28, ge=1, le=90), limit: int = Query(default=20, ge=1, le=100)):
     """Get top performing pages."""
     start_str, end_str = gsc.get_date_range(days)
     rows = gsc.fetch_search_analytics(start_str, end_str, dimensions=['page'], row_limit=limit)

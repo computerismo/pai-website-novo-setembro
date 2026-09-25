@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { LeadsContainer } from "@/components/admin/leads/LeadsContainer";
+import { requirePageAccess } from "@/lib/security/authorization";
 
 // Skip static prerendering - render on demand
 export const dynamic = 'force-dynamic';
@@ -16,6 +17,7 @@ export default async function LeadsPage({
     to?: string;
   }>;
 }) {
+  await requirePageAccess("leads");
   const params = await searchParams;
   const { q, status, treatment, source, from, to } = params;
   
@@ -101,7 +103,7 @@ export default async function LeadsPage({
     },
   ]);
 
-  const treatments = allTreatments.map(t => t.treatment).filter(Boolean);
+  const treatments = allTreatments.map((item) => item.treatment).filter((value): value is string => Boolean(value));
   const utmSources = allSources.map(s => s.utmSource).filter(Boolean) as string[];
 
   return (

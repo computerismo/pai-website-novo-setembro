@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { authorizeApi } from '@/lib/security/authorization';
 import { umamiClient } from '@/lib/umami';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const access = await authorizeApi('analytics');
+  if (!access.ok) return access.response;
 
   if (!umamiClient.isConfigured()) {
     return NextResponse.json({ 
@@ -29,11 +27,8 @@ export async function GET() {
       activeVisitors: activeVisitors.visitors,
       timestamp: Date.now(),
     });
-  } catch (error) {
-    console.error('Failed to fetch realtime analytics:', error);
-    return NextResponse.json({ 
-      error: 'Failed to fetch analytics',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+  } catch {
+    console.error('umami_realtime_fetch_failed');
+    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 502 });
   }
 }
