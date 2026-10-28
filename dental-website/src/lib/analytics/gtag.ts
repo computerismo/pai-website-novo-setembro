@@ -51,17 +51,32 @@ export const trackFormView = (source: string) => {
 };
 
 // Track lead form submissions
-export const trackLead = () => {
+export const trackLead = (data: {
+  treatment: string;
+  page: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+}) => {
   event('generate_lead', {
     event_category: 'form',
-    event_label: 'contact_form',
+    event_label: `${data.treatment} - ${data.page}`,
   });
 
   // Custom conversion event
   event('conversion', {
     event_category: 'lead',
+    event_label: data.treatment,
     value: 1,
   });
+
+  // Track campaign source if available
+  if (data.utm_source) {
+    event('campaign_conversion', {
+      event_category: data.utm_source,
+      event_label: data.utm_campaign || 'unknown',
+    });
+  }
 };
 
 // Track WhatsApp clicks

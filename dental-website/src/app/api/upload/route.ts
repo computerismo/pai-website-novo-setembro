@@ -1,61 +1,42 @@
-import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import { NextRequest, NextResponse } from "next/server";
-import path from "node:path";
-import { authorizeApi } from "@/lib/security/authorization";
-import { MAX_IMAGE_BYTES, validateImageUpload } from "@/lib/security/image-upload";
-import { readRequestBytes, RequestBodyError } from "@/lib/security/request-body";
 
-const MAX_MULTIPART_BYTES = MAX_IMAGE_BYTES + 64 * 1024;
+import { writeFile, mkdir } from 'fs/promises';
+import { NextRequest, NextResponse } from 'next/server';
+import path from 'path';
 
 export async function POST(request: NextRequest) {
-  const access = await authorizeApi("content");
-  if (!access.ok) return access.response;
-  const contentType = request.headers.get("content-type")?.split(";")[0].trim().toLowerCase();
-  if (contentType !== "multipart/form-data") {
-    return NextResponse.json({ error: "Invalid upload request" }, { status: 400 });
-  }
-
   try {
-    const multipartBytes = await readRequestBytes(request, MAX_MULTIPART_BYTES);
-    const boundedRequest = new Request(request.url, {
-      method: "POST",
-      headers: { "Content-Type": request.headers.get("content-type")! },
-      body: Buffer.from(multipartBytes),
-    });
+    const data = await request.formData();
+    const file: File | null = data.get('file') as unknown as File;
 
-    let formData: FormData;
-    try {
-      formData = await boundedRequest.formData();
-    } catch {
-      return NextResponse.json({ error: "Invalid upload request" }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
-    const file = formData.get("file");
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: "Image is required" }, { status: 400 });
-    }
-    if (file.size > MAX_IMAGE_BYTES) {
-      return NextResponse.json({ error: "Image is too large" }, { status: 413 });
-    }
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const image = validateImageUpload(file.type, file.size, bytes);
-    if (!image) {
-      return NextResponse.json({ error: "Unsupported or invalid image" }, { status: 415 });
-    }
-
-    const filename = `${randomUUID()}${image.extension}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    // Sanitize filename
+    const filename = file.name.replace(/[^a-zA-Z0-9.-]/g, '');
+    const uniqueFilename = `${Date.now()}-${filename}`;
+    
+    // Ensure uploads directory exists (should be handled by deployment, but good for local)
+    // Note: In Vercel/Railway ephemeral instances, this persists only for the lifetime of the container
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    
+    // Create directory if it doesn't exist (fixing local dev issue)
     await mkdir(uploadDir, { recursive: true });
-    await writeFile(path.join(uploadDir, filename), bytes, { flag: "wx" });
 
-    return NextResponse.json({ success: true, url: `/uploads/${filename}` }, { status: 201 });
+    const filepath = path.join(uploadDir, uniqueFilename);
+    
+    // In a real production app without persistent volumes, you'd upload to S3/R2 here
+    await writeFile(filepath, buffer);
+
+    return NextResponse.json({ 
+      success: true, 
+      url: `/uploads/${uniqueFilename}` 
+    });
   } catch (error) {
-    if (error instanceof RequestBodyError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
-    }
-    console.error("media_upload_failed");
-    return NextResponse.json({ error: "Unable to upload image" }, { status: 500 });
+    console.error('Upload error:', error);
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }
 }

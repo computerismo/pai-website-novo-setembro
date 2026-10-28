@@ -23,6 +23,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
+        console.log("Login attempt for:", credentials?.email);
         const user = await prisma.user.findUnique({
           where: {
             email: credentials.email as string,
@@ -30,17 +31,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
 
         if (!user) {
+          console.log("User not found in DB");
           return null;
         }
 
+        console.log("User found, comparing password...");
         const passwordMatch = await bcrypt.compare(
           credentials.password as string,
           user.password
         );
 
         if (!passwordMatch) {
+          console.log("Password mismatch. DB Hash:", user.password);
           return null;
         }
+
+        console.log("Login successful!");
 
         return {
           id: user.id,

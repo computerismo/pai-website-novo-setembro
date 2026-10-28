@@ -1,23 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { useUTMParams } from '@/lib/hooks/useUTMParams';
 import { trackLead, trackFormView } from '@/lib/analytics/gtag';
 
 const schema = z.object({
-  name: z.string().trim().min(2, 'Informe seu nome.').max(100),
-  email: z.string().trim().max(254).email('Informe um e-mail válido.'),
-  phone: z.string().trim().min(8, 'Informe um telefone válido.').max(24).regex(/^[+\d\s().-]+$/),
-  acceptTerms: z.boolean().refine((value) => value, {
-    message: 'Autorize o contato para continuar.',
+  name: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
+  email: z.string().email('Email inválido'),
+  phone: z.string().min(10, 'Telefone inválido'),
+  treatment: z.string().min(1, 'Selecione um tratamento'),
+  message: z.string().optional(),
+  acceptTerms: z.boolean().refine(val => val === true, {
+    message: 'Você deve aceitar os termos',
   }),
-  website: z.string().max(0),
+  website: z.string().max(0), // Honeypot
 });
 
 type FormData = z.infer<typeof schema>;
@@ -27,6 +30,8 @@ interface LeadFormProps {
   source?: string;
   onSuccess?: () => void;
   isInModal?: boolean;
+  treatmentOptions?: Array<{ value: string; label: string }>;
+  defaultTreatment?: string;
 }
 
 export function LeadForm({
@@ -34,13 +39,19 @@ export function LeadForm({
   source = 'website',
   onSuccess,
   isInModal = false,
+  treatmentOptions: configuredTreatmentOptions,
+  defaultTreatment,
 }: LeadFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const { utmParams } = useUTMParams();
 
+  // Track form view on static pages (not in modal)
+  // If in modal, parent component already tracked the "Open" event
   useEffect(() => {
-    if (!isInModal) trackFormView(source);
+    if (!isInModal) {
+      trackFormView(source);
+    }
   }, [isInModal, source]);
 
   const {
@@ -48,10 +59,19 @@ export function LeadForm({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      treatment: defaultTreatment,
+    },
+  });
 
   const onSubmit = async (data: FormData) => {
-    if (data.website) return;
+    // Honeypot check
+    if (data.website) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -59,37 +79,53 @@ export function LeadForm({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          acceptTerms: data.acceptTerms,
-          website: data.website,
+          ...data,
           campaignId,
           source,
-          utm_source: utmParams.utm_source,
-          utm_medium: utmParams.utm_medium,
-          utm_campaign: utmParams.utm_campaign,
+          timestamp: new Date().toISOString(),
+          page: window.location.pathname,
+          ...utmParams,
         }),
       });
 
-      if (!response.ok) throw new Error('Lead submission failed');
+      if (!response.ok) throw new Error('Erro ao enviar');
+
       setSubmitSuccess(true);
       reset();
       onSuccess?.();
-      trackLead();
+
+      // Track conversion
+      trackLead({
+        treatment: data.treatment,
+        page: window.location.pathname,
+        ...utmParams,
+      });
+
+      // Reset success message after 5 seconds
       setTimeout(() => setSubmitSuccess(false), 5000);
-    } catch {
-      console.error('lead_form_submit_failed');
+    } catch (error) {
+      console.error('Erro ao enviar formulário:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const treatmentOptions = [
+    { value: 'bruxismo', label: 'Tratamento de Bruxismo' },
+    { value: 'placa', label: 'Placa Miorrelaxante' },
+    { value: 'botox', label: 'Aplicação de Botox' },
+    { value: 'dtm', label: 'Disfunção Temporomandibular' },
+    { value: 'avaliacao', label: 'Avaliação Diagnóstica' },
+    { value: 'outros', label: 'Outros Tratamentos' },
+  ];
+
+  const availableTreatmentOptions = configuredTreatmentOptions ?? treatmentOptions;
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {submitSuccess && (
         <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
-          Formulário enviado com sucesso! Entraremos em contato em breve.
+          ✓ Formulário enviado com sucesso! Entraremos em contato em breve.
         </div>
       )}
 
@@ -100,8 +136,9 @@ export function LeadForm({
           error={errors.name?.message}
           {...register('name')}
         />
+
         <Input
-          label="E-mail"
+          label="Email"
           type="email"
           placeholder="seu@email.com"
           error={errors.email?.message}
@@ -109,27 +146,40 @@ export function LeadForm({
         />
       </div>
 
-      <div className="max-w-md">
+      <div className="grid md:grid-cols-2 gap-4">
         <Input
           label="WhatsApp"
           placeholder="(11) 99999-9999"
           error={errors.phone?.message}
           {...register('phone')}
         />
+
+        <Select
+          label="Tratamento de interesse"
+          options={availableTreatmentOptions}
+          error={errors.treatment?.message}
+          {...register('treatment')}
+        />
       </div>
 
+      <Input
+        label="Mensagem (opcional)"
+        placeholder="Conte-nos mais sobre seu caso..."
+        {...register('message')}
+      />
+
       <Checkbox
-        label="Autorizo a equipe a entrar em contato sobre minha solicitação."
+        label="Aceito receber contato sobre o tratamento e informações relacionadas"
         error={errors.acceptTerms?.message}
         {...register('acceptTerms')}
       />
 
+      {/* Honeypot field - hidden from users */}
       <input
         type="text"
         className="hidden"
         tabIndex={-1}
         autoComplete="off"
-        aria-hidden="true"
         {...register('website')}
       />
 
@@ -140,11 +190,11 @@ export function LeadForm({
         isLoading={isSubmitting}
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Enviando...' : 'Solicitar avaliação'}
+        {isSubmitting ? 'Enviando...' : 'Solicitar Avaliação'}
       </Button>
 
       <p className="text-xs text-gray-500 text-center">
-        Não inclua informações clínicas neste formulário.
+        Suas informações estão seguras e não serão compartilhadas com terceiros.
       </p>
     </form>
   );

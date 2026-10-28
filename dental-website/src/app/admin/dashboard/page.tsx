@@ -1,5 +1,6 @@
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { requirePageAccess } from "@/lib/security/authorization";
+import { redirect } from "next/navigation";
 import StatsCard from "@/components/admin/StatsCard";
 import { LeadsChart } from "@/components/admin/LeadsChart";
 import { ConversionFunnel } from "@/components/admin/ConversionFunnel";
@@ -13,7 +14,11 @@ import { ptBR } from "date-fns/locale";
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
-  const user = await requirePageAccess("dashboard");
+  const session = await auth();
+
+  if (!session) {
+    redirect("/login");
+  }
 
   // Calculate date 24 hours ago for stale leads
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -115,7 +120,7 @@ export default async function DashboardPage() {
       <div>
         <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
         <p className="text-slate-500 mt-1">
-          Bem-vindo de volta, <span className="font-medium text-slate-700">{user.name || "Admin"}</span>!
+          Bem-vindo de volta, <span className="font-medium text-slate-700">{session.user?.name || "Admin"}</span>!
         </p>
       </div>
 

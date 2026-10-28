@@ -1,43 +1,42 @@
-﻿import { PrismaClient } from '@prisma/client';
+
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-function requireDisposableLocalDatabase() {
-  if (process.env.RUN_DISPOSABLE_DB_TESTS !== 'true') {
-    throw new Error('Set RUN_DISPOSABLE_DB_TESTS=true to run this write-and-cleanup check.');
-  }
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error('DATABASE_URL is required.');
-  const databaseUrl = new URL(connectionString);
-  if (!['localhost', '127.0.0.1', '[::1]'].includes(databaseUrl.hostname)) {
-    throw new Error('This database test is restricted to a disposable local database.');
-  }
-}
-
 async function main() {
   try {
-    requireDisposableLocalDatabase();
+    console.log('1. Connecting to DB...');
+    // Fetch the admin user to be the author
     const author = await prisma.user.findFirst({
-      where: { role: 'admin' },
-      select: { id: true },
+      where: { email: 'admin@dental.com' }
     });
-    if (!author) throw new Error('No administrator is available for this local check.');
 
+    if (!author) {
+      console.error('❌ No admin user found! Cannot create post without author.');
+      return;
+    }
+    console.log(`✅ Found author: ${author.name} (${author.id})`);
+
+    console.log('2. Creating test post...');
     const post = await prisma.post.create({
       data: {
-        title: 'Disposable local test post',
-        slug: `disposable-local-test-${Date.now()}`,
-        content: '<p>Disposable local fixture.</p>',
+        title: 'Test Post from Script',
+        slug: 'test-post-script-' + Date.now(),
+        content: '<p>This is a test post content.</p>',
         status: 'draft',
         authorId: author.id,
       },
-      select: { id: true },
     });
+
+    console.log(`✅ Post created successfully! ID: ${post.id}`);
+    console.log('Title:', post.title);
+    
+    // Clean up
     await prisma.post.delete({ where: { id: post.id } });
-    console.log('disposable_post_check_ok');
-  } catch {
-    console.error('disposable_post_check_failed');
-    process.exitCode = 1;
+    console.log('3. Cleaned up (deleted test post).');
+
+  } catch (e) {
+    console.error('❌ Error creating post:', e);
   } finally {
     await prisma.$disconnect();
   }

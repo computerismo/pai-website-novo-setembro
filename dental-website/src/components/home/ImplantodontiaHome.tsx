@@ -94,6 +94,10 @@ const faqData = [
   { id: 'faq-cuidados-implante', question: 'Como cuidar de um implante dentário?', answer: 'A higiene diária cuidadosa e as consultas periódicas são essenciais. A equipe orienta o uso de escova, fio ou outros recursos de higiene de acordo com a prótese instalada.' },
 ];
 
+const implantodontiaTreatmentOptions = [
+  { value: 'implantodontia', label: 'Implantodontia' },
+];
+
 export default function ImplantodontiaHome() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -222,7 +226,7 @@ export default function ImplantodontiaHome() {
 
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Agendar avaliação de implantodontia">
           <p className="text-sm text-gray-500 mb-4">Preencha seus dados e nossa equipe entrará em contato para combinar sua avaliação.</p>
-          <LeadForm campaignId="implantodontia-homepage" source="implantodontia-homepage" isInModal={true} onSuccess={() => setTimeout(() => setIsModalOpen(false), 3000)} />
+          <LeadForm campaignId="implantodontia-homepage" source="implantodontia-homepage" treatmentOptions={implantodontiaTreatmentOptions} defaultTreatment="implantodontia" isInModal={true} onSuccess={() => setTimeout(() => setIsModalOpen(false), 3000)} />
         </Modal>
       </main>
       <Footer />

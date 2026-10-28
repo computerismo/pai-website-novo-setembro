@@ -3,6 +3,10 @@
  * Fetches data from the FastAPI backend
  */
 
+// Backend URL - defaults to localhost for development
+const GA_BACKEND_URL =
+  process.env.NEXT_PUBLIC_GA_BACKEND_URL || "http://127.0.0.1:8000";
+
 /**
  * Helper to convert period string to days number
  */
@@ -23,10 +27,7 @@ async function fetchGA4<T>(
   endpoint: string,
   params?: Record<string, string | number>
 ): Promise<T> {
-  const url = new URL(
-    `/api/admin/analytics/ga4${endpoint}`,
-    window.location.origin
-  );
+  const url = new URL(endpoint, GA_BACKEND_URL);
 
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
@@ -34,10 +35,13 @@ async function fetchGA4<T>(
     });
   }
 
-  const response = await fetch(url.toString(), { cache: "no-store" });
+  const response = await fetch(url.toString());
 
   if (!response.ok) {
-    throw new Error("Analytics request failed");
+    const error = await response
+      .json()
+      .catch(() => ({ detail: "Unknown error" }));
+    throw new Error(error.detail || `API error: ${response.status}`);
   }
 
   return response.json();
@@ -301,17 +305,16 @@ export async function getAllAnalyticsData(period: string) {
 export async function geocodeCities(
   cities: Array<{ city: string; country: string; users: number }>
 ): Promise<GeocodeCitiesResponse> {
-  const response = await fetch(`/api/admin/analytics/ga4/api/geocode-cities`, {
+  const response = await fetch(`${GA_BACKEND_URL}/api/geocode-cities`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ cities }),
-    cache: 'no-store',
   });
   
   if (!response.ok) {
-    throw new Error('Geocoding request failed');
+    throw new Error(`Geocoding failed: ${response.status}`);
   }
   
   return response.json();

@@ -10,8 +10,6 @@ import { BlogPostContent } from "@/components/blog/BlogPostContent";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
 
 import { Metadata } from "next";
-import { sanitizePostHtml } from "@/lib/security/post-html";
-import { publicPostWhere } from "@/lib/security/post-visibility";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -22,7 +20,7 @@ interface BlogPostPageProps {
 export async function generateStaticParams() {
   try {
     const posts = await prisma.post.findMany({
-      where: publicPostWhere(),
+      where: { status: "published" },
       select: { slug: true },
     });
 
@@ -44,8 +42,8 @@ export async function generateMetadata({
 }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  const post = await prisma.post.findFirst({
-    where: { slug, ...publicPostWhere() },
+  const post = await prisma.post.findUnique({
+    where: { slug },
     include: {
       author: { select: { name: true } },
       tags: { select: { name: true } },
@@ -84,15 +82,15 @@ export async function generateMetadata({
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
 
-  const postData = await prisma.post.findFirst({
-    where: { slug, ...publicPostWhere() },
+  const postData = await prisma.post.findUnique({
+    where: { slug },
     include: {
       author: { select: { name: true } },
       tags: { select: { id: true, name: true, slug: true } },
     },
   });
 
-  if (!postData) {
+  if (!postData || postData.status !== "published") {
     notFound();
   }
 
@@ -105,7 +103,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   // Get related posts (same category or shared tags)
   const relatedPostsData = await prisma.post.findMany({
     where: {
-      ...publicPostWhere(),
+      status: "published",
+      publishedAt: { lte: new Date() },
       slug: { not: slug },
       OR: [{ tags: { some: { id: { in: postData.tags.map((t) => t.id) } } } }],
     },
@@ -122,7 +121,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     slug: postData.slug,
     title: postData.title,
     excerpt: postData.excerpt || "",
-    content: sanitizePostHtml(postData.content),
+    content: postData.content,
     date:
       postData.publishedAt?.toISOString() || postData.createdAt.toISOString(),
     author: postData.author.name || "Admin",

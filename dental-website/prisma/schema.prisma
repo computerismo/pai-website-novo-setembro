@@ -18,7 +18,7 @@ model User {
   emailVerified DateTime?
   password      String
   image         String?
-  role          String    @default("viewer") // admin, editor, viewer
+  role          String    @default("admin") // admin, editor, viewer
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   posts         Post[]
@@ -133,10 +133,8 @@ model Lead {
   name          String
   email         String
   phone         String
-  treatment     String?
+  treatment     String
   message       String?  @db.Text
-  consentAt     DateTime?
-  consentPolicyVersion String?
 
   // Tracking fields
   utmSource     String?
@@ -166,15 +164,6 @@ model Lead {
   @@index([assignedToId])
   history       LeadHistory[]
   leadNotes     LeadNote[]
-}
-
-// Short-lived, privacy-preserving buckets for public lead submission throttling.
-model LeadSubmissionBucket {
-  key       String   @id
-  count     Int      @default(0)
-  expiresAt DateTime
-
-  @@index([expiresAt])
 }
 
 // Lead Note model for individualized, chronological notes

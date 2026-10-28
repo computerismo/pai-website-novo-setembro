@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { authorizeApi } from '@/lib/security/authorization';
+import { auth } from '@/lib/auth';
 import { umamiClient } from '@/lib/umami';
 
 export const dynamic = 'force-dynamic';
@@ -14,8 +14,11 @@ const periodMap: Record<PeriodKey, number> = {
 };
 
 export async function GET(request: Request) {
-  const access = await authorizeApi('analytics');
-  if (!access.ok) return access.response;
+  // Verify admin authentication
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   // Check if Umami is configured
   if (!umamiClient.isConfigured()) {
@@ -26,8 +29,7 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const candidate = searchParams.get('period') || '7d';
-  const period: PeriodKey = candidate in periodMap ? candidate as PeriodKey : '7d';
+  const period = (searchParams.get('period') || '7d') as PeriodKey;
 
   // Calculate date range
   const endAt = Date.now();
@@ -61,8 +63,11 @@ export async function GET(request: Request) {
       startAt,
       endAt,
     });
-  } catch {
-    console.error('umami_behavior_fetch_failed');
-    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 502 });
+  } catch (error) {
+    console.error('Failed to fetch behavior analytics:', error);
+    return NextResponse.json({ 
+      error: 'Failed to fetch analytics',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }

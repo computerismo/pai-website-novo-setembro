@@ -4,93 +4,103 @@ import { prisma } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { logLeadHistory } from './lead-history';
-import { authorizeServerAction } from '@/lib/security/authorization';
+import { auth } from '@/lib/auth';
 
-const leadIdSchema = z.string().min(1).max(128);
 const updateStatusSchema = z.object({
-  id: leadIdSchema,
+  id: z.string(),
   status: z.enum(['new', 'contacted', 'qualified', 'converted']),
 });
 
 export async function updateLeadStatus(formData: FormData) {
-  const actor = await authorizeServerAction('leads');
-  if (!actor) return { success: false, message: 'Não autorizado' };
-
-  const parsed = updateStatusSchema.safeParse({
-    id: formData.get('id'),
-    status: formData.get('status'),
-  });
-  if (!parsed.success) return { success: false, message: 'Dados inválidos' };
+  const id = formData.get('id') as string;
+  const status = formData.get('status') as string;
 
   try {
+    const validated = updateStatusSchema.parse({ id, status });
+
+    // Get previous status for logging
     const previousLead = await prisma.lead.findUnique({
-      where: { id: parsed.data.id },
-      select: { status: true },
+      where: { id: validated.id },
+      select: { status: true }
     });
 
     await prisma.lead.update({
-      where: { id: parsed.data.id },
-      data: { status: parsed.data.status },
+      where: { id: validated.id },
+      data: { status: validated.status },
     });
 
-    if (previousLead && previousLead.status !== parsed.data.status) {
-      await logLeadHistory(parsed.data.id, 'STATUS_CHANGE', 'Lead status updated');
+    if (previousLead && previousLead.status !== validated.status) {
+      const statusMap: Record<string, string> = {
+        new: 'Novo',
+        contacted: 'Contactado',
+        qualified: 'Qualificados',
+        converted: 'Convertido'
+      };
+      
+      const oldStatus = statusMap[previousLead.status] || previousLead.status;
+      const newStatus = statusMap[validated.status] || validated.status;
+
+      await logLeadHistory(
+        validated.id, 
+        'ALTERAÇÃO_DE_STATUS', 
+        `Status alterado de "${oldStatus}" para "${newStatus}"`
+      );
     }
 
     revalidatePath('/admin/leads');
     return { success: true, message: 'Status atualizado com sucesso' };
-  } catch {
-    console.error('lead_status_update_failed');
+  } catch (error) {
+    console.error('Error updating lead status:', error);
     return { success: false, message: 'Erro ao atualizar status' };
   }
 }
 
 const addNoteSchema = z.object({
-  id: leadIdSchema,
-  note: z.string().trim().min(1).max(2000),
+  id: z.string(),
+  note: z.string().min(1, 'A nota não pode estar vazia'),
 });
 
 export async function addLeadNote(formData: FormData) {
-  const actor = await authorizeServerAction('leads');
-  if (!actor) return { success: false, message: 'Não autorizado' };
-
-  const parsed = addNoteSchema.safeParse({
-    id: formData.get('id'),
-    note: formData.get('note'),
-  });
-  if (!parsed.success) return { success: false, message: 'Dados inválidos' };
+  const id = formData.get('id') as string;
+  const note = formData.get('note') as string;
 
   try {
+    const session = await auth();
+    const validated = addNoteSchema.parse({ id, note });
+
     await prisma.leadNote.create({
       data: {
-        leadId: parsed.data.id,
-        content: parsed.data.note,
-        createdBy: actor.name || 'Admin',
-        userId: actor.id,
+        leadId: validated.id,
+        content: validated.note,
+        createdBy: session?.user?.name || 'System',
+        userId: session?.user?.id,
       },
     });
 
-    await logLeadHistory(parsed.data.id, 'NOTE_ADDED', 'Lead note added');
+    await logLeadHistory(
+      validated.id, 
+      'NOTA_ADICIONADA', 
+      'Nova anotação adicionada'
+    );
+
     revalidatePath('/admin/leads');
     return { success: true, message: 'Nota adicionada com sucesso' };
-  } catch {
-    console.error('lead_note_create_failed');
+  } catch (error) {
+    console.error('Error adding lead note:', error);
     return { success: false, message: 'Erro ao adicionar nota' };
   }
 }
 
 export async function deleteLead(id: string) {
-  const actor = await authorizeServerAction('leads');
-  if (!actor) return { success: false, message: 'Não autorizado' };
-  const parsedId = leadIdSchema.safeParse(id);
-  if (!parsedId.success) return { success: false, message: 'Dados inválidos' };
-
   try {
-    await prisma.lead.delete({ where: { id: parsedId.data } });
+    await prisma.lead.delete({
+      where: { id },
+    });
+    
     revalidatePath('/admin/leads');
     return { success: true, message: 'Lead excluído com sucesso' };
-  } catch {
-    console.error('lead_delete_failed');
+  } catch (error) {
+    console.error('Error deleting lead:', error);
     return { success: false, message: 'Erro ao excluir lead' };
   }
 }

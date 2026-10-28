@@ -4,8 +4,6 @@ import datetime
 from typing import List, Dict, Any, Optional
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from google_auth_httplib2 import AuthorizedHttp
-import httplib2
 from fastapi import HTTPException
 import json
 import tempfile
@@ -32,8 +30,8 @@ def get_gsc_service():
             try:
                 creds_data = json.loads(creds_json)
                 credentials = service_account.Credentials.from_service_account_info(creds_data)
-            except json.JSONDecodeError:
-                print("google_credentials_invalid_json")
+            except json.JSONDecodeError as e:
+                print(f"Warning: Failed to parse GOOGLE_CREDENTIALS_JSON: {e}")
         
         if not credentials and creds_path and os.path.exists(creds_path):
              credentials = service_account.Credentials.from_service_account_file(creds_path)
@@ -47,16 +45,10 @@ def get_gsc_service():
         if not credentials:
             raise Exception("No valid Google credentials found.")
 
-        authorized_http = AuthorizedHttp(credentials, http=httplib2.Http(timeout=10))
-        _gsc_service = build(
-            'searchconsole',
-            'v1',
-            http=authorized_http,
-            cache_discovery=False,
-        )
+        _gsc_service = build('searchconsole', 'v1', credentials=credentials)
         return _gsc_service
-    except Exception:
-        print("gsc_service_initialization_failed")
+    except Exception as e:
+        print(f"Failed to initialize GSC service: {e}")
         return None
 
 def get_date_range(days: int) -> tuple:
@@ -88,17 +80,17 @@ def fetch_search_analytics(
         'startDate': start_date,
         'endDate': end_date,
         'dimensions': dimensions or [],
-        'rowLimit': max(1, min(row_limit, 100))
+        'rowLimit': row_limit
     }
 
     try:
         response = service.searchanalytics().query(
             siteUrl=GSC_PROPERTY_URL, 
             body=request
-        ).execute(num_retries=0)
+        ).execute()
         return response.get('rows', [])
-    except Exception:
-        raise HTTPException(status_code=502, detail="Search Console provider unavailable")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"GSC Query Error: {str(e)}")
 
 def get_sitemaps_status():
     """List sitemaps and their status."""
@@ -110,9 +102,9 @@ def get_sitemaps_status():
         raise HTTPException(status_code=500, detail="GSC_PROPERTY_URL not configured")
         
     try:
-        response = service.sitemaps().list(siteUrl=GSC_PROPERTY_URL).execute(num_retries=0)
-        return response.get('sitemap', [])[:100]
-    except Exception:
+        response = service.sitemaps().list(siteUrl=GSC_PROPERTY_URL).execute()
+        return response.get('sitemap', [])
+    except Exception as e:
         # It's possible to have no permissions specifically for sitemaps or no sitemaps submitted
-        print("gsc_sitemaps_fetch_failed")
+        print(f"Sitemap fetch error: {e}")
         return []

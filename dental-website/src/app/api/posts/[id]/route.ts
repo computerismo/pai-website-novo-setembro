@@ -1,165 +1,181 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
-import { z } from "zod";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { authorizeApi, getCurrentUser } from "@/lib/security/authorization";
-import { canAccessArea } from "@/lib/security/role-policy";
-import { readJsonBody, RequestBodyError } from "@/lib/security/request-body";
-import { sanitizePostHtml } from "@/lib/security/post-html";
-import { publicPostWhere } from "@/lib/security/post-visibility";
+import { z } from "zod";
 
-const MAX_POST_BODY_BYTES = 256 * 1024;
-const idSchema = z.string().min(1).max(128);
-const postPatchSchema = z.object({
-  title: z.string().trim().min(1).max(200).optional(),
-  slug: z.string().trim().min(1).max(160).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).optional(),
-  excerpt: z.string().max(1000).optional(),
-  content: z.string().min(1).max(200_000).optional(),
-  featuredImage: z.string().max(2048).optional(),
+const postSchema = z.object({
+  title: z.string().min(1).optional(),
+  slug: z.string().min(1).optional(),
+  excerpt: z.string().optional(),
+  content: z.string().min(1).optional(),
+  featuredImage: z.string().optional(),
   status: z.enum(["draft", "published", "scheduled"]).optional(),
-  publishedAt: z.string().datetime().nullable().optional(),
+  publishedAt: z.string().optional(),
   featured: z.boolean().optional(),
-  tags: z.array(z.string().min(1).max(128)).max(20).optional(),
-  seoTitle: z.string().max(200).optional(),
-  seoDescription: z.string().max(500).optional(),
-}).refine((value) => Object.keys(value).length > 0);
 
-interface RouteParams {
-  params: Promise<{ id: string }>;
-}
+  tags: z.array(z.string()).optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+});
 
-type PostWithRelations = Prisma.PostGetPayload<{
-  include: {
-    author: { select: { name: true } };
-    tags: { select: { id: true; name: true; slug: true } };
-  };
-}>;
-
-function toPostResponse(post: PostWithRelations) {
-  return {
-    id: post.id,
-    title: post.title,
-    slug: post.slug,
-    excerpt: post.excerpt,
-    content: sanitizePostHtml(post.content),
-    featuredImage: post.featuredImage,
-    status: post.status,
-    publishedAt: post.publishedAt,
-    featured: post.featured,
-    readingTime: post.readingTime,
-    views: post.views,
-    seoTitle: post.seoTitle,
-    seoDescription: post.seoDescription,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-    author: { name: post.author?.name ?? null },
-    tags: post.tags,
-  };
-}
-
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+// GET /api/posts/[id] - Get a single post
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const parsedId = idSchema.safeParse((await params).id);
-    if (!parsedId.success) return NextResponse.json({ error: "Post not found" }, { status: 404 });
-
-    const user = await getCurrentUser();
-    const canManage = Boolean(user && canAccessArea(user.role, "content"));
-    const post = await prisma.post.findFirst({
-      where: canManage
-        ? { id: parsedId.data }
-        : { id: parsedId.data, ...publicPostWhere() },
+    const { id } = await params;
+    
+    const post = await prisma.post.findUnique({
+      where: { id },
       include: {
-        author: { select: { name: true } },
-        tags: { select: { id: true, name: true, slug: true } },
+        author: { select: { id: true, name: true, email: true } },
+
+        tags: true,
       },
     });
 
-    if (!post) return NextResponse.json({ error: "Post not found" }, { status: 404 });
-    if (!canManage) {
-      await prisma.post.update({ where: { id: post.id }, data: { views: { increment: 1 } } });
-      post.views += 1;
+    if (!post) {
+      return NextResponse.json({ error: "Post não encontrado" }, { status: 404 });
     }
 
-    return NextResponse.json(toPostResponse(post));
-  } catch {
-    console.error("post_read_failed");
-    return NextResponse.json({ error: "Unable to fetch post" }, { status: 500 });
+    // Increment view count if not authenticated (public view)
+    const session = await auth();
+    if (!session) {
+      await prisma.post.update({
+        where: { id },
+        data: { views: { increment: 1 } },
+      });
+    }
+
+    return NextResponse.json(post);
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    return NextResponse.json(
+      { error: "Erro ao buscar post" },
+      { status: 500 }
+    );
   }
 }
 
-export async function PUT(request: NextRequest, { params }: RouteParams) {
-  const access = await authorizeApi("content");
-  if (!access.ok) return access.response;
-
-  const parsedId = idSchema.safeParse((await params).id);
-  if (!parsedId.success) return NextResponse.json({ error: "Post not found" }, { status: 404 });
-
+// PUT /api/posts/[id] - Update a post
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const body = await readJsonBody<unknown>(request, MAX_POST_BODY_BYTES);
-    const validation = postPatchSchema.safeParse(body);
-    if (!validation.success) {
+    const { id } = await params;
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const validatedData = postSchema.parse(body);
+
+    // Check if post exists
+    const existingPost = await prisma.post.findUnique({
+      where: { id },
+    });
+
+    if (!existingPost) {
+      return NextResponse.json({ error: "Post não encontrado" }, { status: 404 });
+    }
+
+    // Calculate reading time if content was updated
+    let readingTime = existingPost.readingTime;
+    if (validatedData.content) {
+      const wordsPerMinute = 200;
+      const wordCount = validatedData.content.split(/\s+/).length;
+      readingTime = `${Math.ceil(wordCount / wordsPerMinute)} min`;
+    }
+
+    // Handle tags if provided
+    const updateData: any = {
+      ...validatedData,
+      readingTime,
+      publishedAt: validatedData.publishedAt
+        ? new Date(validatedData.publishedAt)
+        : validatedData.status === "published" && !existingPost.publishedAt
+        ? new Date()
+        : undefined,
+    };
+
+    // Handle tags separately
+    if (validatedData.tags) {
+      const tags = await Promise.all(
+        validatedData.tags.map(async (tagId) => {
+          const tag = await prisma.tag.findUnique({ where: { id: tagId } });
+          return tag ? { id: tag.id } : null;
+        })
+      );
+
+      const validTagIds = tags.filter((tag) => tag !== null);
+
+      updateData.tags = {
+        set: validTagIds as any,
+      };
+    }
+
+    const post = await prisma.post.update({
+      where: { id },
+      data: updateData,
+      include: {
+        author: { select: { id: true, name: true, email: true } },
+        tags: true,
+      },
+    });
+
+    return NextResponse.json(post);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Invalid post data", details: validation.error.flatten() },
+        { error: "Dados inválidos", details: error.issues },
         { status: 400 }
       );
     }
 
-    const existingPost = await prisma.post.findUnique({ where: { id: parsedId.data } });
-    if (!existingPost) return NextResponse.json({ error: "Post not found" }, { status: 404 });
-
-    const data = validation.data;
-    const updateData: Record<string, unknown> = { ...data };
-    if (data.content !== undefined) {
-      updateData.content = sanitizePostHtml(data.content);
-      const wordCount = data.content.trim().split(/\s+/).filter(Boolean).length;
-      updateData.readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min`;
-    }
-    if (data.publishedAt !== undefined) {
-      updateData.publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
-    } else if (data.status === "published" && !existingPost.publishedAt) {
-      updateData.publishedAt = new Date();
-    }
-
-    if (data.tags !== undefined) {
-      const tags = await prisma.tag.findMany({
-        where: { id: { in: data.tags } },
-        select: { id: true },
-      });
-      updateData.tags = { set: tags };
-    }
-
-    const post = await prisma.post.update({
-      where: { id: parsedId.data },
-      data: updateData,
-      include: {
-        author: { select: { name: true } },
-        tags: { select: { id: true, name: true, slug: true } },
-      },
-    });
-    return NextResponse.json(toPostResponse(post));
-  } catch (error) {
-    if (error instanceof RequestBodyError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
-    }
-    console.error("post_update_failed");
-    return NextResponse.json({ error: "Unable to update post" }, { status: 500 });
+    console.error("Error updating post:", error);
+    return NextResponse.json(
+      { error: "Erro ao atualizar post" },
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
-  const access = await authorizeApi("content");
-  if (!access.ok) return access.response;
-
-  const parsedId = idSchema.safeParse((await params).id);
-  if (!parsedId.success) return NextResponse.json({ error: "Post not found" }, { status: 404 });
-
+// DELETE /api/posts/[id] - Delete a post
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const existingPost = await prisma.post.findUnique({ where: { id: parsedId.data }, select: { id: true } });
-    if (!existingPost) return NextResponse.json({ error: "Post not found" }, { status: 404 });
-    await prisma.post.delete({ where: { id: parsedId.data } });
-    return NextResponse.json({ message: "Post deleted" });
-  } catch {
-    console.error("post_delete_failed");
-    return NextResponse.json({ error: "Unable to delete post" }, { status: 500 });
+    const { id } = await params;
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
+    // Check if post exists
+    const existingPost = await prisma.post.findUnique({
+      where: { id },
+    });
+
+    if (!existingPost) {
+      return NextResponse.json({ error: "Post não encontrado" }, { status: 404 });
+    }
+
+    await prisma.post.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Post deletado com sucesso" });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return NextResponse.json(
+      { error: "Erro ao deletar post" },
+      { status: 500 }
+    );
   }
 }
